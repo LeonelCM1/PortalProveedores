@@ -1,0 +1,204 @@
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\carmen.muñiz\Desktop\Mary\Mi_respaldo_050411\Mis_Documentos_Respaldo\Visual Studio 2008\Projects\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\carmen.muñiz\Desktop\CLPortalUsersDataLink\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\obj\Debug\ResolveAssemblyReference.cache
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\SkytexWeb\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\obj\Debug\ResolveAssemblyReference.cache
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\ProveedoresVersionUsuarios_ultimabien\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb

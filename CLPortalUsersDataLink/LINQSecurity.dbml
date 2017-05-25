@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Name="skytex" Class="LINQSecurityDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=192.168.18.21;Initial Catalog=skytex;Persist Security Info=True;User ID=soludin" SettingsObjectName="CLPortalUsersDataLink.My.MySettings" SettingsPropertyName="skytexConnectionString" Provider="System.Data.SqlClient" />
+  <Function Name="dbo.sp_qcomtrweb1" Method="sp_qcomtrweb1">
+    <ElementType Name="sp_qcomtrweb1Result">
+      <Column Name="nom_op" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="prg_cve" Type="System.String" DbType="NVarChar(15) NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_accesoweb" Method="sp_accesoweb">
+    <Parameter Name="rfc" Type="System.String" DbType="Char(15)" />
+    <Parameter Name="password" Type="System.String" DbType="Char(15)" />
+    <ElementType Name="sp_accesowebResult">
+      <Column Name="rfc" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_datfacweb" Method="sp_datfacweb">
+    <Parameter Name="ef_cve" Type="System.String" DbType="Char(3)" />
+    <Parameter Name="tipo_doc" Type="System.String" DbType="Char(10)" />
+    <Parameter Name="num_fol" Type="System.Int32" DbType="Int" />
+    <ElementType Name="sp_datfacwebResult">
+      <Column Name="ef_cve" Type="System.String" DbType="NChar(3) NOT NULL" CanBeNull="false" />
+      <Column Name="div_cve" Type="System.String" DbType="NChar(3) NOT NULL" CanBeNull="false" />
+      <Column Name="cc_tipo" Type="System.Char" DbType="NChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="cc_cve" Type="System.String" DbType="NChar(6) NOT NULL" CanBeNull="false" />
+      <Column Name="alm_cve" Type="System.String" DbType="NChar(3) NOT NULL" CanBeNull="false" />
+      <Column Name="ven_cve" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="num_fol" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="tot_reng" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
+      <Column Name="tipo_doc" Type="System.String" DbType="NChar(6) NOT NULL" CanBeNull="false" />
+      <Column Name="ef_cvep" Type="System.String" DbType="NChar(3)" CanBeNull="true" />
+      <Column Name="num_folp" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="tipo_docp" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="refer" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="fec_mov" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="fec_ultact" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="id_ultact" Type="System.String" DbType="NChar(3) NOT NULL" CanBeNull="false" />
+      <Column Name="foremb_cve" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="pct_desc" Type="System.Decimal" DbType="Decimal(0,0) NOT NULL" CanBeNull="false" />
+      <Column Name="tm" Type="System.String" DbType="NChar(3)" CanBeNull="true" />
+      <Column Name="tc" Type="System.Decimal" DbType="Decimal(0,0) NOT NULL" CanBeNull="false" />
+      <Column Name="total" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="iva" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="ieps" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="obs" Type="System.String" DbType="NText" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="pct_canacp" Type="System.Decimal" DbType="Decimal(0,0) NOT NULL" CanBeNull="false" />
+      <Column Name="fec_prom" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="sw_facpar" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="sw_entpar" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="forpag_cve" Type="System.String" DbType="NChar(3)" CanBeNull="true" />
+      <Column Name="fob_cve" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="cf_cve" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="cif_cve" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="dest_cve" Type="System.String" DbType="NChar(6)" CanBeNull="true" />
+      <Column Name="sw_transp" Type="System.String" DbType="NChar(6) NOT NULL" CanBeNull="false" />
+      <Column Name="cf_flete" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="cif_flete" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="seguro" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="num_guia" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="contenedor" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="no_bultos" Type="System.Decimal" DbType="Decimal(0,0) NOT NULL" CanBeNull="false" />
+      <Column Name="tie_trans" Type="System.Decimal" DbType="Decimal(0,0) NOT NULL" CanBeNull="false" />
+      <Column Name="plazo_pp" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
+      <Column Name="pct_descpp" Type="System.Decimal" DbType="Decimal(0,0) NOT NULL" CanBeNull="false" />
+      <Column Name="sw_impdia" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="sw_consolida" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="dato1" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato2" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato3" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato4" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato5" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato6" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato7" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato8" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato9" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="dato10" Type="System.Decimal" DbType="Money NOT NULL" CanBeNull="false" />
+      <Column Name="ven_tipo" Type="System.Char" DbType="NChar(1)" CanBeNull="true" />
+      <Column Name="foremb_tipo" Type="System.Char" DbType="NChar(1)" CanBeNull="true" />
+      <Column Name="plazo" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="sw_impexp" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="suc_cve" Type="System.String" DbType="NChar(3)" CanBeNull="true" />
+      <Column Name="suc_aten" Type="System.String" DbType="NVarChar(25)" CanBeNull="true" />
+      <Column Name="imp_letra" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="fec_letra" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+</Database>
