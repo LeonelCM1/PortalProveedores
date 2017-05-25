@@ -1,0 +1,24 @@
+.fValidator-form fieldset {
+	border: 1px solid #ccc;
+	padding: 10px;
+}
+
+.fValidator-form legend {
+	padding: 0 5px;
+}
+
+.fValidator-form input, select {
+	font-family: Arial;
+	color: #666;
+}
+	.fValidator-form input {padding: 2px;}
+
+.full {width: 100%;}
+.half {width: 50%; vertical-align: top;}
+
+.fValidator-msg {
+	background-color: #c00;
+	font-size: 85%;
+	color: #fff;
+	padding: 5px;
+}
