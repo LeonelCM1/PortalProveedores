@@ -1,0 +1,132 @@
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Documents and Settings\carmen.muñiz\Mis documentos\Roadtrack\Roadtrack\Projects\PortalClientesEjemploClass\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\ResolveAssemblyReference.cache
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Roadtrack\Projects\PortalClientesEjemploClass\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\SkytexWeb\Projects\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\SkytexWeb\Projects\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\SkytexWeb\Projects\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\SkytexWeb\Projects\CLPortalAbstract\obj\Debug\ResolveAssemblyReference.cache
+C:\SkytexWeb\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\SkytexWeb\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\SkytexWeb\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\SkytexWeb\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\SkytexWeb\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\obj\Debug\ResolveAssemblyReference.cache
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Skytex\NuevodllSQL\H2\Projects\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_bis\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores_respaldoServicios_11042014\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\Proveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\ricardo.garcia\Documents\compartido\Rgm_task\Querys Pag Proveedores\Version_Login_092013\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\geovana.contreras\Documents\regresar a C\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionUsuarios\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\jose.polledo\Documents\Armando\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Desktop\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
