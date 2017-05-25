@@ -1,0 +1,53 @@
+﻿<%@ Master Language="VB" CodeFile="mpMenu.master.vb" Inherits="mpMenu" %>
+<!DOCTYPE html>
+
+<html>
+    
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Skytex Mexico S.A. de C.V.</title>
+    <link rel="Stylesheet" href= "Layouts/MenuTabs.css" media="screen" />
+    <script language="JavaScript" type="text/javascript">
+    javascript: window.history.forward(1); //Esto es para cuando le pulse al botón de Atrás 
+    </script>
+
+</head>
+ <body>
+<div id="main_container">
+   
+        <div id="top_banner">
+            <div id="Div1">
+                <img src="Layouts/images/fondos/logo_trasp.png" width="248" height="100" border="0" alt="" title="" />
+            </div>
+        </div>
+        <div id="center_content">
+            <form id="exA" class="fValidator-form" runat="server">
+                <div id="div-Close">
+
+                    <asp:LinkButton ID="LnkCerrarSesion" runat="server" ForeColor="Blue" ToolTip="Cerrar Sesión">
+                Cerrar Sesión
+                    </asp:LinkButton>
+                </div>
+
+                <asp:ContentPlaceHolder ID="MainContentPlaceHolder" runat="server">
+                </asp:ContentPlaceHolder>
+
+            </form>
+        </div>
+    
+    <div id="footer">
+        <%--Grupo Skytex Mexico &copy; Todos Los Derechos Reservados 2012 <br  />--%>
+        Grupo Skytex Mexico S.A. de C.V.&copy; Todos Los Derechos Reservados 2013
+        <br />
+        <%--<a href="http://validator.w3.org/check?uri=referer" title="This site is W3C compliant"></a>--%>
+    </div>
+
+
+</div>
+ </body>
+</html>
+
+   
+  
