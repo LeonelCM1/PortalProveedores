@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  attributeFormDefault="unqualified"
+  elementFormDefault="qualified"
+  targetNamespace="http://www.skytex.com.mx/embarques"
+  xmlns="http://www.skytex.com.mx/embarques"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="requestForPayment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="aditionalData" minOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="textData" use="required">
+              <xs:annotation>
+                <xs:documentation>Datos adicionales</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:minLength value="1"/>
+                  <xs:whiteSpace value="collapse"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="methodOfPayment" use="required">
+              <xs:annotation>
+                <xs:documentation>Atributo requerido de texto libre para expresar el método de pago de los bienes o servicios amparados por el comprobante. Se entiende como método de pago leyendas tales como: cheque, tarjeta de crédito o debito, depósito en cuenta, etc.</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="EFECTIVO"/>
+                  <xs:enumeration value="TRANSFERENCIA ELECTRONICA"/>
+                  <xs:enumeration value="TRANSFERENCIA ELECTRÓNICA"/>
+                  <xs:enumeration value="NO IDENTIFICADO"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="currency" use="required">
+              <xs:annotation>
+                <xs:documentation>Atributo opcional para expresar la moneda utilizada para expresar los montos </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                  <xs:length value="3"/>
+                  <xs:enumeration value="MXN"/>
+                  <xs:enumeration value="XEU"/>
+                  <xs:enumeration value="USD"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="provider" minOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="providerID" use="required">
+              <xs:annotation>
+                <xs:documentation>Clave de proveedor en Skytex México, definida con la etiqueta “Proveedor (CFD)” en el Acuse de Recibo Mercancía, ejemplo: Imagen 1. Acuse de Recibo de Mercancía, Archivo: Esquema_XML v2.0</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:minLength value="12"/>
+                  <xs:maxLength value="12"/>
+                  <xs:whiteSpace value="collapse"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="lineItems">
+          <xs:annotation>
+            <xs:documentation>Nodo requerido para enlistar los artículos/cargos extra de la factura.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="lineItem" minOccurs="0" maxOccurs="999">
+                <xs:annotation>
+                  <xs:documentation>Línea de detalle.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="number" use="required" >
+                    <xs:annotation>
+                      <xs:documentation>Número secuencial que se asigna a cada línea de detalle, éste debe proporcionarse en orden ascendente</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:integer">
+                        <xs:totalDigits value="3"/>
+                        <xs:fractionDigits value="0"/>
+                        <xs:minInclusive value='1'/>
+                        <xs:maxInclusive value='999'/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="sku" use="required">
+                    <xs:annotation>
+                      <xs:documentation>
+                        Clave del artículo como se define en el Acuse de Recibo de Mercancía, ejemplo: Imagen 1. Acuse de Recibo de Mercancía, Archivo: Esquema_XML v2.0
+                      </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:minLength value="2"/>
+                        <xs:maxLength value="32"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="articleType" use="required">
+                    <xs:annotation>
+                      <xs:documentation>
+                        Clave del tipo de artículo como se define en el Acuse de Recibo de Mercancía (únicamente la indicada entre paréntesis), ejemplo: Imagen 1. Acuse de Recibo de Mercancía, Archivo: Esquema_XML v2.0
+                      </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:minLength value="1"/>
+                        <xs:maxLength value="3"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="price" use="required" type="t_Decimales" >
+                    <xs:annotation>
+                      <xs:documentation>
+                        Precio acordado con el transportista.
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                  <xs:attribute name="referenceIdentification" use="required">
+                    <xs:annotation>
+                      <xs:documentation>
+                        Referencia de la entrada de mercancía, definida con la etiqueta “Folio Recepción (CFD)” en el Acuse de Recibo de Mercancía, ejemplo: Imagen 1. Acuse de Recibo de Mercancía, Archivo: Esquema_XML v2.0
+                      </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:minLength value="8"/>
+                        <xs:maxLength value="17"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="t_Decimales">
+    <xs:annotation>
+      <xs:documentation>Tipo definido para expresar importes numéricos con fracción hasta seis decimales</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="4"/>
+      <xs:minInclusive value='.0000'/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
