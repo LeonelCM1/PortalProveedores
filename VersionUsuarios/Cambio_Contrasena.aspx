@@ -1,4 +1,4 @@
-<%@ page masterpagefile="~/mpMenu.master" language="VB" autoeventwireup="false" inherits="Logon, App_Web_nykhp1yw" title="Cambio de Contraseña" %>
+<%@ page masterpagefile="~/mpMenu.master" language="VB" autoeventwireup="false" inherits="Logon, App_Web_ce3seyug" title="Cambio de Contraseña" %>
 <%@ MasterType VirtualPath="~/mpMenu.master" %>
 <%@ OutputCache Location="None" %>
 

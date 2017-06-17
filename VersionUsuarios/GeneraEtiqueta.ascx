@@ -1,4 +1,4 @@
-﻿<%@ control language="VB" autoeventwireup="false" inherits="GeneraEtiqueta, App_Web_hxhuble3" %>
+﻿<%@ control language="VB" autoeventwireup="false" inherits="GeneraEtiqueta, App_Web_cjgzslet" %>
 
 <style type="text/css">
     .style1

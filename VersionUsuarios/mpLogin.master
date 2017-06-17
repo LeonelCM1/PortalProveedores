@@ -1,4 +1,4 @@
-﻿<%@ master language="VB" autoeventwireup="false" inherits="mpLogin, App_Web_hxhuble3" %>
+﻿<%@ master language="VB" autoeventwireup="false" inherits="mpLogin, App_Web_cjgzslet" %>
 
 <!DOCTYPE html>
 
