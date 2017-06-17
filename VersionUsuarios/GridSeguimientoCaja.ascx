@@ -1,4 +1,4 @@
-﻿<%@ control language="VB" autoeventwireup="false" inherits="GridSeguimientoCaja, App_Web_iouysf1w" %>
+﻿<%@ control language="VB" autoeventwireup="false" inherits="GridSeguimientoCaja, App_Web_hxhuble3" %>
     
 <script type="text/javascript">
     function onlyNumbersF(e) {

@@ -130,3 +130,11 @@ C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedore
 C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
 C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
 C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb

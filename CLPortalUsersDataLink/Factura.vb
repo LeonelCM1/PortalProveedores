@@ -98,8 +98,8 @@ Public Class Factura
 
     Public Class Datos
         Public Function MiConexion() As SqlConnection
-            'Dim Conexion = Global.CLPortalUsersDataLink.My.MySettings.Default.skytexConnectionString
-            Dim Conexion = Global.CLPortalUsersDataLink.My.MySettings.Default.developConnectionString
+            Dim Conexion = Global.CLPortalUsersDataLink.My.MySettings.Default.skytexConnectionString
+            'Dim Conexion = Global.CLPortalUsersDataLink.My.MySettings.Default.developConnectionString
             'Dim Conexion = Global.CLPortalUsersDataLink.My.MySettings.Default.AppServerConnectionString
             Dim MyConnection As New SqlConnection(Conexion)
             Return MyConnection

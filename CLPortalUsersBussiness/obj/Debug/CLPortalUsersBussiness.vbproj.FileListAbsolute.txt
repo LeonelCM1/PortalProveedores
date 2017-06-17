@@ -298,3 +298,21 @@ C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedore
 C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.dll
 C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.xml
 C:\Users\fernando.garcia\Documents\Proyectos Skytex\ProveedoresVersionProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersBussiness.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersBussiness.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersBussiness.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalAbstract.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersData.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersDataLink.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalAbstract.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalAbstract.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersData.pdb
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\bin\Debug\CLPortalUsersData.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.vbprojResolveAssemblyReference.cache
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.Resources.resources
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.vbproj.GenerateResource.Cache
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.dll
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.xml
+C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersBussiness\obj\Debug\CLPortalUsersBussiness.pdb
