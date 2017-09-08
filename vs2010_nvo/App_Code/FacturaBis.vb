@@ -251,9 +251,39 @@ Namespace Skytex.FacturaElectronica
                         agrega_err(1, "el sello es diferente al del timbre fiscal", errores)
                     End If
                 Else
-                    timbre.uuid = ""
-                    llaveCfd.timbre_fiscal = timbre
+                    'Cambio para CDFI 3.3 FGV (07/08/2017)
+                    If llaveCfd.version_nom = "CFDI_3" Then
+                        Dim qList = From xe In xmlElm.Descendants _
+                                    Select xe
+                        For Each xe In qList
+                            If xe.Name.LocalName = "TimbreFiscalDigital" Then
+                                timbre.version = xe.Attribute("version").Value
+                                timbre.uuid = xe.Attribute("UUID").Value
+                                timbre.fecha_timbrado = xe.Attribute("FechaTimbrado").Value
+                                timbre.sello_cfd = xe.Attribute("selloCFD").Value
+                                timbre.no_certificado_sat = xe.Attribute("noCertificadoSAT").Value
+                                timbre.sello_sat = xe.Attribute("selloSAT").Value
+                                contador = 1
+                                Exit For
+                            End If
+                        Next
+                        llaveCfd.timbre_fiscal = timbre
+
+                        'GCM 22102014 se agrego el error sin timbre fiscal
+                        If contador = 0 Then
+                            agrega_err(1, "sin timbre fiscal", errores)
+                        End If
+
+                        If sello <> llaveCfd.timbre_fiscal.sello_cfd And contador = 1 Then
+                            agrega_err(1, "el sello es diferente al del timbre fiscal", errores)
+                        End If
+                    Else
+                        timbre.uuid = ""
+                        llaveCfd.timbre_fiscal = timbre
+                    End If
                 End If
+
+
                 If IsNothing(root.Attribute("serie")) Then
                     llaveCfd.serie = ""
                 Else
@@ -311,7 +341,10 @@ Namespace Skytex.FacturaElectronica
             Dim swRegimen As Boolean = False
             Dim qList1 = From xe In elemento.Descendants _
              Select xe
-          
+
+            'Cambio para CDFI 3.3 FGV (07/08/2017)
+            Dim versionCFDI = elemento.Attribute("version").Value.ToString()
+
             If Not IsNothing(elemento.Attribute("rfc")) Then
                 emisorTmp.rfc = elemento.Attribute("rfc").Value.ToString()
             Else
@@ -325,63 +358,66 @@ Namespace Skytex.FacturaElectronica
                 emisorTmp.nombre = ""
             End If
 
+            'Cambio para CDFI 3.3 FGV (07/08/2017)
+            If versionCFDI = "3.3" Then
+                swDomiciolioFiscal = False
+            Else
+                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "DomicilioFiscal"
+                    swDomiciolioFiscal = True
+                    If Not IsNothing(xe.Attribute("calle")) Then
+                        domicilio.calle = xe.Attribute("calle").Value.ToString()
+                    Else
+                        domicilio.calle = ""
+                    End If
 
-            For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "DomicilioFiscal"
-                swDomiciolioFiscal = True
-                If Not IsNothing(xe.Attribute("calle")) Then
-                    domicilio.calle = xe.Attribute("calle").Value.ToString()
-                Else
-                    domicilio.calle = ""
-                End If
+                    If Not IsNothing(xe.Attribute("noExterior")) Then
+                        domicilio.no_exterior = xe.Attribute("noExterior").Value.ToString()
+                    Else
+                        domicilio.no_exterior = ""
+                    End If
 
-                If Not IsNothing(xe.Attribute("noExterior")) Then
-                    domicilio.no_exterior = xe.Attribute("noExterior").Value.ToString()
-                Else
-                    domicilio.no_exterior = ""
-                End If
+                    If Not IsNothing(xe.Attribute("noInterior")) Then
+                        domicilio.no_interior = xe.Attribute("noInterior").Value.ToString()
+                    Else
+                        domicilio.no_interior = ""
+                    End If
 
-                If Not IsNothing(xe.Attribute("noInterior")) Then
-                    domicilio.no_interior = xe.Attribute("noInterior").Value.ToString()
-                Else
-                    domicilio.no_interior = ""
-                End If
+                    If Not IsNothing(xe.Attribute("colonia")) Then
+                        domicilio.colonia = xe.Attribute("colonia").Value.ToString()
+                    Else
+                        domicilio.colonia = ""
+                    End If
 
-                If Not IsNothing(xe.Attribute("colonia")) Then
-                    domicilio.colonia = xe.Attribute("colonia").Value.ToString()
-                Else
-                    domicilio.colonia = ""
-                End If
+                    If Not IsNothing(xe.Attribute("localidad")) Then
+                        domicilio.localidad = xe.Attribute("localidad").Value.ToString()
+                    Else
+                        domicilio.localidad = ""
+                    End If
+                    If Not IsNothing(xe.Attribute("municipio")) Then
+                        domicilio.municipio = xe.Attribute("municipio").Value.ToString()
+                    Else
+                        domicilio.municipio = ""
+                    End If
 
-                If Not IsNothing(xe.Attribute("localidad")) Then
-                    domicilio.localidad = xe.Attribute("localidad").Value.ToString()
-                Else
-                    domicilio.localidad = ""
-                End If
-                If Not IsNothing(xe.Attribute("municipio")) Then
-                    domicilio.municipio = xe.Attribute("municipio").Value.ToString()
-                Else
-                    domicilio.municipio = ""
-                End If
+                    If Not IsNothing(xe.Attribute("estado")) Then
+                        domicilio.estado = xe.Attribute("estado").Value.ToString()
+                    Else
+                        domicilio.estado = ""
+                    End If
 
-                If Not IsNothing(xe.Attribute("estado")) Then
-                    domicilio.estado = xe.Attribute("estado").Value.ToString()
-                Else
-                    domicilio.estado = ""
-                End If
+                    If Not IsNothing(xe.Attribute("pais")) Then
+                        domicilio.pais = xe.Attribute("pais").Value.ToString()
+                    Else
+                        domicilio.pais = ""
+                    End If
 
-                If Not IsNothing(xe.Attribute("pais")) Then
-                    domicilio.pais = xe.Attribute("pais").Value.ToString()
-                Else
-                    domicilio.pais = ""
-                End If
-
-                If Not IsNothing(xe.Attribute("codigoPostal")) Then
-                    domicilio.codigo_postal = xe.Attribute("codigoPostal").Value.ToString()
-                Else
-                    domicilio.codigo_postal = ""
-                End If
-            Next
-
+                    If Not IsNothing(xe.Attribute("codigoPostal")) Then
+                        domicilio.codigo_postal = xe.Attribute("codigoPostal").Value.ToString()
+                    Else
+                        domicilio.codigo_postal = ""
+                    End If
+                Next
+            End If
 
             If swDomiciolioFiscal = False Then
                 domicilio.calle = ""
@@ -396,22 +432,40 @@ Namespace Skytex.FacturaElectronica
                 domicilio.codigo_postal = ""
             End If
 
-            For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "RegimenFiscal"
-                If Not IsNothing(xe.Attribute("Regimen")) Then
+            'Cambio para CDFI 3.3 FGV (07/08/2017)
+            If versionCFDI = "3.3" Then
+                If Not IsNothing(elemento.Attribute("nombre")) Then
                     swRegimen = True
-                    regimen.RegimenFisc = CType(xe.Attribute("Regimen"), String)
+                    regimen.RegimenFisc = elemento.Attribute("RegimenFiscal").Value.ToString()
+                Else
+                    swRegimen = False
+                    regimen.RegimenFisc = ""
                 End If
-                Exit For
-            Next
 
-            If swRegimen = False Then
-                agrega_err(1, "El regimen del emisor es un dato requerido", errores)
+                If swRegimen = False Then
+                    agrega_err(1, "El regimen del emisor es un dato requerido", errores)
+                End If
+
+                If emisorTmp.rfc = "" Then
+                    agrega_err(1, "El rfc del emisor es un dato requerido", errores)
+                End If
+            Else
+                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "RegimenFiscal"
+                    If Not IsNothing(xe.Attribute("Regimen")) Then
+                        swRegimen = True
+                        regimen.RegimenFisc = CType(xe.Attribute("Regimen"), String)
+                    End If
+                    Exit For
+                Next
+
+                If swRegimen = False Then
+                    agrega_err(1, "El regimen del emisor es un dato requerido", errores)
+                End If
+
+                If emisorTmp.rfc = "" Then
+                    agrega_err(1, "El rfc del emisor es un dato requerido", errores)
+                End If
             End If
-
-            If emisorTmp.rfc = "" Then
-                agrega_err(1, "El rfc del emisor es un dato requerido", errores)
-            End If
-
 
             emisorTmp.DomicilioFiscal = domicilio
             emisorTmp.Regimen = regimen
@@ -912,10 +966,12 @@ Namespace Skytex.FacturaElectronica
                     comprobante.tc = root.Attribute("TipoCambio").Value.ToString
                 End If
 
+                'Cambio para CDFI 3.3 FGV (07/08/2017)
                 If comprobante.tipodoc_cve = "BTFSER" Or comprobante.tipodoc_cve = "BTCOM" Then
                     If IsNothing(root.Attribute("Moneda")) Then
                         comprobante.moneda = ""
                     Else
+                        'enviar el numero del tipo de moneda al sp
                         comprobante.moneda = root.Attribute("Moneda").Value.ToString()
                     End If
                 End If

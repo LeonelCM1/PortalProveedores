@@ -337,22 +337,42 @@ Partial Class CajaFacturas
 
 
         _facturaBis.GrabaTmp(errores, comprobante, llaveCfd)
-
+        'Cambio para CDFI 3.3 FGV (08/08/2017)
         If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
-            _facturaBis.ValidaDatosEncabezadoCap(errores, comprobante, llaveCfd)
+            If llaveCfd.version = "3.3" Then
+                _facturaBis.ValidaDatosEncabezadoCap3_3(errores, comprobante, llaveCfd)
+            Else
+                _facturaBis.ValidaDatosEncabezadoCap(errores, comprobante, llaveCfd)
+            End If
+            '_facturaBis.ValidaDatosEncabezadoCap(errores, comprobante, llaveCfd)
         End If
 
+        'Cambio para CDFI 3.3 FGV (08/08/2017)
         If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
-            _facturaBis.ValidaDatosDetalleCap(errores, items, llaveCfd)
+            If llaveCfd.version = "3.3" Then
+                _facturaBis.ValidaDatosDetalleCap3_3(errores, items, llaveCfd)
+            Else
+                _facturaBis.ValidaDatosDetalleCap(errores, items, llaveCfd)
+            End If
         End If
 
+        'Cambio para CDFI 3.3 FGV (08/08/2017)
         If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
-            _facturaBis.ValidaDatosPapa(errores, llaveCfd)
+            If llaveCfd.version = "3.3" Then
+                _facturaBis.ValidaDatosPapa3_3(errores, llaveCfd)
+            Else
+                _facturaBis.ValidaDatosPapa(errores, llaveCfd)
+            End If
         End If
 
-
+        'Cambio para CDFI 3.3 FGV (08/08/2017)
         If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
-            _facturaBis.GeneraEncabezadoFactura(errores, llaveCfd, facturaGenerada)
+            If llaveCfd.version = "3.3" Then
+                _facturaBis.GeneraEncabezadoFactura3_3(errores, llaveCfd, facturaGenerada)
+            Else
+                _facturaBis.GeneraEncabezadoFactura(errores, llaveCfd, facturaGenerada)
+            End If
+
             For Each fact In facturaGenerada
                 Try
                     If FileIO.FileSystem.FileExists(_ruta + fact.ef_cve + fact.tipo_doc + fact.num_fol.ToString() + ".pdf") = True Then
@@ -375,28 +395,28 @@ Partial Class CajaFacturas
 
 
 
-        If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
+            If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
 
-            'For Each fact In facturaGenerada
-            '    TxtMensajeExitoso.Text = TxtMensajeExitoso.Text & "La factura " + nombreArchivoXml + "se ha procesado exitosamente, consulte la sección seguimiento folio de comision bancaria: " + fact.num_fol.ToString.Trim + vbNewLine
-            '    TxtMensajeExitoso.Text = TxtMensajeExitoso.Text + "rfc: " + llaveCfd.rfc_emisor + _
-            '    "serie: " + llaveCfd.serie + " folio: " + llaveCfd.folio_factura.ToString() + _
-            '    "uuid: " + llaveCfd.timbre_fiscal.uuid + "<br />"
-            'Next
+                'For Each fact In facturaGenerada
+                '    TxtMensajeExitoso.Text = TxtMensajeExitoso.Text & "La factura " + nombreArchivoXml + "se ha procesado exitosamente, consulte la sección seguimiento folio de comision bancaria: " + fact.num_fol.ToString.Trim + vbNewLine
+                '    TxtMensajeExitoso.Text = TxtMensajeExitoso.Text + "rfc: " + llaveCfd.rfc_emisor + _
+                '    "serie: " + llaveCfd.serie + " folio: " + llaveCfd.folio_factura.ToString() + _
+                '    "uuid: " + llaveCfd.timbre_fiscal.uuid + "<br />"
+                'Next
 
-            'TxtMensajes.Text = ""
-            '
-            Page.Session("ef_cve") = _facturaBis.EfCveG
-            'PInicializaVariables()
-        End If
+                'TxtMensajes.Text = ""
+                '
+                Page.Session("ef_cve") = _facturaBis.EfCveG
+                'PInicializaVariables()
+            End If
 
-        If _facturaBis.IErrorG > 0 And errores.Count = 0 Then
-            _facturaBis.agrega_err(1, "", errores)
-        End If
+            If _facturaBis.IErrorG > 0 And errores.Count = 0 Then
+                _facturaBis.agrega_err(1, "", errores)
+            End If
 
-        If errores.Count > 0 And _facturaBis.IErrorG > 0 Then
-            _facturaBis.LeerErroresSql(errores, llaveCfd)
-        End If
+            If errores.Count > 0 And _facturaBis.IErrorG > 0 Then
+                _facturaBis.LeerErroresSql(errores, llaveCfd)
+            End If
 
     End Sub
 
@@ -557,7 +577,12 @@ Partial Class CajaFacturas
 
         Try
             If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
-                _facturaBis.LeeDatosLlaveLinq(errores, llaveCfd, nombreArchivoXml, receptor, emisor)
+                'Cambio para CDFI 3.3 FGV (08/08/2017)
+                If llaveCfd.version = "3.3" Then
+                    _facturaBis.LeeDatosLlaveLinq3_3(errores, llaveCfd, nombreArchivoXml, receptor, emisor)
+                Else
+                    _facturaBis.LeeDatosLlaveLinq(errores, llaveCfd, nombreArchivoXml, receptor, emisor)
+                End If
             End If
         Catch ex As Exception
             _facturaBis.agrega_err(3, ex.Message, errores)
@@ -589,7 +614,13 @@ Partial Class CajaFacturas
 
         Try
             If errores.Count = 0 And _facturaBis.IErrorG = 0 And llaveCfd.sw_sin_addenda = 1 Then
-                _facturaBis.ValidaXSDLinq_SNAdd(errores, nombreArchivoXml, llaveCfd)
+                'Cambio para CDFI 3.3 FGV (08/08/2017)
+                If llaveCfd.version = "3.3" Then
+                    _facturaBis.ValidaXSDLinq_SNAdd3_3(errores, nombreArchivoXml, llaveCfd)
+                Else
+                    _facturaBis.ValidaXSDLinq_SNAdd(errores, nombreArchivoXml, llaveCfd)
+                End If
+                '_facturaBis.ValidaXSDLinq_SNAdd(errores, nombreArchivoXml, llaveCfd)
             End If
         Catch ex As Exception
             _facturaBis.agrega_err(3, ex.Message, errores)
@@ -598,7 +629,13 @@ Partial Class CajaFacturas
         Try
             If errores.Count = 0 And _facturaBis.IErrorG = 0 And llaveCfd.sw_sin_addenda = 1 Then
                 'leer las facturas caja chica sin adenda
-                _facturaBis.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                'Cambio para CDFI 3.3 FGV (08/08/2017)
+                If llaveCfd.version = "3.3" Then
+                    _facturaBis.LeeDatosFacturaLINQ_SNAdd3_3(errores, comprobante, nombreArchivoXml, llaveCfd)
+                Else
+                    _facturaBis.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                End If
+                '_facturaBis.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
             End If
         Catch ex As Exception
             _facturaBis.agrega_err(1, "Ocurrio un error al leer el XML por favor contacte con el administrador de sitio ", errores)
@@ -685,7 +722,13 @@ Partial Class CajaFacturas
         If swValidarTotales = True Then
             Try
                 If errores.Count = 0 And llaveCfd.sw_sin_addenda = 1 And _facturaBis.IErrorG = 0 Then
-                    _facturaBis.ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
+                    'Cambio para CDFI 3.3 FGV (08/08/2017)
+                    If llaveCfd.version = "3.3" Then
+                        _facturaBis.ValidaTotales_SNAdd3_3(errores, comprobante, llaveCfd, decTrun, decimales)
+                    Else
+                        _facturaBis.ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
+                    End If
+                    '_facturaBis.ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
                 End If
             Catch ex As Exception
                 _facturaBis.agrega_err(3, ex.Message + "ValidaTotales_SNAdd sw addenda:" + llaveCfd.sw_sin_addenda.ToString(), errores)
