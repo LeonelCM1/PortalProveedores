@@ -1409,10 +1409,8 @@ Namespace Skytex.FacturaElectronica
                 Dim qAtrib As IEnumerable(Of XAttribute) = _
                     From atr In root.Attributes() _
                     Select atr
-                'GCM 23102014 
                 Dim qList1 = From xe In xmlElm.Descendants _
                 Select xe
-                ''GCM 23102014 
 
                 'esto es para remover la addenda
                 For Each a In xmlElm.Elements
@@ -1428,7 +1426,6 @@ Namespace Skytex.FacturaElectronica
                         comprobante.TotaldeRetenciones = Decimal.Parse(xe.Attribute("TotaldeRetenciones").Value) 'GCM 11112014 obtenemos el valor de total de retenciones
                     End If
                 Next
-                'GCM 23102014 
 
                 ''GCM 11112014 obtenemos el valor de total de retenciones
                 'For Each xe In qList1
@@ -1537,6 +1534,8 @@ Namespace Skytex.FacturaElectronica
                     If IsNothing(root.Attribute("Moneda")) Then
                         comprobante.moneda = ""
                     Else
+                        'Cambio para CDFI 3.3 FGV (08/08/2017)
+                        'se va a enviar el id del catalogo de las Monedas
                         comprobante.moneda = root.Attribute("Moneda").Value.ToString()
                     End If
                 End If
@@ -2096,6 +2095,341 @@ Namespace Skytex.FacturaElectronica
                 If errorCfd > 0 Then
                     agrega_err(1, msg, errores)
                 End If
+        End Sub
+
+        Public Sub ValidaTotales_SNAdd3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal LlaveCfd As llave_cfd, ByVal decimales_truncados As Integer, ByVal decimales As Integer)
+
+            Dim mtoDescGlobal As Decimal = 0
+            Dim minimoTotal As Decimal
+            Dim maximoTotal As Decimal
+            Dim tasaVarIva As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
+            Dim importeIva As Decimal = 0
+            Dim pctIva As Decimal = 0
+
+            '24022015 GCM se contempla el rango max y min del query del servidor
+            'Dim cmax As New SqlCommand
+            'Dim Excepmax As Object
+            'cmax.CommandText = "select convert(decimal(19,4),prm15) from xcdconapl_cl where tipdoc_cve = 'xmlcfd' and sp_cve = 'webconfig' and spd_cve = 'rangoMinMax'"
+            'cmax.CommandType = CommandType.Text
+            'cmax.Connection = Conexion
+            'Conexion.Open()
+            'Excepmax = cmax.ExecuteScalar()
+            'Conexion.Close()
+
+            Dim iva = From cons In comprobante.Impuestos.Traslados
+                       Select cons.tasa, cons.importe, cons.impuesto
+                       Where (impuesto = "IVA")
+            'GCM 12112014 Agrego para contemplar caso totalimpuestos
+            Dim noiva = Aggregate cons In comprobante.Impuestos.Traslados
+                       Select cons.tasa, cons.importe, cons.impuesto
+                       Where (impuesto = "IVA")
+                          Into Count()
+            'GCM 12112014 Agrego para contemplar caso totalimpuestos
+
+            If noiva > 0 Then
+
+                For Each i In iva
+                    Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                    If swtasa = True Then
+                        tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                    Else
+                        tasaVarIva = i.tasa
+                    End If
+                    importeIva = importeIva + i.importe  'FormatNumber(i.importe, decimales)
+                Next
+            Else
+                importeIva = comprobante.totalImpuestosTrasladados
+                pctIva = comprobante.pctIva / 100
+            End If
+
+            Dim ieps = From cons In comprobante.Impuestos.Traslados
+                      Select cons.tasa, cons.importe, cons.impuesto
+                      Where (impuesto = "IEPS")
+
+            Dim noieps = Aggregate cons In comprobante.Impuestos.Traslados
+                       Select cons.tasa, cons.importe, cons.impuesto
+                       Where (impuesto = "IEPS")
+                          Into Count()
+            Dim tasaIeps As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
+            Dim importeIeps As Decimal = 0
+            For Each i In ieps
+                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                If swtasa = True Then
+                    tasaIeps = i.tasa / 100 ' FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaIeps = i.tasa
+                End If
+                importeIeps = importeIeps + i.importe ' FormatNumber(i.importe, decimales)
+            Next
+
+            Dim retenciones = From cons In comprobante.Impuestos.Retenciones
+                    Select cons.importe, cons.impuesto
+                    Where (impuesto = "IVA")
+
+            Dim retenImporteIva As Decimal = 0
+            For Each i In retenciones
+                retenImporteIva = retenImporteIva + i.importe 'FormatNumber(i.importe, decimales)
+            Next
+            Dim retisr = From cons In comprobante.Impuestos.Retenciones
+                  Select cons.importe, cons.impuesto
+                  Where (impuesto = "ISR")
+            Dim retenImporteIsr As Decimal = 0
+            'verificar impuestos 
+            For Each i In retisr
+                retenImporteIsr = retenImporteIsr + i.importe 'FormatNumber(i.importe, decimales)
+            Next
+            Dim errorCfd As Integer = 0
+            Dim qryResultConceptos = From com In comprobante.Conceptos _
+                       Select comprobante.Conceptos
+            Dim concep As List(Of concepto) = Nothing
+            For Each concep In qryResultConceptos
+            Next
+            Dim qryResLine = From com2 In concep _
+                Let sub_total = com2.cantidad * com2.valor_unitario _
+                Select sub_total, com2.importe, com2.no_identificacion, com2.cantidad, com2.valor_unitario
+            Dim qry_tot_con = From com2 In concep _
+               Let tot_con = com2.importe _
+               Select com2.importe, com2.no_identificacion
+            Dim cant_concep = Aggregate com2 In qryResLine _
+                              Into Sum(com2.cantidad)
+            Dim val_unit = From com2 In qryResLine _
+                            Select com2.valor_unitario _
+                            Distinct
+            If errorCfd = 0 Then
+                '------------------------------------------ Validar los descuentos
+                mtoDescGlobal = FormatNumber(comprobante.descuento, decimales) ' Monto global de descuento
+            End If
+            Dim subtotalComprobante = FormatNumber(comprobante.sub_total, decimales_truncados)
+            Dim subtotalConceptos = From com4 In concep _
+                                     Let sub_total = com4.cantidad * com4.valor_unitario _
+                                     Select sub_total, com4.importe, com4.no_identificacion
+            Dim Subt_c = subtotalComprobante
+            'GCM 11112014 Comentado para no validar sub-total
+            Dim info = Aggregate com4 In subtotalConceptos _
+                          Into Sum(com4.sub_total)
+            'Subt_c = FormatNumber(Round(Subt_c, decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            'If errorCfd = 0 Then 
+            '    minimoTotal = subtotalComprobante - 0.5
+            '    maximoTotal = subtotalComprobante + 0.5
+            '    If Subt_c < minimoTotal Or Subt_c > maximoTotal Then
+            '        errorCfd = 1
+            '    End If
+            'End If
+            Dim totalComprobante = FormatNumber(comprobante.total, decimales_truncados)
+            Dim traslComprobanteTotImp = FormatNumber(Round(((importeIva + importeIeps)), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            Dim traslConceptos = traslComprobanteTotImp
+            importeIva = Math.Round(importeIva, 2)
+            importeIeps = Math.Round(importeIeps, 2)
+            Dim TotaldeTraslados = comprobante.TotaldeTraslados 'GCM 23102014 agrego total de traslado
+            Dim TotaldeRetenciones = comprobante.TotaldeRetenciones
+            'GCM 16102014 Dim traslConceptos = FormatNumber(Round(((Subt_c - mtoDescGlobal) * tasaVarIva), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            Dim totImpRet = (retenImporteIva + retenImporteIsr)
+            'GCM 16102014 comentado para ya no validar iva
+            'If errorCfd = 0 Then
+
+
+            '    If errorCfd = 0 Then
+            '        minimoTotal = CType((traslConceptos - 0.5), Decimal)
+            '        maximoTotal = CType((traslConceptos + 0.5), Decimal)
+
+            '        If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+            '            errorCfd = 4
+            '        End If
+
+            '    End If
+
+            'End If
+            'GCM 13112014 Agrego la separacion de ieps e iva
+            Dim totalConceptos = FormatNumber(Round((Subt_c - mtoDescGlobal + traslConceptos - totImpRet + TotaldeTraslados - TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            If errorCfd = 0 Then
+                minimoTotal = totalConceptos - 0.8
+                maximoTotal = totalConceptos + 0.8
+
+                If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                    totalConceptos = FormatNumber(Round((Subt_c - mtoDescGlobal + importeIva - totImpRet + TotaldeTraslados - TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+
+                    minimoTotal = totalConceptos - 0.8
+                    maximoTotal = totalConceptos + 0.8
+
+                    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                        errorCfd = 5
+                    End If
+                End If
+                If errorCfd = 0 Then
+                    comprobante.total_Valido = totalConceptos
+                End If
+            End If
+
+
+            'en caso de que no exista IVA e IEPS
+            If errorCfd = 0 Then
+                If noiva = 0 And noieps = 0 Then
+                    'Dim subTotalCalculado = FormatNumber(Round((Subt_c - mtoDescGlobal + traslConceptos - totImpRet + TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+                    Dim subTotalCalculado = FormatNumber(Round((Subt_c - mtoDescGlobal - totImpRet + TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+                    Dim totalImpuestos As Decimal
+                    If importeIva = 0 Then
+                        totalImpuestos = 0
+                    Else
+                        totalImpuestos = Math.Round((subTotalCalculado - comprobante.descuento) * (comprobante.pctIva / 100), 2)
+                    End If
+
+                    'minimoTotal = totalImpuestos - 0.5
+                    'maximoTotal = totalImpuestos + 0.5
+
+                    If totalImpuestos = importeIva Or importeIva = 0 Then
+                        comprobante.total_Valido = subTotalCalculado + totalImpuestos
+                        comprobante.totalIEPS = totalImpuestos
+                    Else
+                        errorCfd = 7
+                    End If
+                End If
+            End If
+
+            'en caso de que no exista IVA
+            If errorCfd = 0 Then
+                If noiva = 0 And noieps >= 1 Then
+                    Dim subTotalCalculado = totalConceptos - importeIva
+                    Dim totalImpuestos = Math.Round((subTotalCalculado - comprobante.descuento) * tasaIeps, 2)
+                    'minimoTotal = totalImpuestos - 0.5
+                    maximoTotal = Decimal.Parse(totalImpuestos.ToString().Substring(0, totalImpuestos.ToString().Length - 1))
+
+                    If totalImpuestos = importeIeps Then
+                        'comprobante.total_Valido = subTotalCalculado + totalImpuestos
+                        comprobante.total_Valido = subTotalCalculado + maximoTotal
+                    Else
+                        errorCfd = 7
+                    End If
+                End If
+            End If
+
+            'en caso de que EXISTA IVA
+            If errorCfd = 0 Then
+                If noiva >= 1 And noieps = 0 Then
+                    If importeIva > 0 Then
+                        Dim subTotalCalculado = totalConceptos - importeIva '246.55
+                        Dim totalImpuestos = Math.Round((Subt_c) * (comprobante.pctIva / 100), 2)
+                        minimoTotal = totalImpuestos - 0.05
+                        maximoTotal = totalImpuestos + 0.05
+
+                        'If importeIva > minimoTotal And importeIva < maximoTotal Then
+                        comprobante.total_Valido = subTotalCalculado + importeIva
+                        'comprobante.total_Valido = subTotalCalculado
+                        'Else
+                        'errorCfd = 7
+
+                        'End If
+                    Else
+                        Dim subTotalCalculado = totalConceptos - importeIva
+                        comprobante.total_Valido = subTotalCalculado + importeIva
+                    End If
+                End If
+            End If
+
+            'en caso de que EXISTA IVA e IEPS
+            If errorCfd = 0 Then
+                If noiva >= 1 And noieps >= 1 Then
+                    Dim subTotalCalculado2 = FormatNumber(Round((Subt_c - mtoDescGlobal - totImpRet + TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+                    Dim totalFactura As Decimal
+                    totalFactura = CStr(totalComprobante)
+                    totalFactura = FormatNumber(Round(totalFactura), 2)
+                    Dim subTotalIVA = comprobante.sub_total + importeIva
+                    minimoTotal = subTotalIVA - 0.05
+                    maximoTotal = subTotalIVA + 0.05
+
+                    If totalFactura > minimoTotal And totalFactura < maximoTotal Then
+                        comprobante.total_Valido = subTotalIVA
+                    Else
+                        'Dim subTotalCalculado = totalConceptos - importeIva  '1590.56
+                        Dim totalImpuestosIEPS = comprobante.sub_total + importeIeps + importeIva '1590.56
+                        'minimoTotal = totalImpuestos - 0.5
+                        'maximoTotal = totalImpuestos + 0.5
+
+                        'If totalImpuestosIEPS = totalConceptos Then
+                        comprobante.total_Valido = totalImpuestosIEPS
+                        'Else
+                        'errorCfd = 7
+                        'End If
+                    End If
+                End If
+            End If
+
+
+            'GCM 14112014 para calcular el iva cuando no hay 
+            'If errorCfd = 0 Then
+            '    If noiva = 0 Then
+            '        Dim totalImpuestos = Math.Round((comprobante.sub_total - comprobante.descuento) * tasaIeps, 2)
+            '        minimoTotal = totalImpuestos - 0.5
+            '        maximoTotal = totalImpuestos + 0.5
+
+            '        If importeIeps < minimoTotal Or importeIeps > maximoTotal Then
+            '            errorCfd = 7
+            '        Else
+            '            comprobante.porcentajeIVA = (tasaIeps * 100)
+            '            comprobante.totalIEPS = importeIeps
+            '        End If
+            '    End If
+            'End If
+
+            'If errorCfd = 0 Then
+            '    ''If comprobante.swTImporte = False And comprobante.swImpTras = True Then
+            '    If comprobante.swTImporte = True And comprobante.swImpTras = True Then
+            '        If comprobante.total <> comprobante.sub_total Then
+            '            Dim TotalImpuestosTras = Math.Round((comprobante.sub_total - comprobante.descuento) * (comprobante.pctIva / 100), 2)
+
+            '            minimoTotal = TotalImpuestosTras - 0.5
+            '            maximoTotal = TotalImpuestosTras + 0.5
+
+            '            'minimoTotal = TotalImpuestosTras - 0.8
+            '            'maximoTotal = TotalImpuestosTras + 0.8
+
+            '            If comprobante.totalImpuestosTrasladados < minimoTotal Or comprobante.totalImpuestosTrasladados > maximoTotal Then
+            '                errorCfd = 7
+            '            Else
+            '                comprobante.porcentajeIVA = TotalImpuestosTras
+            '            End If
+            '        End If
+            '    End If
+            'End If
+
+            Dim msg As String = ""
+            Dim er As New Errores
+            If errorCfd > 0 Then
+                er.Interror = 1
+
+            End If
+            Select Case errorCfd
+                'GCM 11112014 comentado para ya no validar subtotal
+                'Case 1
+                '    msg = "El subtotal de la factura es incorrecto"
+                '    er.Message = msg
+                '    graba_error(errores, er, LlaveCfd, "60063", "ValidaTotales_SNAdd")
+                Case 2
+                    msg = "El porcentaje de descuento en LineItems y monto de descuento del CFD no coinciden"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60064", "ValidaTotales_SNAdd")
+                Case 3, 5
+                    msg = "El total de la factura es incorrecto"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60065", "ValidaTotales_SNAdd")
+                    'GCM 16102014 comentado para ya no validar iva
+                    'Case 4
+                    '    msg = "No coincide el iva"
+                    '    er.Message = msg
+                    '    graba_error(errores, er, LlaveCfd, "60066", "ValidaTotales_SNAdd")
+                Case 6
+                    msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales_SNAdd")
+                Case 7
+                    msg = "Error en total impuesto trasladado"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60125", "ValidaTotales_SNAdd")
+                Case Else
+                    msg = ""
+            End Select
+            If errorCfd > 0 Then
+                agrega_err(1, msg, errores)
+            End If
         End Sub
         Public Sub LeerErroresSql(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd)
             Dim ds As New DataSet
