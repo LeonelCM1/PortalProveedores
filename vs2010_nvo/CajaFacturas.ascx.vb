@@ -577,12 +577,7 @@ Partial Class CajaFacturas
 
         Try
             If errores.Count = 0 And _facturaBis.IErrorG = 0 Then
-                'Cambio para CDFI 3.3 FGV (08/08/2017)
-                If llaveCfd.version = "3.3" Then
-                    _facturaBis.LeeDatosLlaveLinq3_3(errores, llaveCfd, nombreArchivoXml, receptor, emisor)
-                Else
-                    _facturaBis.LeeDatosLlaveLinq(errores, llaveCfd, nombreArchivoXml, receptor, emisor)
-                End If
+                _facturaBis.LeeDatosLlaveLinq(errores, llaveCfd, nombreArchivoXml, receptor, emisor)
             End If
         Catch ex As Exception
             _facturaBis.agrega_err(3, ex.Message, errores)
@@ -614,13 +609,7 @@ Partial Class CajaFacturas
 
         Try
             If errores.Count = 0 And _facturaBis.IErrorG = 0 And llaveCfd.sw_sin_addenda = 1 Then
-                'Cambio para CDFI 3.3 FGV (08/08/2017)
-                If llaveCfd.version = "3.3" Then
-                    _facturaBis.ValidaXSDLinq_SNAdd3_3(errores, nombreArchivoXml, llaveCfd)
-                Else
-                    _facturaBis.ValidaXSDLinq_SNAdd(errores, nombreArchivoXml, llaveCfd)
-                End If
-                '_facturaBis.ValidaXSDLinq_SNAdd(errores, nombreArchivoXml, llaveCfd)
+                _facturaBis.ValidaXSDLinq_SNAdd(errores, nombreArchivoXml, llaveCfd)
             End If
         Catch ex As Exception
             _facturaBis.agrega_err(3, ex.Message, errores)
@@ -628,13 +617,6 @@ Partial Class CajaFacturas
 
         Try
             If errores.Count = 0 And _facturaBis.IErrorG = 0 And llaveCfd.sw_sin_addenda = 1 Then
-                'leer las facturas caja chica sin adenda
-                'Cambio para CDFI 3.3 FGV (08/08/2017)
-                If llaveCfd.version = "3.3" Then
-                    _facturaBis.LeeDatosFacturaLINQ_SNAdd3_3(errores, comprobante, nombreArchivoXml, llaveCfd)
-                Else
-                    _facturaBis.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
-                End If
                 '_facturaBis.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
             End If
         Catch ex As Exception

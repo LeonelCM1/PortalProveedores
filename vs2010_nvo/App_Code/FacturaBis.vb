@@ -188,7 +188,6 @@ Namespace Skytex.FacturaElectronica
 
         End Sub
 
-
         Public Sub LeeDatosLlaveLinq(ByVal errores As List(Of Errores), _
                                      ByVal llaveCfd As llave_cfd, _
                                      ByVal xmlDocFilePath As String, _
@@ -215,115 +214,6 @@ Namespace Skytex.FacturaElectronica
                         llaveCfd.version_nom = "CFD"
                     Case "3.2"
                         llaveCfd.version_nom = "CFDI"
-                    Case Else
-                        agrega_err(1, "Version de comprobante incorrecta", errores)
-                        llaveCfd.version_nom = ""
-                End Select
-                Dim sello As String = ""
-                If IsNothing(root.Attribute("sello")) Then
-                    agrega_err(1, "No puede leerse el dato sello", errores)
-                Else
-                    sello = root.Attribute("sello").Value.ToString()
-                End If
-                If llaveCfd.version_nom = "CFDI" Then
-                    Dim qList = From xe In xmlElm.Descendants _
-                                Select xe
-                    For Each xe In qList
-                        If xe.Name.LocalName = "TimbreFiscalDigital" Then
-                            timbre.version = xe.Attribute("version").Value
-                            timbre.uuid = xe.Attribute("UUID").Value
-                            timbre.fecha_timbrado = xe.Attribute("FechaTimbrado").Value
-                            timbre.sello_cfd = xe.Attribute("selloCFD").Value
-                            timbre.no_certificado_sat = xe.Attribute("noCertificadoSAT").Value
-                            timbre.sello_sat = xe.Attribute("selloSAT").Value
-                            contador = 1
-                            Exit For
-                        End If
-                    Next
-                    llaveCfd.timbre_fiscal = timbre
-
-                    'GCM 22102014 se agrego el error sin timbre fiscal
-                    If contador = 0 Then
-                        agrega_err(1, "sin timbre fiscal", errores)
-                    End If
-
-                    If sello <> llaveCfd.timbre_fiscal.sello_cfd And contador = 1 Then
-                        agrega_err(1, "el sello es diferente al del timbre fiscal", errores)
-                    End If
-                Else
-                    timbre.uuid = ""
-                    llaveCfd.timbre_fiscal = timbre
-                End If
-                If IsNothing(root.Attribute("serie")) Then
-                    llaveCfd.serie = ""
-                Else
-                    llaveCfd.serie = root.Attribute("serie").Value.ToString()
-                End If
-                If IsNothing(root.Attribute("folio")) Then
-                    llaveCfd.folio_factura = 0
-                Else
-                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
-                    'Soporte 74669 FGV se valida el maximo tamaño del folio de la factura para truncarlo si excede el numero 2147483647 para que no genere problemas al momento de insertar la info
-                    If folPaso >= 2147483647 Then
-                        llaveCfd.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
-                    Else
-                        llaveCfd.folio_factura = folPaso
-                    End If
-
-                End If
-                Dim qList1 = From xe In xmlElm.Descendants _
-                Select xe
-
-                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Emisor"
-                    LeeEmisorCFDI(xe, emisorCFDI, errores)
-                    llaveCfd.rfc_emisor = emisorCFDI.rfc
-                    Exit For
-                Next
-
-
-
-                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Receptor"
-                    receptor.rfc = CType(xe.Attribute("rfc"), String)
-                    Exit For
-                Next
-
-
-                If llaveCfd.rfc_emisor = "" Then
-                    agrega_err(1, "No puede leerse el dato rfc del Emisor", errores)
-                End If
-                If receptor.rfc = "" Then
-                    agrega_err(1, "No puede leerse el dato rfc del Receptor", errores)
-                End If
-
-
-            Catch ex As Exception
-                agrega_err(1, ex.Message, errores)
-            End Try
-
-        End Sub
-
-        Public Sub LeeDatosLlaveLinq3_3(ByVal errores As List(Of Errores), _
-                                     ByVal llaveCfd As llave_cfd, _
-                                     ByVal xmlDocFilePath As String, _
-                                     ByVal receptor As receptor,
-                                     ByVal emisorCFDI As emisor
-                                     )
-            Dim xmlElm As XElement
-            Try
-                xmlElm = XElement.Load(xmlDocFilePath)
-                Dim root As XElement = XElement.Load(xmlDocFilePath)
-                Dim qAtrib As IEnumerable(Of XAttribute) = _
-                    From atr In root.Attributes() _
-                    Select atr
-                Dim timbre = New timbre_fiscal_digital
-                Dim contador = 0
-
-                If IsNothing(root.Attribute("version")) Then
-                    agrega_err(1, "No puede leerse el dato version", errores)
-                Else
-                    llaveCfd.version = root.Attribute("version").Value.ToString()
-                End If
-                Select Case llaveCfd.version
                     Case "3.3"
                         llaveCfd.version_nom = "CFDI"
                     Case Else
@@ -386,18 +276,20 @@ Namespace Skytex.FacturaElectronica
                 Select xe
 
                 For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Emisor"
-                    LeeEmisorCFDI3_3(xe, emisorCFDI, errores)
+                    If llaveCfd.version = "3.3" Then
+                        LeeEmisorCFDI3_3(xe, emisorCFDI, errores)
+                    Else
+                        LeeEmisorCFDI(xe, emisorCFDI, errores)
+                    End If
+                    'LeeEmisorCFDI(xe, emisorCFDI, errores)
                     llaveCfd.rfc_emisor = emisorCFDI.rfc
                     Exit For
                 Next
-
-
 
                 For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Receptor"
                     receptor.rfc = CType(xe.Attribute("rfc"), String)
                     Exit For
                 Next
-
 
                 If llaveCfd.rfc_emisor = "" Then
                     agrega_err(1, "No puede leerse el dato rfc del Emisor", errores)
@@ -406,13 +298,11 @@ Namespace Skytex.FacturaElectronica
                     agrega_err(1, "No puede leerse el dato rfc del Receptor", errores)
                 End If
 
-
             Catch ex As Exception
                 agrega_err(1, ex.Message, errores)
             End Try
 
         End Sub
-
 
         Private Sub LeeEmisorCFDI(ByVal elemento As XElement, ByVal emisorTmp As emisor, ByVal errores As List(Of Errores))
             'Dim emisorTmp = New emisor
@@ -586,6 +476,7 @@ Namespace Skytex.FacturaElectronica
             emisorTmp.Regimen = regimen
             'Return emisorTmp
         End Sub
+
         Public Sub agrega_err(ByVal errorXml As Integer, ByVal smensaje As String, ByVal errores As List(Of Errores))
             Dim er As New Errores
             IErrorG = 1
@@ -594,6 +485,7 @@ Namespace Skytex.FacturaElectronica
             er.CveError = ""
             errores.Add(er)
         End Sub
+
         Public Sub agrega_err(ByVal errorXml As Integer, ByVal smensaje As String, ByVal errores As List(Of Errores), ByVal cveError As String)
             Dim er As New Errores
             IErrorG = 1
@@ -602,6 +494,7 @@ Namespace Skytex.FacturaElectronica
             er.CveError = cveError
             errores.Add(er)
         End Sub
+
         Public Function GetConfigure(ByVal listaConfig As List(Of ConfigGral), ByVal sConf As String) As Object
             Dim value As Object = Nothing
             Dim rutaEnum = From con In listaConfig
@@ -612,6 +505,7 @@ Namespace Skytex.FacturaElectronica
             Next
             Return value
         End Function
+
         Public Function LlenaCbo(ByVal combo As combos) As DataTable
 
             Dim sqlAdapter = New SqlDataAdapter("sp_cboWebXML", Conexion)
@@ -641,6 +535,7 @@ Namespace Skytex.FacturaElectronica
             Return ds.Tables(ds.Tables.Count - 1)
 
         End Function
+
         Public Function ConsultaCreaProveedor(ByVal errores As List(Of Errores), ByVal emisorCFDI As emisor, ByVal llaveCfd As llave_cfd) As ClaveProveedor
 
             Dim proveedor = New ClaveProveedor
@@ -701,6 +596,7 @@ Namespace Skytex.FacturaElectronica
             Return proveedor
 
         End Function
+
         Public Sub graba_error(ByVal errores As List(Of Errores), ByVal err As Errores, ByVal llaveCfd As llave_cfd, ByVal msgCve As String, ByVal procedimiento As String)
             Dim sqlAdapter = New SqlDataAdapter("sp_gerror_xml", Conexion)
             Dim ds As New DataSet
@@ -738,6 +634,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ConsInsertaXml(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd, ByVal ccTipo As String, ByVal ccCve As String, ByVal rfcReceptor As String, ByVal tipdocCve As String)
             Dim sqlAdapter = New SqlDataAdapter("sp_inserta_xml", Conexion)
             sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
@@ -804,127 +701,8 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ValidaXSDLinq_SNAdd(ByVal errores As List(Of Errores), ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
-
-            Dim xmlElm As XDocument
-            xmlElm = XDocument.Load(xmlDocFilePath)
-            Dim schemas As XmlSchemaSet = New XmlSchemaSet()
-
-            Dim leyendasFiscales As Integer = 0
-            Dim detallista As Integer = 0
-            Dim registrofiscal As Integer = 0
-            Dim impuestosLocales As Integer = 0
-            Dim donatarias As Integer = 0
-            Dim valesdedespensa As Integer = 0
-            Dim aerolineas As Integer = 0
-            'GCM 27102014 agregue venta vehiculos
-            Dim VentaVehiculos As Integer = 0
-            'GCM 21012015 agregue terceros
-            Dim Terceros As Integer = 0
-            'JPO 29-06-2016 AGREGAMOS IEP
-            Dim iep As Integer = 0
-
-            Dim qList1 = From xe In xmlElm.Descendants _
-               Select xe
-
-            Dim xElements As IEnumerable(Of XElement) = If(TryCast(qList1, List(Of XElement)), qList1.ToList())
-            If xElements.Any(Function(xe) xe.Name.LocalName = "LeyendasFiscales") Then
-                leyendasFiscales = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "detallista") Then
-                detallista = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "CFDIRegistroFiscal") Then
-                registrofiscal = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "ImpuestosLocales") Then
-                impuestosLocales = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "Donatarias") Then
-                donatarias = 1
-            End If
-
-            If xElements.Any(Function(xe) xe.Name.LocalName = "ValesDeDespensa") Then
-                valesdedespensa = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "Aerolineas") Then
-                aerolineas = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "VentaVehiculos") Then
-                VentaVehiculos = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "PorCuentadeTerceros") Then
-                Terceros = 1
-            End If
-            If xElements.Any(Function(xe) xe.Name.LocalName = "acreditamientoIEPS") Then
-                iep = 1
-            End If
-
-            'esto es para remover la addenda
-            For Each a In From a1 In xmlElm.Root.Elements Where a1.Name.LocalName = "Addenda"
-                a.Remove()
-            Next
-
-            Dim xsd22 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/CFD_Skytex-2.2.xsd"))
-            Dim xsd32 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv32.xsd"))
-            Dim xsdTdf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/TimbreFiscalDigital.xsd"))
-            Dim xsdLf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/leyendasFisc.xsd"))
-            Dim xsdDet As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/detallista.xsd"))
-            Dim xsdRegf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdiregistrofiscal.xsd"))
-            Dim xsdImp As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/implocal.xsd"))
-            Dim xsdDon As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/donat11.xsd"))
-            Dim xsdVal As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/valesdedespensa.xsd"))
-            Dim xsdAer As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/aerolineas.xsd"))
-            Dim xsdVtaV As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/ventavehiculos11.xsd"))
-            Dim xsdTer As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/terceros11.xsd"))
-            Dim xsdIep As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AcreditamientoIEPS10.xsd"))
-
-            schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
-            If leyendasFiscales = 1 Then
-                schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
-            End If
-            If detallista = 1 Then
-                schemas.Add("http://www.sat.gob.mx/detallista", xsdDet.CreateReader)
-            End If
-            If registrofiscal = 1 Then
-                schemas.Add("http://www.sat.gob.mx/registrofiscal", xsdRegf.CreateReader)
-            End If
-            If impuestosLocales = 1 Then
-                schemas.Add("http://www.sat.gob.mx/implocal", xsdImp.CreateReader)
-            End If
-            If donatarias = 1 Then
-                schemas.Add("http://www.sat.gob.mx/donat", xsdDon.CreateReader)
-            End If
-
-            If valesdedespensa = 1 Then
-                schemas.Add("http://www.sat.gob.mx/valesdedespensa", xsdVal.CreateReader)
-            End If
-            If aerolineas = 1 Then
-                schemas.Add("http://www.sat.gob.mx/aerolineas", xsdAer.CreateReader)
-            End If
-            If VentaVehiculos = 1 Then
-                schemas.Add("http://www.sat.gob.mx/ventavehiculos", xsdVtaV.CreateReader)
-            End If
-            If Terceros = 1 Then
-                schemas.Add("http://www.sat.gob.mx/terceros", xsdTer.CreateReader)
-            End If
-            If iep = 1 Then
-                schemas.Add("http://www.sat.gob.mx/acreditamiento", xsdIep.CreateReader)
-            End If
-
-            xmlElm.Validate(schemas, Function(s As Object, e As ValidationEventArgs) XsdErr(s, e, errores, llaveCfd), True)
-
-            If errores.Count > 0 Then
-                Dim er As New Errores
-                er.Interror = 1
-                er.Message = ""
-                graba_error(errores, er, llaveCfd, "60068", "XSDErr")
-            End If
-        End Sub
-
-        Public Sub ValidaXSDLinq_SNAdd3_3(ByVal errores As List(Of Errores), ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
 
             Dim xmlElm As XDocument
             xmlElm = XDocument.Load(xmlDocFilePath)
@@ -1054,6 +832,7 @@ Namespace Skytex.FacturaElectronica
 
             Return er
         End Function
+
         Public Function ExecuteScalar() As Object
 
         End Function
@@ -1206,11 +985,16 @@ Namespace Skytex.FacturaElectronica
                     If IsNothing(root.Attribute("Moneda")) Then
                         comprobante.moneda = ""
                     Else
-                        comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                        If llaveCfd.version = "3.3" Then
+                            'Cambio para CDFI 3.3 FGV (08/08/2017)
+                            'se va a enviar el id del catalogo de las Monedas
+                            comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                        Else
+                            comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                        End If
+
                     End If
                 End If
-
-
 
                 Dim qList = From xe In xmlElm.Descendants _
                 Select xe
@@ -1389,322 +1173,6 @@ Namespace Skytex.FacturaElectronica
 
         End Sub
 
-        Public Sub LeeDatosFacturaLINQ_SNAdd3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
-
-            'GCM 12112014 paraobtener el IVA
-            Dim cmd As New SqlCommand
-            Dim pctIva As Object
-            cmd.CommandText = "select pct_iva from iciva where iva_cve = 1"
-            cmd.CommandType = CommandType.Text
-            cmd.Connection = Conexion
-            Conexion.Open()
-            pctIva = cmd.ExecuteScalar()
-            Conexion.Close()
-            comprobante.pctIva = pctIva
-
-            Dim xmlElm As XElement
-            Try
-                xmlElm = XElement.Load(xmlDocFilePath)
-                Dim root As XElement = XElement.Load(xmlDocFilePath)
-                Dim qAtrib As IEnumerable(Of XAttribute) = _
-                    From atr In root.Attributes() _
-                    Select atr
-                Dim qList1 = From xe In xmlElm.Descendants _
-                Select xe
-
-                For Each a In xmlElm.Elements
-                    If a.Name.LocalName = "Addenda" Then
-                        a.Remove()
-                    End If
-                Next
-
-                For Each xe In qList1
-                    If xe.Name.LocalName = "ImpuestosLocales" Then
-                        comprobante.TotaldeTraslados = Decimal.Parse(xe.Attribute("TotaldeTraslados").Value)
-                        comprobante.TotaldeRetenciones = Decimal.Parse(xe.Attribute("TotaldeRetenciones").Value) 'GCM 11112014 obtenemos el valor de total de retenciones
-                    End If
-                Next
-
-                For Each a In xmlElm.Elements
-                    If a.Name.LocalName = "Complemento" Then
-                        a.Remove()
-                    End If
-                Next
-
-                If llaveCfd.version_nom <> "" Then
-                    comprobante.version = llaveCfd.version
-                End If
-                If IsNothing(root.Attribute("serie")) Then
-                    comprobante.serie = ""
-                Else
-                    comprobante.serie = root.Attribute("serie").Value.ToString()
-                End If
-
-                If IsNothing(root.Attribute("folio")) Then
-                    comprobante.folio_factura = 0
-                Else
-                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", "")) 'Int32.Parse(root.Attribute("folio").Value)
-                    If folPaso >= 2147483647 Then
-                        comprobante.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
-                    Else
-                        comprobante.folio_factura = folPaso
-                    End If
-                End If
-
-                If IsNothing(root.Attribute("fecha")) Then
-                    agrega_err(1, "No puede leerse el dato fecha", errores)
-                Else
-                    comprobante.fecha_factura = root.Attribute("fecha").Value.ToString()
-                End If
-
-                If IsNothing(root.Attribute("sello")) Then
-                    agrega_err(1, "No puede leerse el dato sello", errores)
-                Else
-                    comprobante.sello = root.Attribute("sello").Value.ToString()
-                End If
-                If llaveCfd.version_nom = "CFD" Then
-                    If IsNothing(root.Attribute("noAprobacion")) Then
-                        agrega_err(1, "No puede leerse el dato noAprobacion", errores)
-                    Else
-                        comprobante.no_aprobacion = Integer.Parse(root.Attribute("noAprobacion").Value)
-                    End If
-                    If IsNothing(root.Attribute("anoAprobacion")) Then
-                        agrega_err(1, "No puede leerse el dato anoAprobacion", errores)
-                    Else
-                        comprobante.ano_aprobacion = Integer.Parse(root.Attribute("anoAprobacion").Value)
-                    End If
-                End If
-                If IsNothing(root.Attribute("noCertificado")) Then
-                    agrega_err(1, "No puede leerse el dato noCertificado", errores)
-                Else
-                    comprobante.no_certificado = root.Attribute("noCertificado").Value.ToString()
-                End If
-                If Not IsNothing(root.Attribute("certificado")) Then
-                    comprobante.certificado = root.Attribute("certificado").Value.ToString()
-                Else
-                    comprobante.certificado = ""
-                End If
-                ' subtotal
-                If IsNothing(root.Attribute("subTotal")) Then
-                    agrega_err(1, "No puede leerse el dato subTotal", errores)
-                Else
-                    comprobante.sub_total = Decimal.Parse(root.Attribute("subTotal").Value)
-                End If
-                ' descuento
-                If IsNothing(root.Attribute("descuento")) Then
-                    'agrega_err(1, "No puede leerse el dato descuento", errores)
-                    comprobante.descuento = 0 'el descuento se manda en 0 en caso de no haber atributo 14/08/2013
-                Else
-                    comprobante.descuento = Decimal.Parse(root.Attribute("descuento").Value)
-                End If
-                ' total
-                If IsNothing(root.Attribute("total")) Then
-                    agrega_err(1, "No puede leerse el dato total", errores)
-                Else
-                    comprobante.total = Decimal.Parse(root.Attribute("total").Value)
-                End If
-                ' tipo de comprobante
-                If IsNothing(root.Attribute("tipoDeComprobante")) Then
-                    agrega_err(1, "No puede leerse el dato tipoDeComprobante", errores)
-                Else
-                    Dim tipoDeComprobante = root.Attribute("tipoDeComprobante").Value.ToString()
-                End If
-                'GCM 05112014 Se agrego el TC
-                If IsNothing(root.Attribute("TipoCambio")) Then
-                    comprobante.tc = "0"
-                Else
-                    comprobante.tc = root.Attribute("TipoCambio").Value.ToString
-                End If
-
-                If comprobante.tipodoc_cve = "BTFSER" Or comprobante.tipodoc_cve = "BTCOM" Then
-                    If IsNothing(root.Attribute("Moneda")) Then
-                        comprobante.moneda = ""
-                    Else
-                        'Cambio para CDFI 3.3 FGV (08/08/2017)
-                        'se va a enviar el id del catalogo de las Monedas
-                        comprobante.moneda = root.Attribute("Moneda").Value.ToString()
-                    End If
-                End If
-
-
-
-                Dim qList = From xe In xmlElm.Descendants _
-                Select xe
-                Dim emisor = New emisor
-                Dim receptor = New receptor
-                Dim conce As New List(Of concepto)
-                Dim impuestos = New impuestos
-                Dim traslados = New List(Of traslado)
-                Dim retenciones = New List(Of retencion)
-                Dim addenda = New addenda
-                Dim requesForPayment = New requestforpayment
-                Dim currency = New currency
-                Dim aditionalData = New aditionaldata
-                Dim paymentTimePeriod = New paymenttimeperiod
-                Dim provider = New provider
-                Dim lineItems As New List(Of lineitem)
-                Const swCargosConcep As Boolean = False
-                Dim errorConceptos As Boolean = False
-                impuestos.total_imp_trasl = 0
-                impuestos.sw_retencion = 0
-                impuestos.total_imp_reten = 0
-                Dim swTotalCapT As Boolean = False
-                Dim swTotalCapR As Boolean = False
-                Dim swTImporte As Boolean = False
-                Dim Tot_ImpuestosTras As Decimal = 0
-                comprobante.swImpTras = True
-                comprobante.swTImporte = False
-
-                For Each xe In qList
-                    If xe.Name.LocalName = "Emisor" Then
-                        emisor.rfc = xe.Attribute("rfc").Value.ToString()
-                    End If
-                    If xe.Name.LocalName = "Receptor" Then
-                        receptor.rfc = xe.Attribute("rfc").Value.ToString()
-                    End If
-
-                    If xe.Name.LocalName = "Impuestos" Then
-                        If IsNothing(xe.Attribute("totalImpuestosTrasladados")) Then
-
-                            comprobante.totalImpuestosTrasladados = 0
-                            comprobante.swImpTras = False
-                        Else
-
-                            comprobante.totalImpuestosTrasladados = xe.Attribute("totalImpuestosTrasladados").Value.ToString()
-                        End If
-                        If IsNothing(xe.Attribute("totalImpuestosRetenidos")) Then 'GCM 19112015 si trae totalimpuestosretenidos marcamos error
-                            If errorConceptos = False Then
-                                errorConceptos = False
-                            End If
-                        Else
-                            If CType(xe.Attribute("totalImpuestosRetenidos"), Decimal) > 0 Then
-                                agrega_err(1, "Factura contiene Impuestos Retenidos", errores)
-                                errorConceptos = True
-                            End If
-                        End If
-                    End If
-
-                    'If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
-                    Dim itemComceptos = New concepto
-                    itemComceptos.cantidad = CType(xe.Attribute("cantidad"), Decimal)
-                    itemComceptos.valor_unitario = CType(xe.Attribute("valorUnitario"), Decimal)
-                    itemComceptos.importe = CType(xe.Attribute("importe"), Decimal)
-                    conce.Add(itemComceptos)
-                    If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
-                        If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
-                            errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
-                        Else
-                            agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
-                            errorConceptos = True
-                        End If
-                    End If
-
-                    If swCargosConcep = True And errorConceptos = False Then
-                        If itemComceptos.cantidad <> 1 Then
-                            agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
-                            errorConceptos = True
-                        End If
-                    End If
-                    'End If
-
-                    If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
-                        If Not IsNothing(xe.Attribute("importe")) Then
-                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("importe"), Decimal)
-                            Dim itemRet = New retencion
-                            itemRet.impuesto = CType(xe.Attribute("impuesto"), String)
-                            itemRet.importe = CType(xe.Attribute("importe"), Decimal)
-                            retenciones.Add(itemRet)
-                            If impuestos.total_imp_reten > 0 Then
-                                impuestos.sw_retencion = 1
-                            End If
-
-                        Else
-                            impuestos.total_imp_trasl = 0
-                        End If
-                    End If
-
-                    If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
-                        If Not IsNothing(xe.Attribute("importe")) Then
-                            Dim itemTras = New traslado
-                            If xe.ToString().Contains("terceros") Then 'JPO / 09-06-2016 / : se agrego esta condicion para evitar que tome en cuenta el impuesto del concepto llamado Traslado Terceros
-                                ' Dim val As String
-
-                                'impuestos.total_imp_trasl = CType(xe.Attribute("importe"), Decimal)
-
-                            Else
-                                ' impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("importe"), Decimal)
-                                impuestos.total_imp_trasl = CType(xe.Attribute("importe"), Decimal)
-                                itemTras.impuesto = CType(xe.Attribute("impuesto"), String)
-                            End If
-                            'If IsNothing(xe.Attribute("terceros")) Then 'JPOH 09/06/2016 se anexo esta condicion para evitar que duplique el impuesto que contiene el concepto Terceros
-
-                            '    impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("importe"), Decimal)
-                            '    comprobante.swTImporte = True
-                            '    If CType(xe.Attribute("tasa"), Decimal) > 0 And CType(xe.Attribute("importe"), Decimal) > 0 Then
-                            '        itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
-                            '        itemTras.importe = CType(xe.Attribute("importe"), Decimal)
-                            '    Else
-                            '        itemTras.tasa = 0
-                            '        itemTras.importe = 0
-                            '    End If
-                            'Else
-                            'impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("importe"), Decimal)
-                            comprobante.swTImporte = True
-
-
-                            'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
-                            'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
-                            If CType(xe.Attribute("tasa"), Decimal) > 0 And CType(xe.Attribute("importe"), Decimal) > 0 Then
-                                itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
-                                itemTras.importe = CType(xe.Attribute("importe"), Decimal)
-                            Else
-                                itemTras.tasa = 0
-                                itemTras.importe = 0
-                            End If
-                            'End If
-                            traslados.Add(itemTras)
-                        End If
-                    End If
-
-
-
-                Next
-                If conce.Count = 0 Then
-                    agrega_err(1, "El comprobante no tiene conceptos", errores)
-                    errorConceptos = True
-                End If
-
-                aditionalData.text_data = "Z"
-                provider.providerid = ""
-                comprobante.Conceptos = conce
-                requesForPayment.provider = provider
-                requesForPayment.line_items = lineItems
-                requesForPayment.currency = currency
-                requesForPayment.aditional_data = aditionalData
-                requesForPayment.paymenttimeperiod = paymentTimePeriod
-                addenda.requestforpayment = requesForPayment
-                comprobante.Emisor = emisor
-                comprobante.Receptor = receptor
-                impuestos.Traslados = traslados
-                impuestos.Retenciones = retenciones
-                comprobante.Impuestos = impuestos
-                comprobante.Addenda = addenda
-                Dim msgUsr = From msg In errores _
-                    Select interror = msg.Interror, message = msg.Message _
-                    Where (interror = 1)
-                Dim er As New Errores
-                Dim cadena As String = msgUsr.Aggregate("", Function(current, msgs) current & msgs.message.Trim + ", ")
-                If cadena.Trim <> "" Then
-                    er.Interror = 1
-                    er.Message = cadena.Trim
-                    graba_error(errores, er, llaveCfd, "60069", "LeeDatosFacturaLINQ_SinAddenda")
-                End If
-            Catch ex As Exception
-                'agrega_err(1, ex.Message, errores)
-                agrega_err(1, "Ocurrio un erro al leer el XML por favor contacte con el administrador de sitio ", errores, "60069")
-            End Try
-
-        End Sub
         Public Function lee_ef_cve(ByVal rfcReceptor As String) As Dictionary(Of String, String)
             Dim er As New Errores
             Dim ds As New DataSet
@@ -1736,6 +1204,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return dicEmpresa
         End Function
+
         Public Function RevisaIntTasa(ByVal tasa As String) As Boolean
             Dim sw As Boolean = True
 
@@ -1749,6 +1218,7 @@ Namespace Skytex.FacturaElectronica
 
             Return sw
         End Function
+
         Public Sub ValidaTotales_SNAdd(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal LlaveCfd As llave_cfd, ByVal decimales_truncados As Integer, ByVal decimales As Integer)
 
             Dim mtoDescGlobal As Decimal = 0
@@ -2346,6 +1816,7 @@ Namespace Skytex.FacturaElectronica
                 agrega_err(1, msg, errores)
             End If
         End Sub
+
         Public Sub LeerErroresSql(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd)
             Dim ds As New DataSet
             Dim sqlAdapter = New SqlDataAdapter("sp_cons_errores_xml", Conexion)
@@ -2397,8 +1868,8 @@ Namespace Skytex.FacturaElectronica
                 ValidacionEncabezado.Rows.Clear()
             Catch ex As Exception
                 Dim msg = "sp_cons_errores_xml"
-                iErrorG = 3
-                agrega_err(iErrorG, msg, errores)
+                IErrorG = 3
+                agrega_err(IErrorG, msg, errores)
             Finally
                 If Conexion.State = ConnectionState.Open Then
                     Conexion.Close()
@@ -2411,13 +1882,16 @@ Namespace Skytex.FacturaElectronica
             iErrorG = 0
             If errores.Count = 0 And iErrorG = 0 Then
                 If comprobante.tipodoc_cve = "BTFACS" Or comprobante.tipodoc_cve = "BTFSER" Then
+                    'se ocupa para xml 3.2 y 3.3
                     ValidaDatosDetalleTmpSrv(errores, llaveCfd, comprobante.Addenda.requestforpayment.document)
                 Else
+                    'se ocupa para xml 3.2 y 3.3
                     ValidaDatosDetalleTmp(errores, comprobante.Addenda.requestforpayment.line_items, llaveCfd)
                 End If
 
             End If
-            If errores.Count = 0 And iErrorG = 0 Then
+            If errores.Count = 0 And IErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosEncabezadoTmp(errores, comprobante, llaveCfd)
             End If
             If iErrorG = 60089 Then
@@ -2430,6 +1904,7 @@ Namespace Skytex.FacturaElectronica
                 LeerErroresSql(errores, llaveCfd)
             End If
         End Sub
+
         Public Sub ValidaDatosEncabezadoTmp(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
             Dim er As New Errores
             Dim ds As New DataSet
@@ -2580,15 +2055,17 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ValidaDatosDetalleTmp(ByVal errores As List(Of Errores), ByVal items As List(Of lineitem), ByVal llaveCfd As llave_cfd)
             Dim item = New lineitem
             For Each item In items
                 ValidaDatosItemTmp(errores, item, llaveCfd)
-                If errores.Count > 0 Or iErrorG > 0 Then
+                If errores.Count > 0 Or IErrorG > 0 Then
                     Exit For
                 End If
             Next
         End Sub
+
         Public Sub ValidaDatosDetalleTmpSrv(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd, ByVal documento As Document)
             Dim item = New lineitem
             item.reference_identification = documento.referenceIdentification
@@ -2604,6 +2081,7 @@ Namespace Skytex.FacturaElectronica
             item.uni_med = "zzzzzz"
             ValidaDatosItemTmp(errores, item, llaveCfd)
         End Sub
+
         Public Sub ValidaDatosItemTmp(ByVal errores As List(Of Errores), ByVal item As lineitem, ByVal llaveCfd As llave_cfd)
 
             Dim er As New Errores
@@ -2633,11 +2111,11 @@ Namespace Skytex.FacturaElectronica
                 sqlAdapter.Fill(ds, "sp_detalle_xml_temp")
                 sqlAdapter.Dispose()
                 ValidacionEncabezado = ds.Tables.Item(0)
-                iErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
-                If iErrorG = 0 Then
+                IErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
+                If IErrorG = 0 Then
                     EfCveG = ValidacionEncabezado.Rows(0).Item("ef_cve").ToString.Trim
                 End If
-                If iErrorG > 0 Then
+                If IErrorG > 0 Then
                     agrega_err(1, "", errores)
                 End If
                 Conexion.Close()
@@ -2650,7 +2128,7 @@ Namespace Skytex.FacturaElectronica
                 er.Interror = 3
                 er.Message = ex.Message
                 agrega_err(3, msg, errores)
-                iErrorG = 60090
+                IErrorG = 60090
                 graba_error(errores, er, llaveCfd, "60090", "sp_detalle_xml_temp")
             Finally
                 If Conexion.State = ConnectionState.Open Then
@@ -2659,6 +2137,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub ValidaDatosEncabezadoCap(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
             'Dim sqlAdapter = New SqlDataAdapter("sp_Valida_XML_zfj", Conexion)
             Dim sqlAdapter = New SqlDataAdapter("sp_Valida_XML", Conexion)
@@ -2702,8 +2181,8 @@ Namespace Skytex.FacturaElectronica
                 sqlAdapter.Fill(ds, "sp_Valida_XML")
                 sqlAdapter.Dispose()
                 ValidacionEncabezado = ds.Tables.Item(0)
-                iErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
-                If iErrorG = 0 Then
+                IErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
+                If IErrorG = 0 Then
                     EfCveG = ValidacionEncabezado.Rows(0).Item("ef_cve").ToString.Trim
                 End If
                 Conexion.Close()
@@ -2717,7 +2196,7 @@ Namespace Skytex.FacturaElectronica
                 er.Interror = 3
                 er.Message = ex.Message
                 agrega_err(3, msg, errores)
-                iErrorG = 60090
+                IErrorG = 60090
                 graba_error(errores, er, llaveCfd, "60090", "sp_Valida_XML")
             Finally
                 If Conexion.State = ConnectionState.Open Then
@@ -2725,6 +2204,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ValidaDatosDetalleCap(ByVal errores As List(Of Errores), ByVal items As List(Of lineitem), ByVal llaveCfd As llave_cfd)
             Dim item = New lineitem
             If llaveCfd.sw_tmp = 1 Then
@@ -2736,6 +2216,7 @@ Namespace Skytex.FacturaElectronica
                 Next
             End If
         End Sub
+
         Public Sub ValidaDatosItemCap(ByVal errores As List(Of Errores), ByVal item As lineitem, ByVal llaveCfd As llave_cfd)
 
             Dim er As New Errores
@@ -2754,14 +2235,14 @@ Namespace Skytex.FacturaElectronica
                 sqlAdapter.Fill(ds, "sp_Inserta_Detalle_XML")
                 sqlAdapter.Dispose()
                 ValidacionEncabezado = ds.Tables.Item(0)
-                iErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
-                If iErrorG = 0 Then
+                IErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
+                If IErrorG = 0 Then
                     EfCveG = ValidacionEncabezado.Rows(0).Item("ef_cve").ToString.Trim
                 End If
                 Conexion.Close()
                 ds.Reset()
                 ValidacionEncabezado.Rows.Clear()
-                If iErrorG > 0 Then
+                If IErrorG > 0 Then
                     agrega_err(1, "", errores)
                 End If
             Catch ex As Exception
@@ -2770,7 +2251,7 @@ Namespace Skytex.FacturaElectronica
                 er.Interror = 3
                 er.Message = ex.Message
                 agrega_err(3, msg, errores)
-                iErrorG = 60090
+                IErrorG = 60090
                 graba_error(errores, er, llaveCfd, "60090", "sp_Inserta_Detalle_XML")
             Finally
                 If Conexion.State = ConnectionState.Open Then
@@ -2778,6 +2259,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ValidaDatosPapa(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd)
             Dim er As New Errores
             Dim ds As New DataSet
@@ -2795,14 +2277,14 @@ Namespace Skytex.FacturaElectronica
                 sqlAdapter.Fill(ds, "sp_valida_XML_papa")
                 sqlAdapter.Dispose()
                 ValidacionEncabezado = ds.Tables.Item(0)
-                iErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
-                If iErrorG = 0 Then
+                IErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
+                If IErrorG = 0 Then
                     EfCveG = ValidacionEncabezado.Rows(0).Item("ef_cve").ToString.Trim
                 End If
                 Conexion.Close()
                 ds.Reset()
                 ValidacionEncabezado.Rows.Clear()
-                If iErrorG > 0 Then
+                If IErrorG > 0 Then
                     'agrega_err(IErrorG, MensajeError, errores)
                     agrega_err(IErrorG, "", errores)
                 End If
@@ -2812,7 +2294,7 @@ Namespace Skytex.FacturaElectronica
                 er.Interror = 3
                 er.Message = ex.Message
                 agrega_err(3, msg, errores)
-                iErrorG = 60090
+                IErrorG = 60090
                 graba_error(errores, er, llaveCfd, "60090", "sp_valida_XML_papa")
             Finally
                 If Conexion.State = ConnectionState.Open Then
@@ -2820,6 +2302,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub GeneraEncabezadoFactura(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd, ByVal factura As List(Of nuevas_facturas))
 
             Dim er As New Errores
@@ -2850,8 +2333,8 @@ Namespace Skytex.FacturaElectronica
                     agrega_folio(factura, CType(row("num_fol"), Integer), CStr(row("tipo_doc")), CStr(row("ef_cve")))
                 Next
 
-                If iErrorG > 0 Then
-                    agrega_err(iErrorG, "", errores)
+                If IErrorG > 0 Then
+                    agrega_err(IErrorG, "", errores)
                     _transaccion.Rollback()
                 Else
                     _transaccion.Commit()
@@ -2869,14 +2352,14 @@ Namespace Skytex.FacturaElectronica
                 End If
                 Dim msg As String
                 msg = "sp_genera_factura"
-                iErrorG = 3
-                er.Interror = iErrorG
+                IErrorG = 3
+                er.Interror = IErrorG
                 er.Message = ex.Message + " GeneraEncabezadoFactura"
                 Dim msgCve As String = DirectCast(ex, SqlException).Number.ToString()
 
                 Const procedimiento As String = "sp_genera_factura"
                 graba_error(errores, er, llaveCfd, msgCve.ToString(), procedimiento)
-                agrega_err(iErrorG, msg, errores)
+                agrega_err(IErrorG, msg, errores)
             Finally
                 If Conexion.State = ConnectionState.Open Then
                     Conexion.Close()
@@ -2894,6 +2377,7 @@ Namespace Skytex.FacturaElectronica
             fact.ef_cve = ef_cve
             factura.Add(fact)
         End Sub
+
         Sub ObtieneDatos(ByVal rfc As String, _
                          ByVal serie As String, _
                          ByVal folio As String, _
@@ -2951,8 +2435,6 @@ Namespace Skytex.FacturaElectronica
             End Try
         End Sub
 
-
-
         Public Function ConsultaFoliosSeguimientoCaja(ByVal rfc As String, _
                                                        ByVal serie As String, _
                                                        ByVal folio As Integer, _
@@ -2998,7 +2480,6 @@ Namespace Skytex.FacturaElectronica
             'End If
             Return dt
         End Function
-
 
         Public Sub ObtArchivo(ByVal rfc As String, _
                                ByVal serie As String, _
