@@ -200,7 +200,12 @@ Partial Class UserControlsRecepcion
 
         Try
             If errores.Count = 0 And _factura.iErrorG = 0 And llaveCfd.sw_sin_addenda = 0 Then
-                _factura.ValidaTotales(errores, comprobante, llaveCfd, decTrun, decimales)
+                If llaveCfd.version = "3.3" Then
+                    _factura.ValidaTotales3_3(errores, comprobante, llaveCfd, decTrun, decimales)
+                Else
+                    _factura.ValidaTotales(errores, comprobante, llaveCfd, decTrun, decimales)
+                End If
+                '_factura.ValidaTotales(errores, comprobante, llaveCfd, decTrun, decimales)
             End If
 
         Catch ex As Exception
@@ -209,7 +214,12 @@ Partial Class UserControlsRecepcion
 
         Try
             If errores.Count = 0 And llaveCfd.sw_sin_addenda = 1 And _factura.iErrorG = 0 Then
-                _factura.ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
+                If llaveCfd.version = "3.3" Then
+                    _factura.ValidaTotales_SNAdd3_3(errores, comprobante, llaveCfd, decTrun, decimales)
+                Else
+                    _factura.ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
+                End If
+                '_factura.ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
             End If
 
         Catch ex As Exception

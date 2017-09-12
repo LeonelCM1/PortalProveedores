@@ -1412,28 +1412,18 @@ Namespace Skytex.FacturaElectronica
                 Dim qList1 = From xe In xmlElm.Descendants _
                 Select xe
 
-                'esto es para remover la addenda
                 For Each a In xmlElm.Elements
                     If a.Name.LocalName = "Addenda" Then
                         a.Remove()
                     End If
                 Next
 
-                'GCM 23102014 obtenemos el valor de total de traslados
                 For Each xe In qList1
                     If xe.Name.LocalName = "ImpuestosLocales" Then
                         comprobante.TotaldeTraslados = Decimal.Parse(xe.Attribute("TotaldeTraslados").Value)
                         comprobante.TotaldeRetenciones = Decimal.Parse(xe.Attribute("TotaldeRetenciones").Value) 'GCM 11112014 obtenemos el valor de total de retenciones
                     End If
                 Next
-
-                ''GCM 11112014 obtenemos el valor de total de retenciones
-                'For Each xe In qList1
-                '    If xe.Name.LocalName = "ImpuestosLocales" Then
-                '        comprobante.TotaldeRetenciones = Decimal.Parse(xe.Attribute("TotaldeRetenciones").Value)
-                '    End If
-                'Next
-                ''GCM 11112014 
 
                 For Each a In xmlElm.Elements
                     If a.Name.LocalName = "Complemento" Then
@@ -1449,39 +1439,35 @@ Namespace Skytex.FacturaElectronica
                 Else
                     comprobante.serie = root.Attribute("serie").Value.ToString()
                 End If
-                'folio 
+
                 If IsNothing(root.Attribute("folio")) Then
                     comprobante.folio_factura = 0
                 Else
-                    'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
                     Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", "")) 'Int32.Parse(root.Attribute("folio").Value)
                     If folPaso >= 2147483647 Then
-                        'comprobante.folio_factura = Int64.Parse(folPaso.ToString())
                         comprobante.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
                     Else
                         comprobante.folio_factura = folPaso
                     End If
                 End If
-                'fecha
+
                 If IsNothing(root.Attribute("fecha")) Then
                     agrega_err(1, "No puede leerse el dato fecha", errores)
                 Else
                     comprobante.fecha_factura = root.Attribute("fecha").Value.ToString()
                 End If
-                'fecha
+
                 If IsNothing(root.Attribute("sello")) Then
                     agrega_err(1, "No puede leerse el dato sello", errores)
                 Else
                     comprobante.sello = root.Attribute("sello").Value.ToString()
                 End If
                 If llaveCfd.version_nom = "CFD" Then
-                    ' numero de aprobacion
                     If IsNothing(root.Attribute("noAprobacion")) Then
                         agrega_err(1, "No puede leerse el dato noAprobacion", errores)
                     Else
                         comprobante.no_aprobacion = Integer.Parse(root.Attribute("noAprobacion").Value)
                     End If
-                    ' año de aprobacion
                     If IsNothing(root.Attribute("anoAprobacion")) Then
                         agrega_err(1, "No puede leerse el dato anoAprobacion", errores)
                     Else
@@ -1598,28 +1584,29 @@ Namespace Skytex.FacturaElectronica
                         End If
                     End If
 
-                    If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
-                        Dim itemComceptos = New concepto
-                        itemComceptos.cantidad = CType(xe.Attribute("cantidad"), Decimal)
-                        itemComceptos.valor_unitario = CType(xe.Attribute("valorUnitario"), Decimal)
-                        itemComceptos.importe = CType(xe.Attribute("importe"), Decimal)
-                        conce.Add(itemComceptos)
-                        If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
-                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
-                                errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
-                            Else
-                                agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
-                                errorConceptos = True
-                            End If
-                        End If
-
-                        If swCargosConcep = True And errorConceptos = False Then
-                            If itemComceptos.cantidad <> 1 Then
-                                agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
-                                errorConceptos = True
-                            End If
+                    'If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
+                    Dim itemComceptos = New concepto
+                    itemComceptos.cantidad = CType(xe.Attribute("cantidad"), Decimal)
+                    itemComceptos.valor_unitario = CType(xe.Attribute("valorUnitario"), Decimal)
+                    itemComceptos.importe = CType(xe.Attribute("importe"), Decimal)
+                    conce.Add(itemComceptos)
+                    If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
+                        If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                            errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
+                        Else
+                            agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                            errorConceptos = True
                         End If
                     End If
+
+                    If swCargosConcep = True And errorConceptos = False Then
+                        If itemComceptos.cantidad <> 1 Then
+                            agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
+                            errorConceptos = True
+                        End If
+                    End If
+                    'End If
+
                     If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
                         If Not IsNothing(xe.Attribute("importe")) Then
                             impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("importe"), Decimal)
@@ -2106,26 +2093,14 @@ Namespace Skytex.FacturaElectronica
             Dim importeIva As Decimal = 0
             Dim pctIva As Decimal = 0
 
-            '24022015 GCM se contempla el rango max y min del query del servidor
-            'Dim cmax As New SqlCommand
-            'Dim Excepmax As Object
-            'cmax.CommandText = "select convert(decimal(19,4),prm15) from xcdconapl_cl where tipdoc_cve = 'xmlcfd' and sp_cve = 'webconfig' and spd_cve = 'rangoMinMax'"
-            'cmax.CommandType = CommandType.Text
-            'cmax.Connection = Conexion
-            'Conexion.Open()
-            'Excepmax = cmax.ExecuteScalar()
-            'Conexion.Close()
-
-            Dim iva = From cons In comprobante.Impuestos.Traslados
+           Dim iva = From cons In comprobante.Impuestos.Traslados
                        Select cons.tasa, cons.importe, cons.impuesto
                        Where (impuesto = "IVA")
-            'GCM 12112014 Agrego para contemplar caso totalimpuestos
             Dim noiva = Aggregate cons In comprobante.Impuestos.Traslados
                        Select cons.tasa, cons.importe, cons.impuesto
                        Where (impuesto = "IVA")
                           Into Count()
-            'GCM 12112014 Agrego para contemplar caso totalimpuestos
-
+            
             If noiva > 0 Then
 
                 For Each i In iva
@@ -2207,14 +2182,7 @@ Namespace Skytex.FacturaElectronica
             'GCM 11112014 Comentado para no validar sub-total
             Dim info = Aggregate com4 In subtotalConceptos _
                           Into Sum(com4.sub_total)
-            'Subt_c = FormatNumber(Round(Subt_c, decimales_truncados, MidpointRounding.AwayFromZero), decimales)
-            'If errorCfd = 0 Then 
-            '    minimoTotal = subtotalComprobante - 0.5
-            '    maximoTotal = subtotalComprobante + 0.5
-            '    If Subt_c < minimoTotal Or Subt_c > maximoTotal Then
-            '        errorCfd = 1
-            '    End If
-            'End If
+
             Dim totalComprobante = FormatNumber(comprobante.total, decimales_truncados)
             Dim traslComprobanteTotImp = FormatNumber(Round(((importeIva + importeIeps)), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
             Dim traslConceptos = traslComprobanteTotImp
@@ -2224,22 +2192,7 @@ Namespace Skytex.FacturaElectronica
             Dim TotaldeRetenciones = comprobante.TotaldeRetenciones
             'GCM 16102014 Dim traslConceptos = FormatNumber(Round(((Subt_c - mtoDescGlobal) * tasaVarIva), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
             Dim totImpRet = (retenImporteIva + retenImporteIsr)
-            'GCM 16102014 comentado para ya no validar iva
-            'If errorCfd = 0 Then
 
-
-            '    If errorCfd = 0 Then
-            '        minimoTotal = CType((traslConceptos - 0.5), Decimal)
-            '        maximoTotal = CType((traslConceptos + 0.5), Decimal)
-
-            '        If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
-            '            errorCfd = 4
-            '        End If
-
-            '    End If
-
-            'End If
-            'GCM 13112014 Agrego la separacion de ieps e iva
             Dim totalConceptos = FormatNumber(Round((Subt_c - mtoDescGlobal + traslConceptos - totImpRet + TotaldeTraslados - TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
             If errorCfd = 0 Then
                 minimoTotal = totalConceptos - 0.8
@@ -2352,44 +2305,6 @@ Namespace Skytex.FacturaElectronica
                     End If
                 End If
             End If
-
-
-            'GCM 14112014 para calcular el iva cuando no hay 
-            'If errorCfd = 0 Then
-            '    If noiva = 0 Then
-            '        Dim totalImpuestos = Math.Round((comprobante.sub_total - comprobante.descuento) * tasaIeps, 2)
-            '        minimoTotal = totalImpuestos - 0.5
-            '        maximoTotal = totalImpuestos + 0.5
-
-            '        If importeIeps < minimoTotal Or importeIeps > maximoTotal Then
-            '            errorCfd = 7
-            '        Else
-            '            comprobante.porcentajeIVA = (tasaIeps * 100)
-            '            comprobante.totalIEPS = importeIeps
-            '        End If
-            '    End If
-            'End If
-
-            'If errorCfd = 0 Then
-            '    ''If comprobante.swTImporte = False And comprobante.swImpTras = True Then
-            '    If comprobante.swTImporte = True And comprobante.swImpTras = True Then
-            '        If comprobante.total <> comprobante.sub_total Then
-            '            Dim TotalImpuestosTras = Math.Round((comprobante.sub_total - comprobante.descuento) * (comprobante.pctIva / 100), 2)
-
-            '            minimoTotal = TotalImpuestosTras - 0.5
-            '            maximoTotal = TotalImpuestosTras + 0.5
-
-            '            'minimoTotal = TotalImpuestosTras - 0.8
-            '            'maximoTotal = TotalImpuestosTras + 0.8
-
-            '            If comprobante.totalImpuestosTrasladados < minimoTotal Or comprobante.totalImpuestosTrasladados > maximoTotal Then
-            '                errorCfd = 7
-            '            Else
-            '                comprobante.porcentajeIVA = TotalImpuestosTras
-            '            End If
-            '        End If
-            '    End If
-            'End If
 
             Dim msg As String = ""
             Dim er As New Errores

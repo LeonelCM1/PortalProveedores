@@ -197,6 +197,7 @@ Namespace Skytex.FacturaElectronica
             Next
             Return value
         End Function
+
         Public Sub GenMailErrHtml(ByVal llaveCfd As llave_cfd, ByVal titulo As String,
                                   ByVal errores As List(Of Errores),
                                   ByVal eMail As String, ByVal proveedor As String)
@@ -330,8 +331,6 @@ Namespace Skytex.FacturaElectronica
 
         End Sub
 
-
-
         Public Sub MailGenericBis(ByVal sSubject As String, _
                               ByVal sBody As String, _
                               ByVal sEmails As String
@@ -350,12 +349,7 @@ Namespace Skytex.FacturaElectronica
             Try
                 objMail.To.Add(sEmails)
 
-                'For Each item As String In lAttach
-                '    oAttch = New Attachment(item.Trim())
-                '    objMail.Attachments.Add(oAttch)
-                'Next
                 objMail.From = New MailAddress(emailFrom)
-                'If base = "develop" Then
                 If base = DBdevelop Then '//JPO: 27-06-16 valida el nombre de la instancia SQL a consultar
                     objMail.Subject = sSubject + " Desarrollo DEVELOP"
                 Else
@@ -380,10 +374,8 @@ Namespace Skytex.FacturaElectronica
             Dim recibo As New nuevas_facturas
             Dim myDataAdapter = New SqlDataAdapter("sp_consInfXML", Conexion)
             Dim ds As New DataSet()
-
             myDataAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
             Conexion.Open()
-
             myDataAdapter.SelectCommand.Parameters.AddWithValue("@rfc_emisor", rfc)
             myDataAdapter.SelectCommand.Parameters.AddWithValue("@folio_factura", Int64.Parse(folio))
             myDataAdapter.SelectCommand.Parameters.AddWithValue("@serie", serie.Trim())
@@ -394,13 +386,10 @@ Namespace Skytex.FacturaElectronica
                 myDataAdapter.Fill(ds, "sp_consInfXML")
                 myDataAdapter.Dispose()
                 Conexion.Close()
-
                 Dim tablaInfo As DataTable
                 tablaInfo = ds.Tables.Item(ds.Tables.Count - 1)
-
                 Dim iError As Integer = Int32.Parse(tablaInfo.Rows(0).Item("error").ToString.Trim)
                 Dim msg = tablaInfo.Rows(0).Item("msg").ToString.Trim
-
                 If iError = 0 Then
                     recibo.num_fol = Int32.Parse(CType(tablaInfo.Rows(0).Item("num_fol_contra"), String))
                     recibo.ef_cve = tablaInfo.Rows(0).Item("ef_cve").ToString.Trim
@@ -408,17 +397,13 @@ Namespace Skytex.FacturaElectronica
                     recibo.nom_arch = tablaInfo.Rows(0).Item("nom_arch").ToString.Trim
                     contra.Add(recibo)
                 End If
-
                 If iError <> 0 Then
                     agrega_err(iError, msg, errores)
                 End If
-
             Catch ex As Exception
-
                 Dim msg As String
                 msg = "sp_consInfXML:"
                 iErrorG = 3
-
                 agrega_err(iErrorG, msg, errores)
             Finally
                 If Conexion.State = ConnectionState.Open Then
@@ -426,6 +411,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub GrabaTmp(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
             iErrorG = 0
             If errores.Count = 0 And iErrorG = 0 Then
@@ -449,6 +435,31 @@ Namespace Skytex.FacturaElectronica
                 LeerErroresSql(errores, llaveCfd)
             End If
         End Sub
+
+        Public Sub GrabaTmp3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
+            iErrorG = 0
+            If errores.Count = 0 And iErrorG = 0 Then
+                If comprobante.tipodoc_cve = "BTFACS" Or comprobante.tipodoc_cve = "BTFSER" Then
+                    ValidaDatosDetalleTmpSrv(errores, llaveCfd, comprobante.Addenda.requestforpayment.document)
+                Else
+                    ValidaDatosDetalleTmp(errores, comprobante.Addenda.requestforpayment.line_items, llaveCfd)
+                End If
+
+            End If
+            If errores.Count = 0 And iErrorG = 0 Then
+                ValidaDatosEncabezadoTmp3_3(errores, comprobante, llaveCfd)
+            End If
+            If iErrorG = 60089 Then
+                agrega_err(1, "Error, la captura no fue procesada, el folio del comprobante ya había sido aceptado", errores, "60089")
+            End If
+            If iErrorG = 60090 Then
+                agrega_err(1, "Error en la aplicacion, consulte con su administrador del sitio ", errores, "60090")
+            End If
+            If errores.Count > 0 Or iErrorG > 0 Then
+                LeerErroresSql(errores, llaveCfd)
+            End If
+        End Sub
+
         Public Sub ValidaDatosEncabezadoTmp(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
             Dim er As New Errores
             Dim sqlAdapter = New SqlDataAdapter("sp_datos_xml_temp", Conexion)
@@ -600,6 +611,135 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
+        Public Sub ValidaDatosEncabezadoTmp3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
+            Dim er As New Errores
+            Dim sqlAdapter = New SqlDataAdapter("sp_datos_xml_temp", Conexion)
+            Dim importeIva As Decimal = 0
+            sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
+            sqlAdapter.SelectCommand.CommandTimeout = _timeout
+            If Not (llaveCfd.ef_cve Is Nothing) And EfCveG Is Nothing Then
+                EfCveG = llaveCfd.ef_cve
+            End If
+            If EfCveG Is Nothing Then
+                EfCveG = "zzz"
+            End If
+            Dim iva = From cons In comprobante.Impuestos.Traslados
+                       Select cons.tasa, cons.impuesto, cons.importe
+            Where (impuesto = "IVA")
+            Dim varIva As Decimal
+            Dim varIvaImporte As Decimal
+            Dim noiva As Integer
+            Dim retisr = From cons In comprobante.Impuestos.Retenciones
+                  Select cons.importe, cons.impuesto
+                  Where (impuesto = "ISR")
+            Dim retenImporteIsr As Decimal = 0
+            For Each i In retisr
+                retenImporteIsr = retenImporteIsr + i.importe
+            Next
+
+            Dim subtotal = comprobante.sub_total - comprobante.descuento + comprobante.TotaldeTraslados - comprobante.TotaldeRetenciones - retenImporteIsr
+            If comprobante.tipodoc_cve = "BTFSER" Then
+                noiva = Aggregate cons In comprobante.Impuestos.Traslados
+                           Select cons.tasa, cons.importe, cons.impuesto
+                           Where (impuesto = "IVA")
+                              Into Count()
+            Else
+                noiva = 1
+            End If
+
+            For Each i In iva
+                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                If swtasa = True Then
+                    If varIva = 0 Then
+                        varIva = i.tasa
+                    End If
+                Else
+                    If varIva = 0 Then
+                        varIva = i.tasa * 100
+                    End If
+                End If
+                importeIva = importeIva + i.importe
+            Next
+
+            If comprobante.tipodoc_cve = "BTFSER" Then
+                varIvaImporte = comprobante.totalImpuestosTrasladados
+                If noiva = 0 Then
+                    If subtotal = comprobante.total Then
+                        varIva = 0
+                    Else
+                        varIva = comprobante.pctIva / 100
+                    End If
+                End If
+            Else
+                varIvaImporte = importeIva
+            End If
+
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@nom_arch", comprobante.nom_arch)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@version", comprobante.version)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@serie", comprobante.serie)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@folio_factura", comprobante.folio_factura)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@fecha_factura", comprobante.fecha_factura)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@sello", comprobante.sello)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@no_aprobacion", comprobante.no_aprobacion)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@ano_aprobacion", comprobante.ano_aprobacion)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@no_certificado", comprobante.no_certificado)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@certificado", comprobante.certificado)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@condiciones_pago", comprobante.Addenda.requestforpayment.paymenttimeperiod.timeperiod.ToString())
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@metodo_pago", comprobante.Addenda.requestforpayment.aditional_data.metododepago) 'comprobante.metodo_pago)
+            If comprobante.tipodoc_cve = "BTFSER" Then
+                sqlAdapter.SelectCommand.Parameters.AddWithValue("@sub_total", comprobante.sub_total - comprobante.descuento + comprobante.TotaldeTraslados - comprobante.TotaldeRetenciones)
+            Else
+                sqlAdapter.SelectCommand.Parameters.AddWithValue("@sub_total", comprobante.sub_total)
+            End If
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@descuento", comprobante.descuento)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@total", comprobante.total)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_emisor", comprobante.Emisor.rfc)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_receptor", comprobante.Receptor.rfc)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@tm", comprobante.Addenda.requestforpayment.aditional_data.moneda) 'comprobante.moneda)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@d_adicionales", comprobante.Addenda.requestforpayment.aditional_data.text_data)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@pct_iva", varIva) 'Decimal.Parse(comprobante.Impuestos.Traslados.tasa))
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@cc_cve", comprobante.cc_cve)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@cc_tipo", comprobante.cc_tipo)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@ef_Cve", llaveCfd.ef_cve)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@no_certificado_sat", llaveCfd.timbre_fiscal.no_certificado_sat)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@uuid", llaveCfd.timbre_fiscal.uuid)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@id", "WEB")
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@tipo_cf", llaveCfd.version_nom)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@sw_reten_iva", comprobante.Impuestos.sw_retencion)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@iva", varIvaImporte)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@id_soludin", llaveCfd.IdSoludin)
+
+            Try
+                Conexion.Open()
+                sqlAdapter.Fill(ds, "sp_datos_xml_temp")
+                sqlAdapter.Dispose()
+                ValidacionEncabezado = ds.Tables.Item(0)
+                iErrorG = CType(ValidacionEncabezado.Rows(0).Item("error"), Integer)
+                If iErrorG = 0 Then
+                    EfCveG = ValidacionEncabezado.Rows(0).Item("ef_cve").ToString.Trim
+                End If
+                If iErrorG > 0 Then
+                    agrega_err(1, "", errores)
+                End If
+                Conexion.Close()
+                ds.Reset()
+                ValidacionEncabezado.Rows.Clear()
+            Catch ex As Exception
+                Dim msg As String
+                msg = "sp_datos_xml_temp"
+                er.Interror = 3
+                er.Message = ex.Message
+                agrega_err(3, msg, errores)
+                iErrorG = 60090
+                graba_error(errores, er, llaveCfd, "60090", "sp_datos_xml_temp")
+            Finally
+                If Conexion.State = ConnectionState.Open Then
+                    Conexion.Close()
+                End If
+            End Try
+        End Sub
+
         Public Sub ValidaDatosDetalleTmp(ByVal errores As List(Of Errores), ByVal items As List(Of lineitem), ByVal llaveCfd As llave_cfd)
             Dim item = New lineitem
             For Each item In items
@@ -680,6 +820,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub PLeeCfd(ByVal nombreArchivoXml As String, ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd, ByVal ccCve As String, ByVal ccTipo As String, ByVal decTrun As Integer, ByVal decimales As Integer)
 
             Const swErrins As Integer = 0
@@ -687,6 +828,7 @@ Namespace Skytex.FacturaElectronica
             iErrorG = 0
             Try
                 If errores.Count = 0 And iErrorG = 0 Then
+                    'se ocupa para xml 3.2 y 3.3
                     LeeDatosLlaveLinq(errores, llaveCfd, nombreArchivoXml, receptor)
                 End If
             Catch ex As Exception
@@ -694,6 +836,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Try
                 If errores.Count = 0 And llaveCfd.sw_sin_addenda = 0 And iErrorG = 0 Then
+                    'se ocupa para xml 3.2 y 3.3
                     LeeDatosFacturaLinq(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
                 End If
             Catch ex As Exception
@@ -701,6 +844,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Try
                 If errores.Count = 0 And llaveCfd.sw_sin_addenda = 1 And iErrorG = 0 Then
+                    'se ocupa para xml 3.2 y 3.3
                     LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
                 End If
             Catch ex As Exception
@@ -722,14 +866,28 @@ Namespace Skytex.FacturaElectronica
             End Try
             Try
                 If errores.Count = 0 And llaveCfd.sw_sin_addenda = 0 And iErrorG = 0 Then
-                    ValidaTotales(errores, comprobante, llaveCfd, decTrun, decimales)
+                    If llaveCfd.version = "3.3" Then
+                        'se ocupa para xml 3.3
+                        ValidaTotales3_3(errores, comprobante, llaveCfd, decTrun, decimales)
+                    Else
+                        'se ocupa para xml 3.2
+                        ValidaTotales(errores, comprobante, llaveCfd, decTrun, decimales)
+                    End If
+                    
                 End If
             Catch ex As Exception
                 agrega_err(3, ex.Message, errores)
             End Try
             Try
                 If errores.Count = 0 And llaveCfd.sw_sin_addenda = 1 And iErrorG = 0 Then
-                    ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
+                    If llaveCfd.version = "3.3" Then
+                        'se ocupa para xml 3.3
+                        ValidaTotales_SNAdd3_3(errores, comprobante, llaveCfd, decTrun, decimales)
+                    Else
+                        'se ocupa para xml 3.2
+                        ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
+                    End If
+                    
                 End If
             Catch ex As Exception
                 agrega_err(3, ex.Message, errores)
@@ -744,29 +902,37 @@ Namespace Skytex.FacturaElectronica
             End If
 
         End Sub
+
         Public Sub GenFactura(ByVal nombreArchivoXml As String, ByVal nombreArchivoPdf As String, ByVal errores As List(Of Errores), ByVal items As List(Of lineitem), ByVal comprobante As Comprobante, ByVal LlaveCfd As llave_cfd, ByVal contrarecibo As nuevas_facturas, ByVal config As List(Of ConfigGral))
 
             iErrorG = 0
             If errores.Count = 0 And LlaveCfd.sw_sin_addenda = 0 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosEncabezado(errores, comprobante, LlaveCfd)
             End If
             If errores.Count = 0 And LlaveCfd.sw_sin_addenda = 1 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosEncabezadoCap(errores, comprobante, LlaveCfd)
             End If
             If errores.Count = 0 And LlaveCfd.sw_sin_addenda = 0 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosDetalle(errores, items, LlaveCfd)
             End If
             If errores.Count = 0 And LlaveCfd.sw_sin_addenda = 1 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosDetalleCap(errores, items, LlaveCfd)
             End If
             If errores.Count = 0 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosPapa(errores, LlaveCfd)
             End If
             Dim factura As New List(Of nuevas_facturas)
             If errores.Count = 0 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 GeneraEncabezadoFactura(errores, LlaveCfd, factura)
             End If
             If errores.Count = 0 And iErrorG = 0 Then
+                'se ocupa para xml 3.2 y 3.3
                 GeneraContraReciboFactura(errores, LlaveCfd)
             End If
             If errores.Count = 0 And iErrorG = 0 Then
@@ -788,7 +954,6 @@ Namespace Skytex.FacturaElectronica
                     Next
                 End If
             End If
-
 
             If iErrorG = 60089 Then
                 agrega_err(1, "Error este comprobante fiscal digital ya fue aceptado", errores)
@@ -816,6 +981,7 @@ Namespace Skytex.FacturaElectronica
             End If
 
         End Sub
+
         Public Sub ValidaDatosEncabezadoCap(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
             Dim sqlAdapter = New SqlDataAdapter("sp_Valida_XML", Conexion)
             'Dim sqlAdapter = New SqlDataAdapter("sp_Valida_XML_zfj", Conexion)
@@ -882,12 +1048,15 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ValidaDatosDetalleCap(ByVal errores As List(Of Errores), ByVal items As List(Of lineitem), ByVal llaveCfd As llave_cfd)
             Dim item = New lineitem
             If llaveCfd.sw_tmp = 1 Then
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosItemCap(errores, item, llaveCfd)
             Else
                 For Each item In items
+                    'se ocupa para xml 3.2 y 3.3
                     ValidaDatosItemCap(errores, item, llaveCfd)
                     Exit For
                 Next
@@ -1087,6 +1256,7 @@ Namespace Skytex.FacturaElectronica
                                 Distinct
                 minimoTotal = CType((sumaTotalLine - Excepmax), Decimal)
                 maximoTotal = CType((sumaTotalLine + Excepmax), Decimal)
+                'validacion ocupada en los xml 3.3
                 If sumaTotalCon < minimoTotal Or sumaTotalCon > maximoTotal Then
                     errorCfd = 1
                 End If
@@ -1235,6 +1405,313 @@ Namespace Skytex.FacturaElectronica
                     errorCfd = 5
                 End If
             End If
+            If comprobante.tipodoc_cve <> "BTFACS" Then
+                If errorCfd = 0 Then
+                    minimoTotal = 0
+                    maximoTotal = 0
+                    minimoTotal = CType((totalListitems - Excepmax), Decimal)
+                    maximoTotal = CType((totalListitems + Excepmax), Decimal)
+                    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                        errorCfd = 5
+                    End If
+                End If
+            End If
+
+            Dim msg As String = ""
+            Dim er As New Errores
+            If errorCfd > 0 Then
+                er.Interror = 1
+            End If
+            Select Case errorCfd
+                Case 1
+                    msg = "El subtotal de la factura es incorrecto"
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60063", "ValidaTotales")
+                Case 2
+                    msg = "El porcentaje de descuento en LineItems y monto de descuento del CFD no coinciden"
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60064", "ValidaTotales")
+                Case 3, 5
+                    msg = "El total de la factura es incorrecto"
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60065", "ValidaTotales")
+                Case 4
+                    msg = "No coincide el iva"
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60066", "ValidaTotales")
+                Case 6
+                    msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
+                Case Else
+                    msg = ""
+            End Select
+            If errorCfd > 0 Then
+                agrega_err(1, msg, errores)
+            End If
+        End Sub
+
+        Public Sub ValidaTotales3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd, ByVal decimalesTruncados As Integer, ByVal decimales As Integer)
+
+            Dim mtoDescGlobal As Decimal = 0
+            Dim minimoTotal As Decimal
+            Dim maximoTotal As Decimal
+            Dim iva = From cons In comprobante.Impuestos.Traslados
+                       Select cons.tasa, cons.importe, cons.impuesto
+                       Where (impuesto = "IVA")
+            Dim tasaVarIva As Decimal = 0
+            Dim importeIva As Decimal = 0
+
+            Dim cmax As New SqlCommand
+            Dim Excepmax As Object
+            cmax.CommandText = "select convert(decimal(19,4),prm15) from xcdconapl_cl where tipdoc_cve = 'xmlcfd' and sp_cve = 'webconfig' and spd_cve = 'rangoMinMax'"
+            cmax.CommandType = CommandType.Text
+            cmax.Connection = Conexion
+            Conexion.Open()
+            Excepmax = cmax.ExecuteScalar()
+            Conexion.Close()
+
+            For Each i In iva
+                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100
+                Else
+                    tasaVarIva = i.tasa
+                End If
+                importeIva = importeIva + i.importe
+            Next
+            Dim ieps = From cons In comprobante.Impuestos.Traslados
+                      Select cons.tasa, cons.importe, cons.impuesto
+                      Where (impuesto = "IEPS")
+            Dim tasaIeps As Decimal = 0
+            Dim importeIeps As Decimal = 0
+            For Each i In ieps
+                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                If swtasa = True Then
+                    tasaIeps = i.tasa / 100
+                Else
+                    tasaIeps = i.tasa
+                End If
+                importeIeps = importeIeps + i.importe
+            Next
+            Dim retenciones = From cons In comprobante.Impuestos.Retenciones
+                    Select cons.importe, cons.impuesto
+                    Where (impuesto = "IVA")
+            Dim retenImporteIva As Decimal = 0
+            For Each i In retenciones
+                retenImporteIva = retenImporteIva + i.importe
+            Next
+            Dim retisr = From cons In comprobante.Impuestos.Retenciones
+                  Select cons.importe, cons.impuesto
+                  Where (impuesto = "ISR")
+            Dim retenImporteIsr As Decimal = 0
+            For Each i In retisr
+                retenImporteIsr = retenImporteIsr + i.importe
+            Next
+            Dim errorCfd As Integer = 0
+            Dim qryResultConceptos = From com In comprobante.Conceptos _
+                       Select comprobante.Conceptos
+            Dim qryResultItems = From com In comprobante.Addenda.requestforpayment.line_items _
+                        Select comprobante.Addenda.requestforpayment.line_items
+            Dim concep As List(Of concepto) = Nothing
+            Dim con = New concepto
+            Dim line As List(Of lineitem) = Nothing
+            Dim sumaTotalCon As Decimal
+            For Each concep In qryResultConceptos
+            Next
+            For Each line In qryResultItems
+            Next
+            Dim qryResLine = From com2 In concep _
+                Let sub_total = com2.cantidad * com2.valor_unitario _
+                Select sub_total, com2.importe, com2.no_identificacion, com2.cantidad, com2.valor_unitario '_
+            Dim qry_tot_con = From com2 In concep _
+               Let tot_con = com2.importe _
+               Select com2.importe, com2.no_identificacion '_
+            sumaTotalCon = Aggregate com2 In qryResLine _
+                                    Into Sum(com2.sub_total)
+            sumaTotalCon = FormatNumber(Round(sumaTotalCon, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Dim totalCon = Aggregate com2 In qry_tot_con _
+                            Into Sum(com2.importe)
+            Dim cantConcep = Aggregate com2 In qryResLine _
+                              Into Sum(com2.cantidad)
+            Dim valUnit = From com2 In qryResLine _
+                            Select com2.valor_unitario _
+                            Distinct
+            totalCon = FormatNumber(Round(totalCon, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            sumaTotalCon = FormatNumber(Round(sumaTotalCon, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            minimoTotal = sumaTotalCon - Excepmax
+            maximoTotal = sumaTotalCon + Excepmax
+            If totalCon < minimoTotal Or totalCon > maximoTotal Then
+                errorCfd = 1
+            End If
+
+            Dim descuentoCalculado As Decimal
+            mtoDescGlobal = comprobante.descuento ' Monto global de descuento
+            If comprobante.tipodoc_cve <> "BTFACS" Then
+                Dim qryResLineItem = From com2 In line _
+                 Let sub_total = com2.uns * com2.precio _
+                 Select sub_total, com2.pct_decuento, com2.sku, com2.monto_decuento, com2.uns, com2.precio
+                Dim sumaTotalLine = Aggregate com2 In qryResLineItem _
+                                        Into Sum(com2.sub_total)
+                sumaTotalLine = FormatNumber(Round(sumaTotalLine, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+
+                Dim unsLine = Aggregate com2 In qryResLineItem _
+                          Into Sum(com2.uns)
+                Dim precioLine = From com2 In qryResLineItem _
+                                Select com2.precio _
+                                Distinct
+                minimoTotal = CType((sumaTotalLine - Excepmax), Decimal)
+                maximoTotal = CType((sumaTotalLine + Excepmax), Decimal)
+
+                'se quito la validacion ocupada en los xml 3.2
+                'If sumaTotalCon < minimoTotal Or sumaTotalCon > maximoTotal Then
+                '    errorCfd = 1
+                'End If
+                'Dim desctoLineitem = From com3 In line _
+                '                          Let descto = (com3.uns * com3.precio) * (com3.pct_decuento / 100)
+                'descuentoCalculado = Aggregate com3 In desctoLineitem _
+                '                          Into Sum(com3.descto)
+                'Dim mtoDesc = Aggregate com3 In line _
+                '               Into Sum(com3.monto_decuento)
+
+                'If errorCfd = 0 Then
+                '    '------------------------------------------ Validar los descuentos
+
+                '    If descuentoCalculado <> 0 Or mtoDesc <> 0 Then
+                '        If errorCfd = 0 Then
+                '            minimoTotal = CType((mtoDesc - Excepmax), Decimal)
+                '            maximoTotal = CType((mtoDesc + Excepmax), Decimal)
+                '            If descuentoCalculado < minimoTotal Or descuentoCalculado > maximoTotal Then
+                '                errorCfd = 2
+                '            End If
+                '        End If
+                '    End If
+                'End If
+
+            End If
+
+
+
+            Dim subtotalComprobante = FormatNumber(Round(comprobante.sub_total, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Dim subtotalConceptos = From com4 In concep _
+                                     Let sub_total = com4.cantidad * com4.valor_unitario _
+                                     Select sub_total, com4.importe, com4.no_identificacion
+            Dim subtC = Aggregate com4 In subtotalConceptos _
+                          Into Sum(com4.sub_total)
+            subtC = FormatNumber(Round(subtC, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+
+            Dim subtL As Decimal
+            If comprobante.tipodoc_cve <> "BTFACS" Then
+                Dim subtotalItems = From com4 In line _
+                                     Let sub_total = com4.uns * com4.precio _
+                                     Select sub_total, com4.pct_decuento, com4.sku, com4.monto_decuento
+                subtL = Aggregate com4 In subtotalItems _
+                             Into Sum(com4.sub_total)
+                subtL = FormatNumber(Round(subtL, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            End If
+
+            'se quito la validacion ocupada en los xml 3.2
+            'If errorCfd = 0 Then
+            '    '-------------------------------- Subtotales
+            '    'If subtotalComprobante <> subtC Then
+            '    '    errorCfd = 1
+            '    'End If
+
+            '    minimoTotal = CType((subtC - Excepmax), Decimal)
+            '    maximoTotal = CType((subtC + Excepmax), Decimal)
+
+            '    If subtotalComprobante < minimoTotal Or subtotalComprobante > maximoTotal Then
+            '        errorCfd = 1
+            '    End If
+
+
+            '    If comprobante.tipodoc_cve <> "BTFACS" Then
+            '        'If subtotalComprobante <> subtL Then
+            '        '    errorCfd = 1
+            '        'End If
+            '        minimoTotal = CType((subtL - Excepmax), Decimal)
+            '        maximoTotal = CType((subtL + Excepmax), Decimal)
+
+            '        If subtotalComprobante < minimoTotal Or subtotalComprobante > maximoTotal Then
+            '            errorCfd = 1
+            '        End If
+
+
+            '        If subtC <> subtL Then
+            '            agrega_err(1, "No coincide Subtotal de Conceptos con LineItems: [" + subtC.ToString() + ":" + subtL.ToString() + "]", errores)
+            '            errorCfd = 1
+            '        End If
+            '    End If
+
+            'End If
+            Dim totalComprobante = FormatNumber(Round(comprobante.total, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Dim totImpTraslComprobante = FormatNumber(Round(comprobante.Impuestos.total_imp_trasl, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Dim traslComprobanteTotImp = FormatNumber(Round(((importeIva + importeIeps)), decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Dim traslConceptos = FormatNumber(Round(((subtC - mtoDescGlobal) * tasaVarIva), decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            'Dim traslLineitems = FormatNumber(Round(((subtL - descuentoCalculado) * tasaVarIva), decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Dim traslLineitems As String 'Decimal
+            If comprobante.tipodoc_cve = "VTFE" Or comprobante.tipodoc_cve = "BTFACS" Then
+                traslLineitems = FormatNumber(Round(((subtL - mtoDescGlobal) * tasaVarIva), decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Else
+                traslLineitems = FormatNumber(Round(((subtL - descuentoCalculado) * tasaVarIva), decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            End If
+
+            Dim totalReten = Round((retenImporteIva + retenImporteIsr), decimalesTruncados, MidpointRounding.AwayFromZero)
+
+            If errorCfd = 0 Then
+                'se quito la validacion ocupada en los xml 3.2
+                'If errorCfd = 0 Then
+                '    minimoTotal = CType((traslComprobanteTotImp - 0.5), Decimal)
+                '    maximoTotal = CType((traslComprobanteTotImp + 0.5), Decimal)
+                '    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                '        errorCfd = 4
+                '    End If
+                'End If
+                'If errorCfd = 0 Then
+                '    minimoTotal = CType((traslConceptos - 0.5), Decimal)
+                '    maximoTotal = CType((traslConceptos + 0.5), Decimal)
+                '    If traslConceptos < minimoTotal Or traslConceptos > maximoTotal Then
+                '        errorCfd = 4
+                '    End If
+                'End If
+                'If errorCfd = 0 Then
+                '    minimoTotal = CType((traslConceptos - Excepmax), Decimal)
+                '    maximoTotal = CType((traslConceptos + Excepmax), Decimal)
+
+                '    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                '        errorCfd = 4
+                '    End If
+
+                'End If
+
+                If comprobante.tipodoc_cve <> "BTFACS" Then
+                    If errorCfd = 0 Then
+                        minimoTotal = CType((traslLineitems - Excepmax), Decimal)
+                        maximoTotal = CType((traslLineitems + Excepmax), Decimal)
+                        If traslLineitems < minimoTotal Or traslLineitems > maximoTotal Then
+                            errorCfd = 4
+                        End If
+                    End If
+                End If
+
+            End If
+            Dim totalConceptos = FormatNumber(Round((subtC - mtoDescGlobal + traslConceptos) - totalReten, decimalesTruncados, MidpointRounding.AwayFromZero), decimales) 'Subt_c - mto_desc_global + iva_conceptos
+            'Dim totalListitems = FormatNumber(Round((subtL - descuentoCalculado + traslLineitems) - totalReten, decimalesTruncados, MidpointRounding.AwayFromZero), decimales) 'Subt_l - descuento_calculado + iva_lineitems
+
+            Dim totalListitems As String
+            If comprobante.tipodoc_cve = "VTFE" Or comprobante.tipodoc_cve = "BTFACS" Then
+                totalListitems = FormatNumber(Round((subtL - mtoDescGlobal + traslLineitems) - totalReten, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            Else
+                totalListitems = FormatNumber(Round((subtL - descuentoCalculado + traslLineitems) - totalReten, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
+            End If
+            'se quito la validacion ocupada en los xml 3.2
+            'If errorCfd = 0 Then
+            '    minimoTotal = CType((totalConceptos - Excepmax), Decimal)
+            '    maximoTotal = CType((totalConceptos + Excepmax), Decimal)
+            '    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+            '        errorCfd = 5
+            '    End If
+            'End If
             If comprobante.tipodoc_cve <> "BTFACS" Then
                 If errorCfd = 0 Then
                     minimoTotal = 0
@@ -1543,6 +2020,270 @@ Namespace Skytex.FacturaElectronica
                 agrega_err(1, msg, errores)
             End If
         End Sub
+
+        Public Sub ValidaTotales_SNAdd3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal LlaveCfd As llave_cfd, ByVal decimales_truncados As Integer, ByVal decimales As Integer)
+
+            'GCM 04022015 para contemplar la configuracion de noiva
+            Dim cmd As New SqlCommand
+            Dim Excep As Object
+            Dim cmax As New SqlCommand
+            Dim Excepmax As Object
+            cmd.CommandText = "select count(*) from xcdconapl_cl where tipdoc_cve = 'xmlcfd' and sp_cve = 'novaliva' and spd_cve = '" + comprobante.cc_tipo + "'  and prm7 =  '" + LlaveCfd.rfc_emisor + "'"
+            cmax.CommandText = "select convert(decimal(19,4),prm15) from xcdconapl_cl where tipdoc_cve = 'xmlcfd' and sp_cve = 'webconfig' and spd_cve = 'rangoMinMax'"
+            cmd.CommandType = CommandType.Text
+            cmax.CommandType = CommandType.Text
+            cmd.Connection = Conexion
+            cmax.Connection = Conexion
+            Conexion.Open()
+            Excep = cmd.ExecuteScalar()
+            Excepmax = cmax.ExecuteScalar()
+            Conexion.Close()
+
+
+            Dim mtoDescGlobal As Decimal = 0
+            Dim minimoTotal As Decimal
+            Dim maximoTotal As Decimal
+            Dim iva = From cons In comprobante.Impuestos.Traslados
+                       Select cons.tasa, cons.importe, cons.impuesto
+                       Where (impuesto = "IVA" And importe > 0)
+            Dim tasaVarIva As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
+            Dim importeIva As Decimal = 0
+            Dim totalConceptos As Decimal = 0
+            For Each i In iva
+                'tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaVarIva = i.tasa
+                End If
+
+                importeIva = importeIva + i.importe 'FormatNumber(i.importe, decimales)
+
+            Next
+            'If LlaveCfd.timbre_fiscal.uuid = "C677B813-4D8D-4390-9924-6614787A34C4" Then
+            '    importeIva = importeIva / 2
+            'End If
+
+            Dim ieps = From cons In comprobante.Impuestos.Traslados
+                      Select cons.tasa, cons.importe, cons.impuesto
+                      Where (impuesto = "IEPS")
+            Dim tasaIeps As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
+            Dim importeIeps As Decimal = 0
+            For Each i In ieps
+                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+
+                If swtasa = True Then
+                    tasaIeps = i.tasa / 100 ' FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaIeps = i.tasa
+                End If
+
+
+                importeIeps = importeIeps + i.importe ' FormatNumber(i.importe, decimales)
+            Next
+            Dim retenciones = From cons In comprobante.Impuestos.Retenciones
+                    Select cons.importe, cons.impuesto
+                    Where (impuesto = "IVA")
+            Dim retenImporteIva As Decimal = 0
+            For Each i In retenciones
+                retenImporteIva = retenImporteIva + i.importe 'FormatNumber(i.importe, decimales)
+            Next
+            Dim retisr = From cons In comprobante.Impuestos.Retenciones
+                  Select cons.importe, cons.impuesto
+                  Where (impuesto = "ISR")
+            Dim retenImporteIsr As Decimal = 0
+            For Each i In retisr
+                retenImporteIsr = retenImporteIsr + i.importe 'FormatNumber(i.importe, decimales)
+            Next
+            Dim errorCfd As Integer = 0
+            Dim qryResultConceptos = From com In comprobante.Conceptos _
+                       Select comprobante.Conceptos
+            Dim concep As List(Of concepto) = Nothing
+            For Each concep In qryResultConceptos
+            Next
+            Dim qryResLine = From com2 In concep _
+                Let sub_total = com2.cantidad * com2.valor_unitario _
+                Select sub_total, com2.importe, com2.no_identificacion, com2.cantidad, com2.valor_unitario
+            Dim qry_tot_con = From com2 In concep _
+               Let tot_con = com2.importe _
+               Select com2.importe, com2.no_identificacion
+            Dim cant_concep = Aggregate com2 In qryResLine _
+                              Into Sum(com2.cantidad)
+            Dim val_unit = From com2 In qryResLine _
+                            Select com2.valor_unitario _
+                            Distinct
+            If errorCfd = 0 Then
+                '------------------------------------------ Validar los descuentos
+                mtoDescGlobal = FormatNumber(comprobante.descuento, decimales) ' Monto global de descuento
+            End If
+            Dim subtotalComprobante = FormatNumber(comprobante.sub_total, decimales_truncados)
+            Dim subtotalConceptos = From com4 In concep _
+                                     Let sub_total = com4.cantidad * com4.valor_unitario _
+                                     Select sub_total, com4.importe, com4.no_identificacion
+            Dim Subt_c = Aggregate com4 In subtotalConceptos _
+                          Into Sum(com4.sub_total)
+            Dim traslConceptos As Decimal
+            Subt_c = FormatNumber(Round(Subt_c, decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+
+            If comprobante.tipodoc_cve <> "BTFSER" Then
+                If errorCfd = 0 Then
+                    minimoTotal = subtotalComprobante - Excepmax
+                    maximoTotal = subtotalComprobante + Excepmax
+                    If Subt_c < minimoTotal Or Subt_c > maximoTotal Then
+                        errorCfd = 1
+                    End If
+                End If
+            End If
+            'GCM 23032015 mtoDescGlobal se agrego para el BTFSER
+            Dim totaltrasladados = comprobante.TotaldeTraslados
+            Dim totalComprobante = FormatNumber(comprobante.total, decimales_truncados)
+            Dim traslComprobanteTotImp = FormatNumber(Round(((importeIva + importeIeps)), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            If comprobante.tipodoc_cve <> "BTFSER" Then
+                traslConceptos = FormatNumber(Round(((Subt_c - mtoDescGlobal) * tasaVarIva), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            Else
+                traslConceptos = FormatNumber(Round(((subtotalComprobante - mtoDescGlobal) * tasaVarIva), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            End If
+
+            Dim totImpRet = (retenImporteIva + retenImporteIsr)
+            If errorCfd = 0 Then
+                'se quito la validacion ocupada en los xml 3.2
+                'If errorCfd = 0 Then
+                '    minimoTotal = traslComprobanteTotImp - 0.5
+                '    maximoTotal = traslComprobanteTotImp + 0.5
+
+                '    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                '        errorCfd = 4
+                '    End If
+
+                'End If
+
+
+                'If errorCfd = 0 Then 'tot_imp_trasl_comprobante <> trasl_conceptos Then
+                '    minimoTotal = traslConceptos - 0.5
+                '    maximoTotal = traslConceptos + 0.5
+
+                '    If traslConceptos < minimoTotal Or traslConceptos > maximoTotal Then
+                '        errorCfd = 4
+                '    End If
+
+                'End If
+
+                If errorCfd = 0 Then
+                    minimoTotal = CType((traslConceptos - Excepmax), Decimal)
+                    maximoTotal = CType((traslConceptos + Excepmax), Decimal)
+
+                    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                        errorCfd = 4
+                    End If
+
+                End If
+
+            End If
+
+            'GCM 30012015 para no validar IVA en las facturas BTFSER para estos rfc
+            If errorCfd = 4 And comprobante.tipodoc_cve = "BTFSER" And Excep > 0 Then '(LlaveCfd.rfc_emisor = "RTS591030RL3" Or LlaveCfd.rfc_emisor = "RDI841003QJ4" Or LlaveCfd.rfc_emisor = "CAHC740704H99") Then
+                errorCfd = 0
+                traslConceptos = importeIva
+            End If
+
+            'GCM 17122014 hasta que lo autorice 
+            If comprobante.tipodoc_cve = "BTFSER" Then
+                totalConceptos = FormatNumber(Round((subtotalComprobante - mtoDescGlobal + traslConceptos - totImpRet + comprobante.TotaldeTraslados - comprobante.TotaldeRetenciones), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            Else
+                totalConceptos = FormatNumber(Round((Subt_c - mtoDescGlobal + traslConceptos - totImpRet), decimales_truncados, MidpointRounding.AwayFromZero), decimales)
+            End If
+
+            If errorCfd = 0 Then
+                minimoTotal = totalConceptos - Excepmax
+                maximoTotal = totalConceptos + Excepmax
+
+                If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                    errorCfd = 5
+                End If
+            End If
+
+
+            If LlaveCfd.rfc_emisor = "CAHC740704H99" Or LlaveCfd.rfc_emisor = "TCH850701RM1" Then ' Or LlaveCfd.rfc_emisor = "HMI950125KG8" Then
+                errorCfd = 0
+            End If
+
+            If LlaveCfd.rfc_emisor = "EIZJ480901PJ7" And LlaveCfd.timbre_fiscal.uuid = "92BD3F8B-D023-400F-A2F0-171809C9D588" Then
+                errorCfd = 0
+            End If
+
+            If LlaveCfd.rfc_emisor = "IABC820706GM6" Then 'GCM se mete exepcion 15102014 por que este marca error con IVA y solicito zor que se brincara mientras investigaran. para que pudieran generarse solo en caja chica
+                errorCfd = 0
+            End If
+            'GCM 23102014 Para dejar pasar unas facturas
+            If LlaveCfd.rfc_emisor = "COM890206254" And (
+                                                        comprobante.folio_factura = 12900 Or
+                                                        comprobante.folio_factura = 12901 Or
+                                                        comprobante.folio_factura = 12902 Or
+                                                        comprobante.folio_factura = 12903 Or
+                                                        comprobante.folio_factura = 12905 Or
+                                                        comprobante.folio_factura = 12906 Or
+                                                        comprobante.folio_factura = 12907 Or
+                                                        comprobante.folio_factura = 12909 Or
+                                                        comprobante.folio_factura = 12911) Then
+                errorCfd = 0
+            End If
+
+            'GCM 06012015
+            If LlaveCfd.rfc_emisor = "CFE370814QI0" And (
+                                                            LlaveCfd.timbre_fiscal.uuid = "5CE11D93-82E3-48F5-84A5-AC3DAE9E5C65" Or
+                                                            LlaveCfd.timbre_fiscal.uuid = "64301B4C-A63A-4899-BE4F-C1DF4C96A8E9" Or
+                                                            LlaveCfd.timbre_fiscal.uuid = "BCF8ECD3-58C1-4F70-90BD-EA6E5DA01223" Or
+                                                            LlaveCfd.timbre_fiscal.uuid = "B100ACE9-A0A9-4D43-8A78-45F2C6F80035") Then
+                errorCfd = 0
+            End If
+
+            'GCM 23032015
+            If LlaveCfd.rfc_emisor = "CPF6307036N8" And LlaveCfd.timbre_fiscal.uuid = "71b1321e-729a-4341-9904-aaf225b8fe7b" Then
+                errorCfd = 0
+            End If
+
+            'GCM 04012016
+            If LlaveCfd.rfc_emisor = "AOGC740622GL3" And LlaveCfd.timbre_fiscal.uuid = "162EEF97-815B-4688-81EE-563865E67F4F" Then
+                errorCfd = 0
+            End If
+
+            Dim msg As String = ""
+            Dim er As New Errores
+            If errorCfd > 0 Then
+                er.Interror = 1
+
+            End If
+            Select Case errorCfd
+                Case 1
+                    msg = "El subtotal de la factura es incorrecto"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60063", "ValidaTotales_SNAdd")
+                Case 2
+                    msg = "El porcentaje de descuento en LineItems y monto de descuento del CFD no coinciden"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60064", "ValidaTotales_SNAdd")
+                Case 3, 5
+                    msg = "El total de la factura es incorrecto"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60065", "ValidaTotales_SNAdd")
+                Case 4
+                    msg = "No coincide el iva"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60066", "ValidaTotales_SNAdd")
+                Case 6
+                    msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales_SNAdd")
+                Case Else
+                    msg = ""
+            End Select
+            If errorCfd > 0 Then
+                agrega_err(1, msg, errores)
+            End If
+        End Sub
+
         Public Sub ExecTmpFact(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd, ByVal numInfo As Integer)
             Dim sqlAdapter = New SqlDataAdapter("sp_consInfXML", Conexion)
             sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
@@ -1578,6 +2319,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Function lee_ef_cve(ByVal rfcReceptor As String) As Dictionary(Of String, String)
             Dim er As New Errores
             Dim dicEmpresa = New Dictionary(Of String, String)
@@ -1862,6 +2604,7 @@ Namespace Skytex.FacturaElectronica
             End If
 
         End Sub
+
         Public Sub ValidaXsdLinq(ByVal errores As List(Of Errores), ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
 
             Dim xmlElm As XDocument
@@ -1981,6 +2724,7 @@ Namespace Skytex.FacturaElectronica
             End If
 
         End Sub
+
         Public Sub ValidaXSDLinq_SNAdd(ByVal errores As List(Of Errores), ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
 
             Dim xmlElm As XDocument
@@ -2100,6 +2844,7 @@ Namespace Skytex.FacturaElectronica
                 graba_error(errores, er, llaveCfd, "60068", "XSDErr")
             End If
         End Sub
+
         Private Function XsdErr(ByVal sender As Object, ByVal e As ValidationEventArgs, ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd) As Errores
             Dim er As New Errores
 
@@ -2111,6 +2856,7 @@ Namespace Skytex.FacturaElectronica
 
             Return er
         End Function
+
         Public Sub ValidaExisteAddenda(ByVal errores As List(Of Errores), ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
 
             Dim xmlElm As XDocument
@@ -2259,6 +3005,8 @@ Namespace Skytex.FacturaElectronica
                     Case "2.2"
                         llaveCfd.version_nom = "CFD"
                     Case "3.2"
+                        llaveCfd.version_nom = "CFDI"
+                    Case "3.3"
                         llaveCfd.version_nom = "CFDI"
                     Case Else
                         agrega_err(1, "Version de comprobante incorrecta", errores)
@@ -2562,9 +3310,11 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Function ExecuteScalar() As Object
 
         End Function
+
         Public Sub LeeDatosFacturaLINQ_SNAdd(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
 
             'GCM 17122014 paraobtener el IVA
@@ -2708,32 +3458,38 @@ Namespace Skytex.FacturaElectronica
                 End If
 
                 'GCM 06012015 se contempla el tc
-                If IsNothing(root.Attribute("Moneda")) Then
-                    If IsNothing(root.Attribute("TipoCambio")) Then
-                        comprobante.moneda = "MXN"
-                    Else
-                        If (comprobante.tc Like "1.00*" Or comprobante.tc = "1") Then
-                            comprobante.moneda = "MXN"
-                        Else
-                            comprobante.moneda = ""
-                        End If
-                    End If
+                If llaveCfd.version = "3.3" Then
+                    'Cambio para CDFI 3.3 FGV (12/08/2017)
+                    'se va a enviar el id del catalogo de las Monedas
+                    comprobante.moneda = root.Attribute("Moneda").Value.ToString()
                 Else
-                    'GCM 07012015 contemplamos $ 13012015 contemplamos Ninguno
-                    'GCM 11092015 Agregamos MONEDA NACIONAL sin contemplar el TC
-                    If (root.Attribute("Moneda").Value.ToString() = "$" Or
-                        root.Attribute("Moneda").Value.ToString() = "Ninguno") And
-                    (comprobante.tc = "1.00" Or comprobante.tc = "1") Then
-                        comprobante.moneda = "MXN"
-                    Else
-                        'FGV 09/11/2016 se agrego la cadena "Modena Nacional" y "moneda nacional" ya que al no encontrarse la cadena "MONEDA NACIONAL"(en mayusculas) se le asignaba el valor del campo moneda, al momento de insertarlo se enviaba la cadena completa y no la cadena "MXN" 
-                        If (root.Attribute("Moneda").Value.ToString().ToUpper() = "MONEDA NACIONAL") Then
+                    If IsNothing(root.Attribute("Moneda")) Then
+                        If IsNothing(root.Attribute("TipoCambio")) Then
                             comprobante.moneda = "MXN"
                         Else
-                            If (root.Attribute("Moneda").Value.ToString() = "Pesos") Then
-                                comprobante.moneda = "PES"
+                            If (comprobante.tc Like "1.00*" Or comprobante.tc = "1") Then
+                                comprobante.moneda = "MXN"
                             Else
-                                comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                                comprobante.moneda = ""
+                            End If
+                        End If
+                    Else
+                        'GCM 07012015 contemplamos $ 13012015 contemplamos Ninguno
+                        'GCM 11092015 Agregamos MONEDA NACIONAL sin contemplar el TC
+                        If (root.Attribute("Moneda").Value.ToString() = "$" Or
+                            root.Attribute("Moneda").Value.ToString() = "Ninguno") And
+                        (comprobante.tc = "1.00" Or comprobante.tc = "1") Then
+                            comprobante.moneda = "MXN"
+                        Else
+                            'FGV 09/11/2016 se agrego la cadena "Modena Nacional" y "moneda nacional" ya que al no encontrarse la cadena "MONEDA NACIONAL"(en mayusculas) se le asignaba el valor del campo moneda, al momento de insertarlo se enviaba la cadena completa y no la cadena "MXN" 
+                            If (root.Attribute("Moneda").Value.ToString().ToUpper() = "MONEDA NACIONAL") Then
+                                comprobante.moneda = "MXN"
+                            Else
+                                If (root.Attribute("Moneda").Value.ToString() = "Pesos") Then
+                                    comprobante.moneda = "PES"
+                                Else
+                                    comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                                End If
                             End If
                         End If
                     End If
@@ -2905,6 +3661,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub LeeDatosFacturaLinq(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd, ByVal ccCve As String, ByVal ccTipo As String)
             Dim xmlElm As XElement
             Try
@@ -3232,6 +3989,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub LeeDatosFacturaLINQ_FacEmb(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal XMLDOCFILEPATH As String, ByVal LlaveCFD As llave_cfd, ByVal cc_cve As String, ByVal cc_tipo As String)
 
             Dim xmlElm As XElement
@@ -3525,6 +4283,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub LeeDatosFacturaLINQ_FacSrv(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal XMLDOCFILEPATH As String, ByVal LlaveCFD As llave_cfd, ByVal cc_cve As String, ByVal cc_tipo As String)
 
             Dim xmlElm As XElement
@@ -3805,7 +4564,6 @@ Namespace Skytex.FacturaElectronica
 
         End Sub
 
-
         Public Sub agrega_err(ByVal errorXml As Integer, ByVal smensaje As String, ByVal errores As List(Of Errores))
             Dim er As New Errores
             iErrorG = 1
@@ -3814,6 +4572,7 @@ Namespace Skytex.FacturaElectronica
             er.CveError = ""
             errores.Add(er)
         End Sub
+
         Public Sub agrega_err(ByVal errorXml As Integer, ByVal smensaje As String, ByVal errores As List(Of Errores), ByVal cveError As String)
             Dim er As New Errores
             iErrorG = 1
@@ -3822,6 +4581,7 @@ Namespace Skytex.FacturaElectronica
             er.CveError = cveError
             errores.Add(er)
         End Sub
+
         Public Sub agrega_folio(ByVal factura As List(Of nuevas_facturas), ByVal numFol As Integer, ByVal tipoDoc As String, ByVal ef_cve As String)
             Dim fact As New nuevas_facturas
             fact.num_fol = numFol
@@ -3829,6 +4589,7 @@ Namespace Skytex.FacturaElectronica
             fact.ef_cve = ef_cve
             factura.Add(fact)
         End Sub
+
         Public Sub LeerErroresSql(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd)
             Dim sqlAdapter = New SqlDataAdapter("sp_cons_errores_xml", Conexion)
             sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
@@ -3888,6 +4649,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub ValidaDatosEncabezado(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
 
             'Dim sqlAdapter = New SqlDataAdapter("sp_Valida_XML_zfj", Conexion)
@@ -3982,7 +4744,6 @@ Namespace Skytex.FacturaElectronica
         End Sub
 
         ' Metodos para cuando se sube una factura
-
         Public Sub ConsInsertaXml(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd, ByVal ccTipo As String, ByVal ccCve As String, ByVal rfcReceptor As String, ByVal tipdocCve As String)
             Dim sqlAdapter = New SqlDataAdapter("sp_inserta_xml", Conexion)
             sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
@@ -4047,16 +4808,19 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub ValidaDatosDetalle(ByVal errores As List(Of Errores), ByVal items As List(Of lineitem), ByVal llaveCfd As llave_cfd)
             Dim item = New lineitem
 
             For Each item In items
+                'se ocupa para xml 3.2 y 3.3
                 ValidaDatosItem(errores, item, llaveCfd)
                 If errores.Count > 0 Or iErrorG > 0 Then
                     Exit For
                 End If
             Next
         End Sub
+
         Public Sub ValidaDatosItem(ByVal errores As List(Of Errores), ByVal item As lineitem, ByVal llaveCfd As llave_cfd)
 
             Dim er As New Errores
@@ -4108,6 +4872,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub ValidaDatosPapa(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd)
             Dim er As New Errores
             Dim sqlAdapter = New SqlDataAdapter("sp_valida_XML_papa", Conexion)
@@ -4148,6 +4913,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub GeneraEncabezadoFactura(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd, ByVal factura As List(Of nuevas_facturas))
 
             Dim er As New Errores
@@ -4250,6 +5016,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub GeneraContraReciboFactura(ByVal errores As List(Of Errores), ByVal llaveCdf As llave_cfd)
 
             Dim er As New Errores
@@ -4304,6 +5071,7 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
         Public Sub llama_errores_tipo2(ByVal errores As List(Of Errores), ByVal llaveCfd As llave_cfd)
             Dim sqlAdapter = New SqlDataAdapter("sp_gmail_xml", Conexion)
             sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
@@ -4341,6 +5109,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Sub cons_doc(ByVal errores As List(Of Errores), ByVal documento As String, ByVal folio As Integer, ByVal partida As Integer, ByVal efCve As String, ByVal tipo As Integer, ByVal dsRes As DataSet)
             Dim sqlAdapter = New SqlDataAdapter("sp_consDatosAcuseR", Conexion)
             sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
@@ -4368,6 +5137,7 @@ Namespace Skytex.FacturaElectronica
                 End If
             End Try
         End Sub
+
         Public Function cons_trans(ByVal errores As List(Of Errores), ByVal ccTipo As String, ByVal ccCve As String) As DataTable
             Dim dtRes As New DataTable
             Dim sqlAdapter = New SqlDataAdapter("qcomsercon1_web", Conexion)
@@ -4392,6 +5162,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return dtRes
         End Function
+
         Public Function cons_placa(ByVal errores As List(Of Errores), ByVal tipo As String, ByVal ccCve As String) As DataTable
             Dim dtPlaca As New DataTable
             Dim sqlAdapter = New SqlDataAdapter("qcomplacas", Conexion)
@@ -4416,6 +5187,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return dtPlaca
         End Function
+
         Public Function ConsDatos(ByVal errores As List(Of Errores), ByVal documento As String, ByVal folio As Int64, ByVal partida As Integer, ByVal efCve As String, ByVal tipo As Integer) As DataTable
             Dim dtDatos As New DataTable
             Dim sqlAdapter = New SqlDataAdapter("sp_consDatosAcuseR", Conexion)
@@ -4442,6 +5214,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return dtDatos
         End Function
+
         Public Function cons_docs(ByVal errores As List(Of Errores), ByVal efCve As String, ByVal tipdocCve As String, ByVal ccTipo As String, ByVal ccCve As String, ByVal tipTransp As String, ByVal cc3Cve As String) As DataTable
             Dim dtDatos As New DataTable
             Dim sqlAdapter = New SqlDataAdapter("sp_qReferenceId", Conexion)
@@ -4470,6 +5243,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return dtDatos
         End Function
+
         Public Function cons_retP(ByVal errores As List(Of Errores), ByVal ccTipo As String, ByVal ccCve As String, ByVal tipdocCve As String) As DataTable
             Dim dtDatos As New DataTable
 
@@ -4530,7 +5304,6 @@ Namespace Skytex.FacturaElectronica
 
         End Function
 
-
         Public Function ConsultaEntidad() As DataTable
             Dim dtRes As New DataTable
             Dim sqlAdapter = New SqlDataAdapter("consWeb", Conexion)
@@ -4580,7 +5353,6 @@ Namespace Skytex.FacturaElectronica
             Return dtRes
         End Function
 
-
         Public Function ValidaUsuario(ByRef efCve As String, ByRef usrCve As String, ByRef pass As String) As Int16
             Dim dtRes As New DataTable
             Dim valida As Int16 = 0
@@ -4609,7 +5381,6 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return valida
         End Function
-
 
         Public Function GetPortalUser(ByVal pUser As String, ByVal pPassword As String) As PerfilesUser
             Dim sqlAdapter = New SqlDataAdapter("sp_accesoweb", Conexion)
@@ -4662,6 +5433,7 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return pf
         End Function
+
         Public Function GetConfig(ByVal noInf As Integer) As List(Of ConfigGral)
             Dim myDataAdapter = New SqlDataAdapter("sp_consInfXML", Conexion)
             Dim ds As New DataSet()
@@ -4698,8 +5470,6 @@ Namespace Skytex.FacturaElectronica
             End Try
             Return configuraciones
         End Function
-
-
 
         Public Function ObtDatosGenerico(ByVal rfc As String, _
                              ByVal serie As String, _
