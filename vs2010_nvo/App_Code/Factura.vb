@@ -2788,6 +2788,8 @@ Namespace Skytex.FacturaElectronica
 
             Dim xsd22 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/CFD_Skytex-2.2.xsd"))
             Dim xsd32 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv32.xsd"))
+            Dim xsd33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv33.xsd"))
+            Dim xsdCat33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/catCFDI33.xsd"))
             Dim xsdTdf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/TimbreFiscalDigital.xsd"))
             Dim xsdLf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/leyendasFisc.xsd"))
             Dim xsdDet As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/detallista.xsd"))
@@ -2801,7 +2803,8 @@ Namespace Skytex.FacturaElectronica
             Dim xsdIep As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AcreditamientoIEPS10.xsd"))
 
             schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
+            'schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
+            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd33.CreateReader)
             schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
             If leyendasFiscales = 1 Then
                 schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
@@ -2997,7 +3000,12 @@ Namespace Skytex.FacturaElectronica
 
 
                 If IsNothing(root.Attribute("version")) Then
-                    agrega_err(1, "No puede leerse el dato version", errores)
+                    If IsNothing(root.Attribute("Version")) Then
+                        agrega_err(1, "No puede leerse el dato version", errores)
+                    Else
+                        llaveCfd.version = root.Attribute("Version").Value.ToString()
+                    End If
+                    'agrega_err(1, "No puede leerse el dato version", errores)
                 Else
                     llaveCfd.version = root.Attribute("version").Value.ToString()
                 End If
@@ -3013,196 +3021,132 @@ Namespace Skytex.FacturaElectronica
                         llaveCfd.version_nom = ""
                 End Select
                 Dim sello As String = ""
-                If IsNothing(root.Attribute("sello")) Then
-                    agrega_err(1, "No puede leerse el dato sello", errores)
-                Else
-                    sello = root.Attribute("sello").Value.ToString()
-                End If
-                If llaveCfd.version_nom = "CFDI" Then
-                    Dim qList = From xe In xmlElm.Descendants _
-                                Select xe
-                    For Each xe In qList
-                        If xe.Name.LocalName = "TimbreFiscalDigital" Then
-                            timbre.version = xe.Attribute("version").Value
-                            timbre.uuid = xe.Attribute("UUID").Value
-                            timbre.fecha_timbrado = xe.Attribute("FechaTimbrado").Value
-                            timbre.sello_cfd = xe.Attribute("selloCFD").Value
-                            timbre.no_certificado_sat = xe.Attribute("noCertificadoSAT").Value
-                            timbre.sello_sat = xe.Attribute("selloSAT").Value
-                            contador = 1
-                            Exit For
-                        End If
-                    Next
-                    llaveCfd.timbre_fiscal = timbre
-                    'GCM 22102014 se agrego el error sin timbre fiscal
-                    If contador = 0 Then
-                        agrega_err(1, "sin timbre fiscal", errores)
-                    End If
 
-                    If sello <> llaveCfd.timbre_fiscal.sello_cfd And contador = 1 Then
-                        agrega_err(1, "el sello es diferente al del timbre fiscal", errores)
-                    End If
-                Else
-                    timbre.uuid = ""
-                    llaveCfd.timbre_fiscal = timbre
-                End If
-                If IsNothing(root.Attribute("serie")) Then
-                    llaveCfd.serie = ""
-                Else
-                    llaveCfd.serie = root.Attribute("serie").Value.ToString()
-                End If
-                If IsNothing(root.Attribute("folio")) Then
-                    llaveCfd.folio_factura = 0
-                Else
-                    'GCM 17102014 Limpia el folio
-
-                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", "")) 'Int32.Parse(root.Attribute("folio").Value)
-
-                    If folPaso >= 2147483647 Then
-                        'llaveCfd.folio_factura = Int64.Parse(folPaso.ToString())
-                        llaveCfd.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                If llaveCfd.version = "3.3" Then
+                    If IsNothing(root.Attribute("Sello")) Then
+                        agrega_err(1, "No puede leerse el dato sello", errores)
                     Else
-                        llaveCfd.folio_factura = folPaso
+                        sello = root.Attribute("Sello").Value.ToString()
                     End If
-
-                End If
-
-                Dim qList1 = From xe In xmlElm.Descendants _
-                Select xe
-                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Emisor"
-                    llaveCfd.rfc_emisor = CType(xe.Attribute("rfc"), String)
-                    Exit For
-                Next
-                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Receptor"
-                    receptor.rfc = CType(xe.Attribute("rfc"), String)
-                    Exit For
-                Next
-                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "DomicilioFiscal"
-                    nomEstadoEmisor = CType(xe.Attribute("estado"), String)
-                    cpEmisor = CType(xe.Attribute("codigoPostal"), String)
-                    Exit For
-                Next
-                For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Domicilio"
-                    nomEstadoReceptor = CType(xe.Attribute("estado"), String)
-                    cpReceptor = CType(xe.Attribute("codigoPostal"), String)
-                    Exit For
-                Next
-
-                'FGV 27012017
-                'se agrego la validacion para que el nombre del estado no sea ninguno relacionado con el distrito federal
-
-                If cpEmisor = "" Then
-
-                Else
-                    cpEmisor = cpEmisor.Substring(0, 2)
-                End If
-                If cpReceptor = "" Then
-
-                Else
-                    cpReceptor = cpReceptor.Substring(0, 2)
-                End If
-
-                If cpEmisor = "" Then
-                    cpEmisor = "01"
-                    nomEstadoEmisor = "CDMX"
-                End If
-                'validacion para el emisor
-                Dim sqlAdapterCPE = New SqlDataAdapter("sp_excepcionCpEstado", Conexion)
-                'Dim nomEstado As String
-                'nomEstado = nomEstado
-                sqlAdapterCPE.SelectCommand.CommandType = CommandType.StoredProcedure
-                sqlAdapterCPE.SelectCommand.CommandTimeout = _timeout
-                sqlAdapterCPE.SelectCommand.Parameters.AddWithValue("@cp", cpEmisor)
-                sqlAdapterCPE.SelectCommand.Parameters.AddWithValue("@opc", "1")
-                Try
-                    Conexion.Open()
-                    sqlAdapterCPE.Fill(dsCPEmisor, "sp_excepcionCpEstado")
-                    sqlAdapterCPE.Dispose()
-                    ValidacionCPEmisor = dsCPEmisor.Tables.Item(0)
-                    Mensaje = CType(ValidacionCPEmisor.Rows(0).Item("sw_valida"), String)
-                    If Mensaje = 1 Then
-
-                        Dim sqlAdapterEE = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
-                        sqlAdapterEE.SelectCommand.CommandType = CommandType.StoredProcedure
-                        sqlAdapterEE.SelectCommand.CommandTimeout = _timeout
-                        sqlAdapterEE.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoEmisor.ToUpper())
-                        sqlAdapterEE.SelectCommand.Parameters.AddWithValue("@opc", "1")
-                        Try
-                            'Conexion.Open()
-                            sqlAdapterEE.Fill(dsNEEmisor, "sp_excepcionNomEstado")
-                            sqlAdapterEE.Dispose()
-                            ValidacionNEEmisor = dsNEEmisor.Tables.Item(0)
-                            Mensaje = CType(ValidacionNEEmisor.Rows(0).Item("sw_valida"), String)
-                            If Mensaje = 0 Then
-                                agrega_err(1, "Para este codigo postal, el nombre del estado del emisor no aceptado por Skytex <br />", errores)
+                    If llaveCfd.version_nom = "CFDI" Then
+                        Dim qList = From xe In xmlElm.Descendants _
+                                    Select xe
+                        For Each xe In qList
+                            If xe.Name.LocalName = "TimbreFiscalDigital" Then
+                                timbre.version = xe.Attribute("Version").Value
+                                timbre.uuid = xe.Attribute("UUID").Value
+                                timbre.fecha_timbrado = xe.Attribute("FechaTimbrado").Value
+                                timbre.sello_cfd = xe.Attribute("SelloCFD").Value
+                                timbre.no_certificado_sat = xe.Attribute("NoCertificadoSAT").Value
+                                timbre.sello_sat = xe.Attribute("SelloSAT").Value
+                                contador = 1
+                                Exit For
                             End If
-                            Conexion.Close()
-                            dsCPReceptor.Reset()
-                            ValidacionNEEmisor.Rows.Clear()
-                        Catch ex As Exception
-                            Dim msg As String
-                            msg = "sp_excepcionNomEstado"
-                            iErrorG = 3
-                            agrega_err(iErrorG, msg, errores)
-                        Finally
-                            If Conexion.State = ConnectionState.Open Then
-                                Conexion.Close()
-                            End If
-                        End Try
-                        'agrega_err(1, "El nombre del estado no aceptado por Skytex <br />", errores)
-                    End If
-                    Conexion.Close()
-                    dsNE.Reset()
-                    ValidacionCPEmisor.Rows.Clear()
-                Catch ex As Exception
-                    Dim msg As String
-                    msg = "sp_excepcionNomEstado"
-                    iErrorG = 3
-                    agrega_err(iErrorG, msg, errores)
-                Finally
-                    If Conexion.State = ConnectionState.Open Then
-                        Conexion.Close()
-                    End If
-                End Try
+                        Next
+                        llaveCfd.timbre_fiscal = timbre
+                        'GCM 22102014 se agrego el error sin timbre fiscal
+                        If contador = 0 Then
+                            agrega_err(1, "sin timbre fiscal", errores)
+                        End If
 
-                If cpReceptor = "" Then
-                    cpReceptor = "01"
-                    nomEstadoReceptor = "CDMX"
-                End If
+                        If sello <> llaveCfd.timbre_fiscal.sello_cfd And contador = 1 Then
+                            agrega_err(1, "el sello es diferente al del timbre fiscal", errores)
+                        End If
+                    Else
+                        timbre.uuid = ""
+                        llaveCfd.timbre_fiscal = timbre
+                    End If
+                    If IsNothing(root.Attribute("Serie")) Then
+                        llaveCfd.serie = ""
+                    Else
+                        llaveCfd.serie = root.Attribute("Serie").Value.ToString()
+                    End If
+                    If IsNothing(root.Attribute("Folio")) Then
+                        llaveCfd.folio_factura = 0
+                    Else
+                        'GCM 17102014 Limpia el folio
 
-                'validacion para el receptor
-                Dim sqlAdapterCPR = New SqlDataAdapter("sp_excepcionCpEstado", Conexion)
-                'Dim nomEstado As String
-                'nomEstado = nomEstado
-                sqlAdapterCPR.SelectCommand.CommandType = CommandType.StoredProcedure
-                sqlAdapterCPR.SelectCommand.CommandTimeout = _timeout
-                sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@cp", cpReceptor)
-                sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@opc", "1")
-                Try
-                    Conexion.Open()
-                    sqlAdapterCPR.Fill(dsCPReceptor, "sp_excepcionCpEstado")
-                    sqlAdapterCPR.Dispose()
-                    ValidacionCPReceptor = dsCPReceptor.Tables.Item(0)
-                    Mensaje = CType(ValidacionCPReceptor.Rows(0).Item("sw_valida"), String)
-                    If Mensaje = 1 Then
-                        If Not IsNothing(nomEstadoReceptor) Then 'si el nomEstadoReceptor tiene valor 
-                            Dim sqlAdapterER = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
-                            sqlAdapterER.SelectCommand.CommandType = CommandType.StoredProcedure
-                            sqlAdapterER.SelectCommand.CommandTimeout = _timeout
-                            sqlAdapterER.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoReceptor.ToUpper())
-                            sqlAdapterER.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                        Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", "")) 'Int32.Parse(root.Attribute("folio").Value)
+
+                        If folPaso >= 2147483647 Then
+                            'llaveCfd.folio_factura = Int64.Parse(folPaso.ToString())
+                            llaveCfd.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                        Else
+                            llaveCfd.folio_factura = folPaso
+                        End If
+
+                    End If
+
+                    Dim qList1 = From xe In xmlElm.Descendants _
+                    Select xe
+                    For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Emisor"
+                        llaveCfd.rfc_emisor = CType(xe.Attribute("Rfc"), String)
+                        Exit For
+                    Next
+                    For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Receptor"
+                        receptor.rfc = CType(xe.Attribute("Rfc"), String)
+                        Exit For
+                    Next
+                    'For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "DomicilioFiscal"
+                    '    nomEstadoEmisor = CType(xe.Attribute("estado"), String)
+                    '    cpEmisor = CType(xe.Attribute("codigoPostal"), String)
+                    '    Exit For
+                    'Next
+                    'For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Domicilio"
+                    '    nomEstadoReceptor = CType(xe.Attribute("estado"), String)
+                    '    cpReceptor = CType(xe.Attribute("codigoPostal"), String)
+                    '    Exit For
+                    'Next
+
+                    'FGV 27012017
+                    'se agrego la validacion para que el nombre del estado no sea ninguno relacionado con el distrito federal
+
+                    If cpEmisor = "" Then
+                        cpEmisor = "01"
+                        nomEstadoEmisor = "CDMX"
+                    Else
+                        cpEmisor = cpEmisor.Substring(0, 2)
+                    End If
+                    If cpReceptor = "" Then
+                        cpReceptor = "01"
+                        nomEstadoReceptor = "CDMX"
+                    Else
+                        cpReceptor = cpReceptor.Substring(0, 2)
+                    End If
+
+                    'validacion para el emisor
+                    Dim sqlAdapterCPE = New SqlDataAdapter("sp_excepcionCpEstado", Conexion)
+                    'Dim nomEstado As String
+                    'nomEstado = nomEstado
+                    sqlAdapterCPE.SelectCommand.CommandType = CommandType.StoredProcedure
+                    sqlAdapterCPE.SelectCommand.CommandTimeout = _timeout
+                    sqlAdapterCPE.SelectCommand.Parameters.AddWithValue("@cp", cpEmisor)
+                    sqlAdapterCPE.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                    Try
+                        Conexion.Open()
+                        sqlAdapterCPE.Fill(dsCPEmisor, "sp_excepcionCpEstado")
+                        sqlAdapterCPE.Dispose()
+                        ValidacionCPEmisor = dsCPEmisor.Tables.Item(0)
+                        Mensaje = CType(ValidacionCPEmisor.Rows(0).Item("sw_valida"), String)
+                        If Mensaje = 1 Then
+
+                            Dim sqlAdapterEE = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
+                            sqlAdapterEE.SelectCommand.CommandType = CommandType.StoredProcedure
+                            sqlAdapterEE.SelectCommand.CommandTimeout = _timeout
+                            sqlAdapterEE.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoEmisor.ToUpper())
+                            sqlAdapterEE.SelectCommand.Parameters.AddWithValue("@opc", "1")
                             Try
                                 'Conexion.Open()
-                                sqlAdapterER.Fill(dsNEReceptor, "sp_excepcionNomEstado")
-                                sqlAdapterER.Dispose()
-                                ValidacionNEReceptor = dsNEReceptor.Tables.Item(0)
-                                Mensaje = CType(ValidacionNEReceptor.Rows(0).Item("sw_valida"), String)
+                                sqlAdapterEE.Fill(dsNEEmisor, "sp_excepcionNomEstado")
+                                sqlAdapterEE.Dispose()
+                                ValidacionNEEmisor = dsNEEmisor.Tables.Item(0)
+                                Mensaje = CType(ValidacionNEEmisor.Rows(0).Item("sw_valida"), String)
                                 If Mensaje = 0 Then
-                                    agrega_err(1, "Para este codigo postal, el nombre del estado del receptor no aceptado por Skytex <br />", errores)
+                                    agrega_err(1, "Para este codigo postal, el nombre del estado del emisor no aceptado por Skytex <br />", errores)
                                 End If
                                 Conexion.Close()
                                 dsCPReceptor.Reset()
-                                ValidacionNEReceptor.Rows.Clear()
+                                ValidacionNEEmisor.Rows.Clear()
                             Catch ex As Exception
                                 Dim msg As String
                                 msg = "sp_excepcionNomEstado"
@@ -3213,97 +3157,452 @@ Namespace Skytex.FacturaElectronica
                                     Conexion.Close()
                                 End If
                             End Try
+                            'agrega_err(1, "El nombre del estado no aceptado por Skytex <br />", errores)
                         End If
-                        'agrega_err(1, "El nombre del estado no aceptado por Skytex <br />", errores)
-                    End If
-                    Conexion.Close()
-                    dsNE.Reset()
-                    ValidacionCPReceptor.Rows.Clear()
-                Catch ex As Exception
-                    Dim msg As String
-                    msg = "sp_excepcionNomEstado"
-                    iErrorG = 3
-                    agrega_err(iErrorG, msg, errores)
-                Finally
-                    If Conexion.State = ConnectionState.Open Then
                         Conexion.Close()
-                    End If
-                End Try
+                        dsNE.Reset()
+                        ValidacionCPEmisor.Rows.Clear()
+                    Catch ex As Exception
+                        Dim msg As String
+                        msg = "sp_excepcionNomEstado"
+                        iErrorG = 3
+                        agrega_err(iErrorG, msg, errores)
+                    Finally
+                        If Conexion.State = ConnectionState.Open Then
+                            Conexion.Close()
+                        End If
+                    End Try
 
-                ''FGV 31/01/2017
-                '' si el codigo postal es igual a 11510 se valida el nombre del estado del receptor (Skytex)
-                'If cpReceptor = "11510" Then
-                '    Dim sqlAdapterCPR = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
-                '    sqlAdapterCPR.SelectCommand.CommandType = CommandType.StoredProcedure
-                '    sqlAdapterCPR.SelectCommand.CommandTimeout = _timeout
-                '    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoReceptor.ToUpper())
-                '    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@opc", "1")
-                '    Try
-                '        Conexion.Open()
-                '        sqlAdapterCPR.Fill(dsCPReceptor, "sp_excepcionNomEstado")
-                '        sqlAdapterCPR.Dispose()
-                '        ValidacionCPReceptor = dsCPReceptor.Tables.Item(0)
-                '        Mensaje = CType(ValidacionCPReceptor.Rows(0).Item("sw_valida"), String)
-                '        If Mensaje = 1 Then
-                '            agrega_err(1, "Para este codigo postal, el nombre del estado no aceptado por Skytex <br />", errores)
-                '        End If
-                '        Conexion.Close()
-                '        dsCPReceptor.Reset()
-                '        ValidacionCPReceptor.Rows.Clear()
-                '    Catch ex As Exception
-                '        Dim msg As String
-                '        msg = "sp_excepcionNomEstado"
-                '        iErrorG = 3
-                '        agrega_err(iErrorG, msg, errores)
-                '    Finally
-                '        If Conexion.State = ConnectionState.Open Then
-                '            Conexion.Close()
-                '        End If
-                '    End Try
-                'End If
+                    'validacion para el receptor
+                    Dim sqlAdapterCPR = New SqlDataAdapter("sp_excepcionCpEstado", Conexion)
+                    'Dim nomEstado As String
+                    'nomEstado = nomEstado
+                    sqlAdapterCPR.SelectCommand.CommandType = CommandType.StoredProcedure
+                    sqlAdapterCPR.SelectCommand.CommandTimeout = _timeout
+                    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@cp", cpReceptor)
+                    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                    Try
+                        Conexion.Open()
+                        sqlAdapterCPR.Fill(dsCPReceptor, "sp_excepcionCpEstado")
+                        sqlAdapterCPR.Dispose()
+                        ValidacionCPReceptor = dsCPReceptor.Tables.Item(0)
+                        Mensaje = CType(ValidacionCPReceptor.Rows(0).Item("sw_valida"), String)
+                        If Mensaje = 1 Then
+                            If Not IsNothing(nomEstadoReceptor) Then 'si el nomEstadoReceptor tiene valor 
+                                Dim sqlAdapterER = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
+                                sqlAdapterER.SelectCommand.CommandType = CommandType.StoredProcedure
+                                sqlAdapterER.SelectCommand.CommandTimeout = _timeout
+                                sqlAdapterER.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoReceptor.ToUpper())
+                                sqlAdapterER.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                                Try
+                                    'Conexion.Open()
+                                    sqlAdapterER.Fill(dsNEReceptor, "sp_excepcionNomEstado")
+                                    sqlAdapterER.Dispose()
+                                    ValidacionNEReceptor = dsNEReceptor.Tables.Item(0)
+                                    Mensaje = CType(ValidacionNEReceptor.Rows(0).Item("sw_valida"), String)
+                                    If Mensaje = 0 Then
+                                        agrega_err(1, "Para este codigo postal, el nombre del estado del receptor no aceptado por Skytex <br />", errores)
+                                    End If
+                                    Conexion.Close()
+                                    dsCPReceptor.Reset()
+                                    ValidacionNEReceptor.Rows.Clear()
+                                Catch ex As Exception
+                                    Dim msg As String
+                                    msg = "sp_excepcionNomEstado"
+                                    iErrorG = 3
+                                    agrega_err(iErrorG, msg, errores)
+                                Finally
+                                    If Conexion.State = ConnectionState.Open Then
+                                        Conexion.Close()
+                                    End If
+                                End Try
+                            End If
+                            'agrega_err(1, "El nombre del estado no aceptado por Skytex <br />", errores)
+                        End If
+                        Conexion.Close()
+                        dsNE.Reset()
+                        ValidacionCPReceptor.Rows.Clear()
+                    Catch ex As Exception
+                        Dim msg As String
+                        msg = "sp_excepcionNomEstado"
+                        iErrorG = 3
+                        agrega_err(iErrorG, msg, errores)
+                    Finally
+                        If Conexion.State = ConnectionState.Open Then
+                            Conexion.Close()
+                        End If
+                    End Try
 
-                
+                    ''FGV 31/01/2017
+                    '' si el codigo postal es igual a 11510 se valida el nombre del estado del receptor (Skytex)
+                    'If cpReceptor = "11510" Then
+                    '    Dim sqlAdapterCPR = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
+                    '    sqlAdapterCPR.SelectCommand.CommandType = CommandType.StoredProcedure
+                    '    sqlAdapterCPR.SelectCommand.CommandTimeout = _timeout
+                    '    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoReceptor.ToUpper())
+                    '    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                    '    Try
+                    '        Conexion.Open()
+                    '        sqlAdapterCPR.Fill(dsCPReceptor, "sp_excepcionNomEstado")
+                    '        sqlAdapterCPR.Dispose()
+                    '        ValidacionCPReceptor = dsCPReceptor.Tables.Item(0)
+                    '        Mensaje = CType(ValidacionCPReceptor.Rows(0).Item("sw_valida"), String)
+                    '        If Mensaje = 1 Then
+                    '            agrega_err(1, "Para este codigo postal, el nombre del estado no aceptado por Skytex <br />", errores)
+                    '        End If
+                    '        Conexion.Close()
+                    '        dsCPReceptor.Reset()
+                    '        ValidacionCPReceptor.Rows.Clear()
+                    '    Catch ex As Exception
+                    '        Dim msg As String
+                    '        msg = "sp_excepcionNomEstado"
+                    '        iErrorG = 3
+                    '        agrega_err(iErrorG, msg, errores)
+                    '    Finally
+                    '        If Conexion.State = ConnectionState.Open Then
+                    '            Conexion.Close()
+                    '        End If
+                    '    End Try
+                    'End If
 
-                'FGV 14012016
-                'se agrego la excepcion para que con algunos rfc's no aplicara la validacion del numCtaPago
-                Dim sqlAdapter = New SqlDataAdapter("sp_excepcionNumCtaPago", Conexion)
-                sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
-                sqlAdapter.SelectCommand.CommandTimeout = _timeout
-                sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_emisor", llaveCfd.rfc_emisor)
-                Try
-                    Conexion.Open()
-                    sqlAdapter.Fill(ds, "sp_excepcionNumCtaPago")
-                    sqlAdapter.Dispose()
-                    ValidacionEncabezado = ds.Tables.Item(0)
-                    Mensaje = CType(ValidacionEncabezado.Rows(0).Item("sw_valida"), String)
-                    If Mensaje = 0 Then
-                        'GCM 18082016 no permitir nodos NumCtaPago
-                        'GCM 02092016 Se comenta por instrucciones del Ing Hindi Correo NumCtaPago
-                        If Not IsNothing(root.Attribute("NumCtaPago")) Then 'si NumCtaPago tiene un valor manda el error
-                            If (root.Attribute("NumCtaPago").Value.ToString().Equals("0000") = False) Then 'si numCatPago es diferente a ""(espacio en blanco) manda un error
-                                agrega_err(1, "Atributo NumCtaPago no aceptado por Skytex <br />", errores)
+
+
+                    'FGV 14012016
+                    'se agrego la excepcion para que con algunos rfc's no aplicara la validacion del numCtaPago
+                    Dim sqlAdapter = New SqlDataAdapter("sp_excepcionNumCtaPago", Conexion)
+                    sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
+                    sqlAdapter.SelectCommand.CommandTimeout = _timeout
+                    sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_emisor", llaveCfd.rfc_emisor)
+                    Try
+                        Conexion.Open()
+                        sqlAdapter.Fill(ds, "sp_excepcionNumCtaPago")
+                        sqlAdapter.Dispose()
+                        ValidacionEncabezado = ds.Tables.Item(0)
+                        Mensaje = CType(ValidacionEncabezado.Rows(0).Item("sw_valida"), String)
+                        If Mensaje = 0 Then
+                            'GCM 18082016 no permitir nodos NumCtaPago
+                            'GCM 02092016 Se comenta por instrucciones del Ing Hindi Correo NumCtaPago
+                            If Not IsNothing(root.Attribute("NumCtaPago")) Then 'si NumCtaPago tiene un valor manda el error
+                                If (root.Attribute("NumCtaPago").Value.ToString().Equals("0000") = False) Then 'si numCatPago es diferente a ""(espacio en blanco) manda un error
+                                    agrega_err(1, "Atributo NumCtaPago no aceptado por Skytex <br />", errores)
+                                End If
                             End If
                         End If
-                    End If
-                    Conexion.Close()
-                    ds.Reset()
-                    ValidacionEncabezado.Rows.Clear()
-                Catch ex As Exception
-                    Dim msg As String
-                    msg = "sp_excepcionNumCtaPago"
-                    iErrorG = 3
-                    agrega_err(iErrorG, msg, errores)
-                Finally
-                    If Conexion.State = ConnectionState.Open Then
                         Conexion.Close()
-                    End If
-                End Try
+                        ds.Reset()
+                        ValidacionEncabezado.Rows.Clear()
+                    Catch ex As Exception
+                        Dim msg As String
+                        msg = "sp_excepcionNumCtaPago"
+                        iErrorG = 3
+                        agrega_err(iErrorG, msg, errores)
+                    Finally
+                        If Conexion.State = ConnectionState.Open Then
+                            Conexion.Close()
+                        End If
+                    End Try
 
-                If llaveCfd.rfc_emisor = "" Then
-                    agrega_err(1, "No puede leerse el dato rfc del Emisor", errores)
-                End If
-                If receptor.rfc = "" Then
-                    agrega_err(1, "No puede leerse el dato rfc del Receptor", errores)
+                    If llaveCfd.rfc_emisor = "" Then
+                        agrega_err(1, "No puede leerse el dato rfc del Emisor", errores)
+                    End If
+                    If receptor.rfc = "" Then
+                        agrega_err(1, "No puede leerse el dato rfc del Receptor", errores)
+                    End If
+
+                Else
+                    'version 3.2
+                    If IsNothing(root.Attribute("sello")) Then
+                        agrega_err(1, "No puede leerse el dato sello", errores)
+                    Else
+                        sello = root.Attribute("sello").Value.ToString()
+                    End If
+                    If llaveCfd.version_nom = "CFDI" Then
+                        Dim qList = From xe In xmlElm.Descendants _
+                                    Select xe
+                        For Each xe In qList
+                            If xe.Name.LocalName = "TimbreFiscalDigital" Then
+                                timbre.version = xe.Attribute("version").Value
+                                timbre.uuid = xe.Attribute("UUID").Value
+                                timbre.fecha_timbrado = xe.Attribute("FechaTimbrado").Value
+                                timbre.sello_cfd = xe.Attribute("selloCFD").Value
+                                timbre.no_certificado_sat = xe.Attribute("noCertificadoSAT").Value
+                                timbre.sello_sat = xe.Attribute("selloSAT").Value
+                                contador = 1
+                                Exit For
+                            End If
+                        Next
+                        llaveCfd.timbre_fiscal = timbre
+                        'GCM 22102014 se agrego el error sin timbre fiscal
+                        If contador = 0 Then
+                            agrega_err(1, "sin timbre fiscal", errores)
+                        End If
+
+                        If sello <> llaveCfd.timbre_fiscal.sello_cfd And contador = 1 Then
+                            agrega_err(1, "el sello es diferente al del timbre fiscal", errores)
+                        End If
+                    Else
+                        timbre.uuid = ""
+                        llaveCfd.timbre_fiscal = timbre
+                    End If
+                    If IsNothing(root.Attribute("serie")) Then
+                        llaveCfd.serie = ""
+                    Else
+                        llaveCfd.serie = root.Attribute("serie").Value.ToString()
+                    End If
+                    If IsNothing(root.Attribute("folio")) Then
+                        llaveCfd.folio_factura = 0
+                    Else
+                        'GCM 17102014 Limpia el folio
+
+                        Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", "")) 'Int32.Parse(root.Attribute("folio").Value)
+
+                        If folPaso >= 2147483647 Then
+                            'llaveCfd.folio_factura = Int64.Parse(folPaso.ToString())
+                            llaveCfd.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                        Else
+                            llaveCfd.folio_factura = folPaso
+                        End If
+
+                    End If
+
+                    Dim qList1 = From xe In xmlElm.Descendants _
+                    Select xe
+                    For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Emisor"
+                        llaveCfd.rfc_emisor = CType(xe.Attribute("rfc"), String)
+                        Exit For
+                    Next
+                    For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Receptor"
+                        receptor.rfc = CType(xe.Attribute("rfc"), String)
+                        Exit For
+                    Next
+                    For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "DomicilioFiscal"
+                        nomEstadoEmisor = CType(xe.Attribute("estado"), String)
+                        cpEmisor = CType(xe.Attribute("codigoPostal"), String)
+                        Exit For
+                    Next
+                    For Each xe In From xe1 In qList1 Where xe1.Name.LocalName = "Domicilio"
+                        nomEstadoReceptor = CType(xe.Attribute("estado"), String)
+                        cpReceptor = CType(xe.Attribute("codigoPostal"), String)
+                        Exit For
+                    Next
+
+                    'FGV 27012017
+                    'se agrego la validacion para que el nombre del estado no sea ninguno relacionado con el distrito federal
+
+                    If cpEmisor = "" Then
+
+                    Else
+                        cpEmisor = cpEmisor.Substring(0, 2)
+                    End If
+                    If cpReceptor = "" Then
+
+                    Else
+                        cpReceptor = cpReceptor.Substring(0, 2)
+                    End If
+
+                    If cpEmisor = "" Then
+                        cpEmisor = "01"
+                        nomEstadoEmisor = "CDMX"
+                    End If
+                    'validacion para el emisor
+                    Dim sqlAdapterCPE = New SqlDataAdapter("sp_excepcionCpEstado", Conexion)
+                    'Dim nomEstado As String
+                    'nomEstado = nomEstado
+                    sqlAdapterCPE.SelectCommand.CommandType = CommandType.StoredProcedure
+                    sqlAdapterCPE.SelectCommand.CommandTimeout = _timeout
+                    sqlAdapterCPE.SelectCommand.Parameters.AddWithValue("@cp", cpEmisor)
+                    sqlAdapterCPE.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                    Try
+                        Conexion.Open()
+                        sqlAdapterCPE.Fill(dsCPEmisor, "sp_excepcionCpEstado")
+                        sqlAdapterCPE.Dispose()
+                        ValidacionCPEmisor = dsCPEmisor.Tables.Item(0)
+                        Mensaje = CType(ValidacionCPEmisor.Rows(0).Item("sw_valida"), String)
+                        If Mensaje = 1 Then
+
+                            Dim sqlAdapterEE = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
+                            sqlAdapterEE.SelectCommand.CommandType = CommandType.StoredProcedure
+                            sqlAdapterEE.SelectCommand.CommandTimeout = _timeout
+                            sqlAdapterEE.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoEmisor.ToUpper())
+                            sqlAdapterEE.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                            Try
+                                'Conexion.Open()
+                                sqlAdapterEE.Fill(dsNEEmisor, "sp_excepcionNomEstado")
+                                sqlAdapterEE.Dispose()
+                                ValidacionNEEmisor = dsNEEmisor.Tables.Item(0)
+                                Mensaje = CType(ValidacionNEEmisor.Rows(0).Item("sw_valida"), String)
+                                If Mensaje = 0 Then
+                                    agrega_err(1, "Para este codigo postal, el nombre del estado del emisor no aceptado por Skytex <br />", errores)
+                                End If
+                                Conexion.Close()
+                                dsCPReceptor.Reset()
+                                ValidacionNEEmisor.Rows.Clear()
+                            Catch ex As Exception
+                                Dim msg As String
+                                msg = "sp_excepcionNomEstado"
+                                iErrorG = 3
+                                agrega_err(iErrorG, msg, errores)
+                            Finally
+                                If Conexion.State = ConnectionState.Open Then
+                                    Conexion.Close()
+                                End If
+                            End Try
+                            'agrega_err(1, "El nombre del estado no aceptado por Skytex <br />", errores)
+                        End If
+                        Conexion.Close()
+                        dsNE.Reset()
+                        ValidacionCPEmisor.Rows.Clear()
+                    Catch ex As Exception
+                        Dim msg As String
+                        msg = "sp_excepcionNomEstado"
+                        iErrorG = 3
+                        agrega_err(iErrorG, msg, errores)
+                    Finally
+                        If Conexion.State = ConnectionState.Open Then
+                            Conexion.Close()
+                        End If
+                    End Try
+
+                    If cpReceptor = "" Then
+                        cpReceptor = "01"
+                        nomEstadoReceptor = "CDMX"
+                    End If
+
+                    'validacion para el receptor
+                    Dim sqlAdapterCPR = New SqlDataAdapter("sp_excepcionCpEstado", Conexion)
+                    'Dim nomEstado As String
+                    'nomEstado = nomEstado
+                    sqlAdapterCPR.SelectCommand.CommandType = CommandType.StoredProcedure
+                    sqlAdapterCPR.SelectCommand.CommandTimeout = _timeout
+                    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@cp", cpReceptor)
+                    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                    Try
+                        Conexion.Open()
+                        sqlAdapterCPR.Fill(dsCPReceptor, "sp_excepcionCpEstado")
+                        sqlAdapterCPR.Dispose()
+                        ValidacionCPReceptor = dsCPReceptor.Tables.Item(0)
+                        Mensaje = CType(ValidacionCPReceptor.Rows(0).Item("sw_valida"), String)
+                        If Mensaje = 1 Then
+                            If Not IsNothing(nomEstadoReceptor) Then 'si el nomEstadoReceptor tiene valor 
+                                Dim sqlAdapterER = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
+                                sqlAdapterER.SelectCommand.CommandType = CommandType.StoredProcedure
+                                sqlAdapterER.SelectCommand.CommandTimeout = _timeout
+                                sqlAdapterER.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoReceptor.ToUpper())
+                                sqlAdapterER.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                                Try
+                                    'Conexion.Open()
+                                    sqlAdapterER.Fill(dsNEReceptor, "sp_excepcionNomEstado")
+                                    sqlAdapterER.Dispose()
+                                    ValidacionNEReceptor = dsNEReceptor.Tables.Item(0)
+                                    Mensaje = CType(ValidacionNEReceptor.Rows(0).Item("sw_valida"), String)
+                                    If Mensaje = 0 Then
+                                        agrega_err(1, "Para este codigo postal, el nombre del estado del receptor no aceptado por Skytex <br />", errores)
+                                    End If
+                                    Conexion.Close()
+                                    dsCPReceptor.Reset()
+                                    ValidacionNEReceptor.Rows.Clear()
+                                Catch ex As Exception
+                                    Dim msg As String
+                                    msg = "sp_excepcionNomEstado"
+                                    iErrorG = 3
+                                    agrega_err(iErrorG, msg, errores)
+                                Finally
+                                    If Conexion.State = ConnectionState.Open Then
+                                        Conexion.Close()
+                                    End If
+                                End Try
+                            End If
+                            'agrega_err(1, "El nombre del estado no aceptado por Skytex <br />", errores)
+                        End If
+                        Conexion.Close()
+                        dsNE.Reset()
+                        ValidacionCPReceptor.Rows.Clear()
+                    Catch ex As Exception
+                        Dim msg As String
+                        msg = "sp_excepcionNomEstado"
+                        iErrorG = 3
+                        agrega_err(iErrorG, msg, errores)
+                    Finally
+                        If Conexion.State = ConnectionState.Open Then
+                            Conexion.Close()
+                        End If
+                    End Try
+
+                    ''FGV 31/01/2017
+                    '' si el codigo postal es igual a 11510 se valida el nombre del estado del receptor (Skytex)
+                    'If cpReceptor = "11510" Then
+                    '    Dim sqlAdapterCPR = New SqlDataAdapter("sp_excepcionNomEstado", Conexion)
+                    '    sqlAdapterCPR.SelectCommand.CommandType = CommandType.StoredProcedure
+                    '    sqlAdapterCPR.SelectCommand.CommandTimeout = _timeout
+                    '    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@nomEstado", nomEstadoReceptor.ToUpper())
+                    '    sqlAdapterCPR.SelectCommand.Parameters.AddWithValue("@opc", "1")
+                    '    Try
+                    '        Conexion.Open()
+                    '        sqlAdapterCPR.Fill(dsCPReceptor, "sp_excepcionNomEstado")
+                    '        sqlAdapterCPR.Dispose()
+                    '        ValidacionCPReceptor = dsCPReceptor.Tables.Item(0)
+                    '        Mensaje = CType(ValidacionCPReceptor.Rows(0).Item("sw_valida"), String)
+                    '        If Mensaje = 1 Then
+                    '            agrega_err(1, "Para este codigo postal, el nombre del estado no aceptado por Skytex <br />", errores)
+                    '        End If
+                    '        Conexion.Close()
+                    '        dsCPReceptor.Reset()
+                    '        ValidacionCPReceptor.Rows.Clear()
+                    '    Catch ex As Exception
+                    '        Dim msg As String
+                    '        msg = "sp_excepcionNomEstado"
+                    '        iErrorG = 3
+                    '        agrega_err(iErrorG, msg, errores)
+                    '    Finally
+                    '        If Conexion.State = ConnectionState.Open Then
+                    '            Conexion.Close()
+                    '        End If
+                    '    End Try
+                    'End If
+
+
+
+                    'FGV 14012016
+                    'se agrego la excepcion para que con algunos rfc's no aplicara la validacion del numCtaPago
+                    Dim sqlAdapter = New SqlDataAdapter("sp_excepcionNumCtaPago", Conexion)
+                    sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
+                    sqlAdapter.SelectCommand.CommandTimeout = _timeout
+                    sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_emisor", llaveCfd.rfc_emisor)
+                    Try
+                        Conexion.Open()
+                        sqlAdapter.Fill(ds, "sp_excepcionNumCtaPago")
+                        sqlAdapter.Dispose()
+                        ValidacionEncabezado = ds.Tables.Item(0)
+                        Mensaje = CType(ValidacionEncabezado.Rows(0).Item("sw_valida"), String)
+                        If Mensaje = 0 Then
+                            'GCM 18082016 no permitir nodos NumCtaPago
+                            'GCM 02092016 Se comenta por instrucciones del Ing Hindi Correo NumCtaPago
+                            If Not IsNothing(root.Attribute("NumCtaPago")) Then 'si NumCtaPago tiene un valor manda el error
+                                If (root.Attribute("NumCtaPago").Value.ToString().Equals("0000") = False) Then 'si numCatPago es diferente a ""(espacio en blanco) manda un error
+                                    agrega_err(1, "Atributo NumCtaPago no aceptado por Skytex <br />", errores)
+                                End If
+                            End If
+                        End If
+                        Conexion.Close()
+                        ds.Reset()
+                        ValidacionEncabezado.Rows.Clear()
+                    Catch ex As Exception
+                        Dim msg As String
+                        msg = "sp_excepcionNumCtaPago"
+                        iErrorG = 3
+                        agrega_err(iErrorG, msg, errores)
+                    Finally
+                        If Conexion.State = ConnectionState.Open Then
+                            Conexion.Close()
+                        End If
+                    End Try
+
+                    If llaveCfd.rfc_emisor = "" Then
+                        agrega_err(1, "No puede leerse el dato rfc del Emisor", errores)
+                    End If
+                    If receptor.rfc = "" Then
+                        agrega_err(1, "No puede leerse el dato rfc del Receptor", errores)
+                    End If
                 End If
             Catch ex As Exception
                 agrega_err(1, ex.Message, errores)
@@ -4563,6 +4862,1211 @@ Namespace Skytex.FacturaElectronica
             End Try
 
         End Sub
+
+        'versiones 3.3
+        Public Sub LeeDatosFacturaLINQ_SNAdd3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd)
+
+            'GCM 17122014 paraobtener el IVA
+            Dim cmd As New SqlCommand
+            Dim pctIva As Object
+            cmd.CommandText = "select pct_iva from iciva where iva_cve = 1"
+            cmd.CommandType = CommandType.Text
+            cmd.Connection = Conexion
+            Conexion.Open()
+            pctIva = cmd.ExecuteScalar()
+            Conexion.Close()
+            comprobante.pctIva = pctIva
+
+            Dim xmlElm As XElement
+            Try
+                xmlElm = XElement.Load(xmlDocFilePath)
+                Dim root As XElement = XElement.Load(xmlDocFilePath)
+                Dim qAtrib As IEnumerable(Of XAttribute) = _
+                    From atr In root.Attributes() _
+                    Select atr
+
+                'GCM 17122014 
+                Dim qList1 = From xe In xmlElm.Descendants _
+                Select xe
+                ''GCM 17122014 
+
+                'esto es para remover la addenda
+                For Each a In xmlElm.Elements
+                    If a.Name.LocalName = "Addenda" Then
+                        a.Remove()
+                    End If
+                Next
+
+                'GCM 17122014 obtenemos el valor de total de traslados
+                For Each xe In qList1
+                    If xe.Name.LocalName = "ImpuestosLocales" Then
+                        comprobante.TotaldeTraslados = Decimal.Parse(xe.Attribute("TotaldeTraslados").Value)
+                        comprobante.TotaldeRetenciones = Decimal.Parse(xe.Attribute("TotaldeRetenciones").Value) 'GCM 11112014 obtenemos el valor de total de retenciones
+                    End If
+                Next
+                'GCM 17122014 
+
+                For Each a In xmlElm.Elements
+                    If a.Name.LocalName = "Complemento" Then
+                        a.Remove()
+                    End If
+                Next
+
+
+                If llaveCfd.version_nom <> "" Then
+                    comprobante.version = llaveCfd.version
+                End If
+                If IsNothing(root.Attribute("Serie")) Then
+                    comprobante.serie = ""
+                Else
+                    comprobante.serie = root.Attribute("Serie").Value.ToString()
+                End If
+                'folio 
+                If IsNothing(root.Attribute("Folio")) Then
+                    comprobante.folio_factura = 0
+                Else
+                    'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
+                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
+                    If folPaso >= 2147483647 Then
+                        'comprobante.folio_factura = Int64.Parse(folPaso.ToString())
+                        comprobante.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                    Else
+                        comprobante.folio_factura = folPaso
+                    End If
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Fecha")) Then
+                    agrega_err(1, "No puede leerse el dato fecha", errores)
+                Else
+                    comprobante.fecha_factura = root.Attribute("Fecha").Value.ToString()
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Sello")) Then
+                    agrega_err(1, "No puede leerse el dato sello", errores)
+                Else
+                    comprobante.sello = root.Attribute("Sello").Value.ToString()
+                End If
+                If llaveCfd.version_nom = "CFD" Then
+                    ' numero de aprobacion
+                    If IsNothing(root.Attribute("noAprobacion")) Then
+                        agrega_err(1, "No puede leerse el dato noAprobacion", errores)
+                    Else
+                        comprobante.no_aprobacion = Integer.Parse(root.Attribute("noAprobacion").Value)
+                    End If
+                    ' año de aprobacion
+                    If IsNothing(root.Attribute("anoAprobacion")) Then
+                        agrega_err(1, "No puede leerse el dato anoAprobacion", errores)
+                    Else
+                        comprobante.ano_aprobacion = Integer.Parse(root.Attribute("anoAprobacion").Value)
+                    End If
+                End If
+                If IsNothing(root.Attribute("NoCertificado")) Then
+                    agrega_err(1, "No puede leerse el dato noCertificado", errores)
+                Else
+                    comprobante.no_certificado = root.Attribute("NoCertificado").Value.ToString()
+                End If
+                If Not IsNothing(root.Attribute("Certificado")) Then
+                    comprobante.certificado = root.Attribute("Certificado").Value.ToString()
+                Else
+                    comprobante.certificado = ""
+                End If
+                ' subtotal
+                If IsNothing(root.Attribute("SubTotal")) Then
+                    agrega_err(1, "No puede leerse el dato subTotal", errores)
+                Else
+                    comprobante.sub_total = Decimal.Parse(root.Attribute("SubTotal").Value)
+                End If
+                ' descuento
+                If IsNothing(root.Attribute("Descuento")) Then
+                    'agrega_err(1, "No puede leerse el dato descuento", errores)
+                    comprobante.descuento = 0 'el descuento se manda en 0 en caso de no haber atributo 14/08/2013
+                Else
+                    comprobante.descuento = Decimal.Parse(root.Attribute("Descuento").Value)
+                End If
+                ' total
+                If IsNothing(root.Attribute("Total")) Then
+                    agrega_err(1, "No puede leerse el dato total", errores)
+                Else
+                    comprobante.total = Decimal.Parse(root.Attribute("Total").Value)
+                End If
+                ' tipo de comprobante
+                If IsNothing(root.Attribute("TipoDeComprobante")) Then
+                    agrega_err(1, "No puede leerse el dato tipoDeComprobante", errores)
+                Else
+                    Dim tipoDeComprobante = root.Attribute("TipoDeComprobante").Value.ToString()
+                End If
+
+                'GCM 05012015 Comentado el tipo de documento ya que no se capturara el tm
+                'If comprobante.tipodoc_cve = "BTFSER" Then
+
+                'GCM 07012015 Se agrego el TC
+                If IsNothing(root.Attribute("TipoCambio")) Then
+                    comprobante.tc = "0"
+                Else
+                    comprobante.tc = root.Attribute("TipoCambio").Value.ToString
+                End If
+
+                'GCM 06012015 se contempla el tc
+                If llaveCfd.version = "3.3" Then
+                    'Cambio para CDFI 3.3 FGV (12/08/2017)
+                    'se va a enviar el id del catalogo de las Monedas
+                    comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                Else
+                    If IsNothing(root.Attribute("Moneda")) Then
+                        If IsNothing(root.Attribute("TipoCambio")) Then
+                            comprobante.moneda = "MXN"
+                        Else
+                            If (comprobante.tc Like "1.00*" Or comprobante.tc = "1") Then
+                                comprobante.moneda = "MXN"
+                            Else
+                                comprobante.moneda = ""
+                            End If
+                        End If
+                    Else
+                        'GCM 07012015 contemplamos $ 13012015 contemplamos Ninguno
+                        'GCM 11092015 Agregamos MONEDA NACIONAL sin contemplar el TC
+                        If (root.Attribute("Moneda").Value.ToString() = "$" Or
+                            root.Attribute("Moneda").Value.ToString() = "Ninguno") And
+                        (comprobante.tc = "1.00" Or comprobante.tc = "1") Then
+                            comprobante.moneda = "MXN"
+                        Else
+                            'FGV 09/11/2016 se agrego la cadena "Modena Nacional" y "moneda nacional" ya que al no encontrarse la cadena "MONEDA NACIONAL"(en mayusculas) se le asignaba el valor del campo moneda, al momento de insertarlo se enviaba la cadena completa y no la cadena "MXN" 
+                            If (root.Attribute("Moneda").Value.ToString().ToUpper() = "MONEDA NACIONAL") Then
+                                comprobante.moneda = "MXN"
+                            Else
+                                If (root.Attribute("Moneda").Value.ToString() = "Pesos") Then
+                                    comprobante.moneda = "PES"
+                                Else
+                                    comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+
+
+
+                'If IsNothing(root.Attribute("Moneda")) Then
+                '    comprobante.moneda = ""
+                'Else
+                '    comprobante.moneda = root.Attribute("Moneda").Value.ToString()
+                'End If
+
+
+                Dim qList = From xe In xmlElm.Descendants _
+                Select xe
+                Dim emisor = New emisor
+                Dim receptor = New receptor
+                Dim conce As New List(Of concepto)
+                Dim impuestos = New impuestos
+                Dim traslados = New List(Of traslado)
+                Dim retenciones = New List(Of retencion)
+                Dim addenda = New addenda
+                Dim requesForPayment = New requestforpayment
+                Dim currency = New currency
+                Dim aditionalData = New aditionaldata
+                Dim paymentTimePeriod = New paymenttimeperiod
+                Dim provider = New provider
+                Dim lineItems As New List(Of lineitem)
+                Const swCargosConcep As Boolean = False
+                Dim errorConceptos As Boolean = False
+                impuestos.total_imp_trasl = 0
+                impuestos.sw_retencion = 0
+                impuestos.total_imp_reten = 0
+                Dim swTotalCapT As Boolean = False
+                Dim swTotalCapR As Boolean = False
+                Dim Tot_ImpuestosTras As Decimal = 0
+                comprobante.swImpTras = True
+                comprobante.swTImporte = False
+
+                For Each xe In qList
+
+
+                    If xe.Name.LocalName = "Emisor" Then
+                        emisor.rfc = xe.Attribute("Rfc").Value.ToString()
+                    End If
+                    'GCM 12022015
+                    If emisor.rfc = "TME970922LV3" And comprobante.moneda = "P-US$" Then
+                        comprobante.moneda = "DOL"
+                    End If
+
+                    If emisor.rfc = "CEM900327M82" And (comprobante.moneda = "D&amp;oacute;lar estadounidense" Or
+                                                        comprobante.moneda = "D&oacute;lar estadounidense") Then
+                        comprobante.moneda = "DOL"
+                    End If
+
+                    If xe.Name.LocalName = "Receptor" Then
+                        receptor.rfc = xe.Attribute("Rfc").Value.ToString()
+                    End If
+                    'GCM 17122014
+                    If xe.Name.LocalName = "Impuestos" Then
+                        If IsNothing(xe.Attribute("TotalImpuestosTrasladados")) Then
+                            comprobante.totalImpuestosTrasladados = 0
+                            comprobante.swImpTras = False
+                        Else
+                            comprobante.totalImpuestosTrasladados = xe.Attribute("TotalImpuestosTrasladados").Value.ToString()
+                        End If
+                    End If
+                    'GCM 17122014
+                    If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
+                        Dim itemComceptos = New concepto
+                        itemComceptos.cantidad = CType(xe.Attribute("Cantidad"), Decimal)
+                        itemComceptos.valor_unitario = CType(xe.Attribute("ValorUnitario"), Decimal)
+                        itemComceptos.importe = CType(xe.Attribute("Importe"), Decimal)
+                        conce.Add(itemComceptos)
+                        If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
+                            Else
+                                agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+                        If swCargosConcep = True And errorConceptos = False Then
+                            If itemComceptos.cantidad <> 1 Then
+                                agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+                    End If
+
+                    If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemRet = New retencion
+                            itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
+                            retenciones.Add(itemRet)
+                            If impuestos.total_imp_reten > 0 Then
+                                impuestos.sw_retencion = 1
+                            End If
+
+                        Else
+                            impuestos.total_imp_trasl = 0
+                        End If
+                    End If
+
+
+
+                    If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
+
+                        'GCM 22012015 Obtenemos prefijo, solo entrara si es cfdi
+                        Dim prefijo = xe.GetPrefixOfNamespace(xe.Name.NamespaceName)
+
+                        If prefijo = "cfdi" Then
+                            If Not IsNothing(xe.Attribute("Importe")) Then
+                                impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                                Dim itemTras = New traslado
+                                itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                                'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                                'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                                If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                    itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                    itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                                Else
+                                    itemTras.tasa = 0
+                                    itemTras.importe = 0
+                                End If
+                                traslados.Add(itemTras)
+                            End If
+                        End If
+                    End If
+
+
+                Next
+                If conce.Count = 0 Then
+                    agrega_err(1, "El comprobante no tiene conceptos", errores)
+                    errorConceptos = True
+                End If
+                aditionalData.text_data = "Z"
+                provider.providerid = ""
+                comprobante.Conceptos = conce
+                requesForPayment.provider = provider
+                requesForPayment.line_items = lineItems
+                requesForPayment.currency = currency
+                requesForPayment.aditional_data = aditionalData
+                requesForPayment.paymenttimeperiod = paymentTimePeriod
+                addenda.requestforpayment = requesForPayment
+                comprobante.Emisor = emisor
+                comprobante.Receptor = receptor
+                impuestos.Traslados = traslados
+                impuestos.Retenciones = retenciones
+                comprobante.Impuestos = impuestos
+                comprobante.Addenda = addenda
+
+                Dim msgUsr = From msg In errores _
+                    Select interror = msg.Interror, message = msg.Message _
+                    Where (interror = 1)
+                Dim er As New Errores
+                Dim cadena As String = msgUsr.Aggregate("", Function(current, msgs) current & msgs.message.Trim + ", ")
+                If cadena.Trim <> "" Then
+                    er.Interror = 1
+                    er.Message = cadena.Trim
+                    graba_error(errores, er, llaveCfd, "60069", "LeeDatosFacturaLINQ_SinAddenda")
+                End If
+            Catch ex As Exception
+                'agrega_err(1, ex.Message, errores)
+                agrega_err(1, "Ocurrio un erro al leer el XML por favor contacte con el administrador de sitio ", errores, "60069")
+            End Try
+
+        End Sub
+
+        Public Sub LeeDatosFacturaLinq3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal xmlDocFilePath As String, ByVal llaveCfd As llave_cfd, ByVal ccCve As String, ByVal ccTipo As String)
+            Dim xmlElm As XElement
+            Try
+                xmlElm = XElement.Load(xmlDocFilePath)
+                Dim root As XElement = XElement.Load(xmlDocFilePath)
+
+
+                For Each a In xmlElm.Elements
+                    If a.Name.LocalName = "Complemento" Then
+                        a.Remove()
+                    End If
+                Next
+
+                If llaveCfd.version_nom <> "" Then
+                    comprobante.version = llaveCfd.version
+                End If
+                If IsNothing(root.Attribute("Serie")) Then
+                    comprobante.serie = ""
+                Else
+                    comprobante.serie = root.Attribute("Serie").Value.ToString()
+                End If
+                'folio 
+                If IsNothing(root.Attribute("Folio")) Then
+                    agrega_err(1, "No puede leerse el dato folio", errores)
+                Else
+                    'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
+                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
+                    If folPaso >= 2147483647 Then
+                        comprobante.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                    Else
+                        comprobante.folio_factura = folPaso
+                    End If
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Fecha")) Then
+                    agrega_err(1, "No puede leerse el dato fecha", errores)
+                Else
+                    comprobante.fecha_factura = root.Attribute("Fecha").Value.ToString()
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Sello")) Then
+                    agrega_err(1, "No puede leerse el dato sello", errores)
+                Else
+                    comprobante.sello = root.Attribute("Sello").Value.ToString()
+                End If
+                ' numero de certificado
+                If IsNothing(root.Attribute("NoCertificado")) Then
+                    agrega_err(1, "No puede leerse el dato noCertificado", errores)
+                Else
+                    comprobante.no_certificado = root.Attribute("NoCertificado").Value.ToString()
+                End If
+                ' certificado
+                If IsNothing(root.Attribute("Certificado")) Then
+                    agrega_err(1, "No puede leerse el dato certificado", errores)
+                Else
+                    comprobante.certificado = root.Attribute("Certificado").Value.ToString()
+                End If
+                ' subtotal
+                If IsNothing(root.Attribute("SubTotal")) Then
+                    agrega_err(1, "No puede leerse el dato subTotal", errores)
+                Else
+                    comprobante.sub_total = Decimal.Parse(root.Attribute("SubTotal").Value)
+                End If
+                ' descuento
+                If IsNothing(root.Attribute("Descuento")) Then
+                    comprobante.descuento = 0 'el descuento se manda en 0 en caso de no haber atributo 14/08/2013
+                Else
+                    comprobante.descuento = Decimal.Parse(root.Attribute("Descuento").Value)
+                End If
+                ' total
+                If IsNothing(root.Attribute("Total")) Then
+                    agrega_err(1, "No puede leerse el dato total", errores)
+                Else
+                    comprobante.total = Decimal.Parse(root.Attribute("Total").Value)
+                End If
+                ' tipo de comprobante
+                If IsNothing(root.Attribute("TipoDeComprobante")) Then
+                    agrega_err(1, "No puede leerse el dato tipoDeComprobante", errores)
+                Else
+                    Dim tipoDeComprobante = root.Attribute("TipoDeComprobante").Value.ToString()
+                End If
+
+
+                comprobante.condiciones_pago = "0"
+                Dim qList = From xe In xmlElm.Descendants _
+                Select xe
+                Dim emisor = New emisor
+                Dim receptor = New receptor
+                Dim conce As New List(Of concepto)
+                Dim impuestos = New impuestos
+                Dim traslados = New List(Of traslado)
+                Dim retenciones = New List(Of retencion)
+                Dim addenda = New addenda
+                Dim requesForPayment = New requestforpayment
+                Dim currency = New currency
+                Dim aditionalData = New aditionaldata
+                Dim paymentTimePeriod = New paymenttimeperiod
+                Dim provider = New provider
+                Dim lineItems As New List(Of lineitem)
+                Dim renglon As Integer = 1
+                Const swCargosConcep As Boolean = False
+                Dim swCargos As Boolean = False
+                Dim errorConceptos As Boolean = False
+                Dim errorItms As Boolean = False
+                impuestos.total_imp_trasl = 0
+                impuestos.sw_retencion = 0
+                impuestos.total_imp_reten = 0
+                Dim swTotalCapT As Boolean = False
+                Dim swTotalCapR As Boolean = False
+
+                For Each xe In qList
+                    If xe.Name.LocalName = "Emisor" Then
+                        emisor.rfc = CType(xe.Attribute("Rfc"), String)
+                    End If
+                    If xe.Name.LocalName = "Receptor" Then
+                        receptor.rfc = CType(xe.Attribute("Rfc"), String)
+                    End If
+                    If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
+                        Dim itemComceptos = New concepto
+                        itemComceptos.cantidad = CType(xe.Attribute("Cantidad"), Decimal)
+                        itemComceptos.valor_unitario = CType(xe.Attribute("ValorUnitario"), Decimal)
+                        itemComceptos.importe = CType(xe.Attribute("Importe"), Decimal)
+                        conce.Add(itemComceptos)
+                        'If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then 'GCM 05082015 codigo original
+                        'agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                        'errorConceptos = True
+                        'End If
+                        If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
+                            Else
+                                agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+
+                        If swCargosConcep = True And errorConceptos = False Then
+                            If itemComceptos.cantidad <> 1 Then
+                                agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+                    End If
+
+                    If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemRet = New retencion
+                            itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
+                            retenciones.Add(itemRet)
+                            If impuestos.total_imp_reten > 0 Then
+                                impuestos.sw_retencion = 1
+                            End If
+
+                        Else
+                            impuestos.total_imp_trasl = 0
+                        End If
+                    End If
+                    If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemTras = New traslado
+                            itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                            'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                            If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                            Else
+                                itemTras.tasa = 0
+                                itemTras.importe = 0
+                            End If
+                            traslados.Add(itemTras)
+                        End If
+                    End If
+
+
+                    If xe.Name.LocalName = "AditionalData" Then
+                        aditionalData.text_data = CType(xe.Attribute("textData"), String)
+                        aditionalData.metododepago = CType(xe.Attribute("metodoDePago"), String)
+                        aditionalData.moneda = CType(xe.Attribute("Moneda"), String)
+                    End If
+                    If xe.Name.LocalName = "Provider" Then
+                        provider.providerid = CType(xe.Attribute("ProviderID"), String)
+                        Const caracterSeparador As String = "@"
+                        Dim testPos As Integer = InStr(provider.providerid, caracterSeparador)
+                        If testPos <> 2 Then
+                            agrega_err(1, "El proveedor no tiene el formato correcto", errores)
+                        End If
+                        If provider.providerid.Length <> 12 Then
+                            agrega_err(1, "Longitud incorrecta en ProviderID", errores)
+                        Else
+                            Dim primer As Integer = provider.providerid.IndexOf("@", StringComparison.Ordinal)
+                            comprobante.cc_tipo = provider.providerid.Substring(0, primer)
+                            Dim segundo As Integer = InStr(3, provider.providerid, "@", CompareMethod.Text)
+                            comprobante.cc_cve = provider.providerid.Substring(2, 6)
+                            EfCveG = provider.providerid.Substring(segundo, 3)
+                        End If
+                        If comprobante.cc_cve <> ccCve Or comprobante.cc_tipo <> ccTipo Then
+                            agrega_err(1, "El dato Provider es incorrecto no corresponde con la session", errores)
+                        End If
+                    End If
+                    If xe.Name.LocalName = "lineItem" And errorItms = False Then
+                        Dim item = New lineitem
+                        item.type = CType(xe.Attribute("type").Value, Integer)
+                        item.number = CType(xe.Attribute("number"), Integer)
+                        item.monto_decuento = CType(xe.Attribute("montoDescuento"), Decimal)
+                        item.pct_decuento = CType(xe.Attribute("pctDescuento"), Decimal)
+                        item.uns = CType(xe.Attribute("uns"), Decimal)
+                        item.precio = CType(xe.Attribute("precio"), Decimal)
+                        item.sku = CType(xe.Attribute("sku"), String)
+                        item.partida = CType(xe.Attribute("partida"), Integer)
+                        item.reference_identification = CType(xe.Attribute("referenceIdentification"), String)
+                        item.art_tip = CType(xe.Attribute("art_tip"), String)
+                        item.uni_med = CType(xe.Attribute("uni_med"), String)
+                        Dim primer As Integer = item.reference_identification.IndexOf("@", StringComparison.Ordinal)
+                        If primer < 1 Then
+                            agrega_err(1, "El formato del atributo referenceIdentification es incorrecto : " + item.reference_identification, errores)
+                            errorItms = True
+                        End If
+
+                        lineItems.Add(item)
+
+                        If item.number <> renglon Then
+                            agrega_err(1, "Los renglones deben ser agregados en orden lineItem: sku: " + item.sku + "number: " + item.number.ToString(), errores)
+                            errorItms = True
+                        End If
+
+                        If swCargos = True And item.type = 1 Then
+                            agrega_err(1, "Los cargos deben agregarse después de todos los artículos lineItem: sku: " + item.sku, errores)
+                            errorItms = True
+                        End If
+                        If item.type = 2 And swCargos = False Then
+                            swCargos = True
+                        End If
+
+                        If item.uns = 0 And item.precio > 0 Then
+                            agrega_err(1, "Si las uns son 0, no debe agregar precio", errores)
+                            errorItms = True
+                        End If
+
+                        If item.uns > 0 And item.precio = 0 Then
+                            agrega_err(1, "Si el precio es 0, no debe agregar uns", errores)
+                            errorItms = True
+                        End If
+
+                        If swCargos = True Then
+                            If item.monto_decuento > 0 Then
+                                agrega_err(1, "Incorrecto aplicar descuento a cargo extra ", errores) ' + item.sku, errores)
+                                errorItms = True
+                            End If
+                            If item.pct_decuento > 0 Then
+                                agrega_err(1, "Los cargos no debe grabarse porcentaje de descuento ", errores) '+ item.sku, errores)
+                                errorItms = True
+                            End If
+                            If item.partida > 0 Then
+                                agrega_err(1, "El dato partida para los cargos extra debe ser 0", errores)
+                                errorItms = True
+                            End If
+                            If item.uns <> 1 Then
+                                agrega_err(1, "Las uns siempre debe ser 1 en el cargo extra", errores)
+                                errorItms = True
+                            End If
+
+                            If item.uni_med.ToString().ToUpper <> "NO APLICA" Then
+                                agrega_err(1, "La unidad de medida debe ser 'No aplica' en cargo extra", errores)
+                                errorItms = True
+                            End If
+
+                        End If
+                        renglon = renglon + 1
+
+                    End If
+                Next
+
+                If conce.Count = 0 Then
+                    agrega_err(1, "El comprobante no tiene conceptos", errores, "60069")
+                    errorConceptos = True
+                End If
+
+                comprobante.Conceptos = conce
+                requesForPayment.line_items = lineItems
+                requesForPayment.currency = currency
+                requesForPayment.aditional_data = aditionalData
+                requesForPayment.paymenttimeperiod = paymentTimePeriod
+                addenda.requestforpayment = requesForPayment
+                comprobante.Emisor = emisor
+                impuestos.Traslados = traslados
+                impuestos.Retenciones = retenciones
+                comprobante.Emisor = emisor
+                comprobante.Receptor = receptor
+                comprobante.Impuestos = impuestos
+                comprobante.Addenda = addenda
+
+                Dim msgUsr = From msg In errores _
+                    Select interror = msg.Interror, message = msg.Message _
+                    Where (interror = 1)
+
+                Dim er As New Errores
+                Dim cadena As String = msgUsr.Aggregate("", Function(current, msgs) current & msgs.message.Trim + ", ")
+
+                If cadena.Trim <> "" Then
+                    er.Interror = 1
+                    er.Message = cadena.Trim
+                    graba_error(errores, er, llaveCfd, "60069", "LeeDatosFacturaLINQ")
+                End If
+
+            Catch ex As Exception
+                agrega_err(1, ex.Message, errores, "60069")
+            End Try
+
+        End Sub
+
+        Public Sub LeeDatosFacturaLINQ_FacEmb3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal XMLDOCFILEPATH As String, ByVal LlaveCFD As llave_cfd, ByVal cc_cve As String, ByVal cc_tipo As String)
+
+            Dim xmlElm As XElement
+
+            Try
+
+                xmlElm = XElement.Load(XMLDOCFILEPATH)
+                Dim root As XElement = XElement.Load(XMLDOCFILEPATH)
+                Dim qAtrib As IEnumerable(Of XAttribute) = _
+                    From atr In root.Attributes() _
+                    Select atr
+
+                For Each a In xmlElm.Elements
+                    If a.Name.LocalName = "Complemento" Then
+                        a.Remove()
+                    End If
+                Next
+
+                If LlaveCFD.version_nom <> "" Then
+                    comprobante.version = LlaveCFD.version
+                End If
+
+                If IsNothing(root.Attribute("Serie")) Then
+                    comprobante.serie = ""
+                Else
+                    comprobante.serie = root.Attribute("Serie").Value.ToString()
+                End If
+                'folio 
+                If IsNothing(root.Attribute("Folio")) Then
+                    agrega_err(1, "No puede leerse el dato folio", errores)
+                Else
+                    'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
+                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
+                    If folPaso >= 2147483647 Then
+                        comprobante.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                    Else
+                        comprobante.folio_factura = folPaso
+                    End If
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Fecha")) Then
+                    agrega_err(1, "No puede leerse el dato fecha", errores)
+                Else
+                    comprobante.fecha_factura = root.Attribute("Fecha").Value.ToString()
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Sello")) Then
+                    agrega_err(1, "No puede leerse el dato sello", errores)
+                Else
+                    comprobante.sello = root.Attribute("Sello").Value.ToString()
+                End If
+
+                ' numero de certificado
+                If IsNothing(root.Attribute("NoCertificado")) Then
+                    agrega_err(1, "No puede leerse el dato noCertificado", errores)
+                Else
+                    comprobante.no_certificado = root.Attribute("NoCertificado").Value.ToString()
+                End If
+                ' certificado
+                If IsNothing(root.Attribute("Certificado")) Then
+                    agrega_err(1, "No puede leerse el dato certificado", errores)
+                Else
+                    comprobante.certificado = root.Attribute("Certificado").Value.ToString()
+                End If
+                ' subtotal
+                If IsNothing(root.Attribute("SubTotal")) Then
+                    agrega_err(1, "No puede leerse el dato subTotal", errores)
+                Else
+                    comprobante.sub_total = Decimal.Parse(root.Attribute("SubTotal").Value)
+                End If
+                ' descuento
+                If IsNothing(root.Attribute("Descuento")) Then
+                    'agrega_err(1, "No puede leerse el dato descuento", errores)
+                    comprobante.descuento = 0 'el descuento se manda en 0 en caso de no haber atributo 14/08/2013
+                Else
+                    comprobante.descuento = Decimal.Parse(root.Attribute("Descuento").Value)
+                End If
+                ' total
+                If IsNothing(root.Attribute("Total")) Then
+                    agrega_err(1, "No puede leerse el dato total", errores)
+                Else
+                    comprobante.total = Decimal.Parse(root.Attribute("Total").Value)
+                End If
+                ' tipo de comprobante
+                If IsNothing(root.Attribute("TipoDeComprobante")) Then
+                    agrega_err(1, "No puede leerse el dato tipoDeComprobante", errores)
+                Else
+                    Dim tipoDeComprobante = root.Attribute("TipoDeComprobante").Value.ToString()
+                End If
+
+
+                comprobante.condiciones_pago = "0"
+
+
+
+                Dim qList = From xe In xmlElm.Descendants _
+                Select xe
+                Dim emisor = New emisor
+                Dim receptor = New receptor
+                Dim conce As New List(Of concepto)
+                Dim impuestos = New impuestos
+                Dim traslados = New List(Of traslado)
+                Dim retenciones = New List(Of retencion)
+                Dim addenda = New addenda
+                Dim requesForPayment = New requestforpayment
+                Dim currency = New currency
+                Dim aditionalData = New aditionaldata
+                Dim paymentTimePeriod = New paymenttimeperiod
+                Dim provider = New provider
+                Dim lineItems As New List(Of lineitem)
+                Dim renglon As Integer = 1
+                Const swCargosConcep As Boolean = False
+                Dim errorConceptos As Boolean = False
+                Dim errorItms As Boolean = False
+                impuestos.total_imp_trasl = 0
+                impuestos.sw_retencion = 0
+                impuestos.total_imp_reten = 0
+                Dim swTotalCapT As Boolean = False
+                Dim swTotalCapR As Boolean = False
+
+                For Each xe In qList
+
+                    If xe.Name.LocalName = "Emisor" Then
+                        emisor.rfc = CType(xe.Attribute("Rfc"), String)
+                    End If
+                    If xe.Name.LocalName = "Receptor" Then
+                        receptor.rfc = CType(xe.Attribute("Rfc"), String)
+                    End If
+                    If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
+                        Dim itemComceptos = New concepto
+                        itemComceptos.cantidad = CType(xe.Attribute("Cantidad"), Decimal)
+                        itemComceptos.valor_unitario = CType(xe.Attribute("ValorUnitario"), Decimal)
+                        itemComceptos.importe = CType(xe.Attribute("Importe"), Decimal)
+                        conce.Add(itemComceptos)
+
+
+                        If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
+                            Else
+                                agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+
+                        If swCargosConcep = True And errorConceptos = False Then
+                            If itemComceptos.cantidad <> 1 Then
+                                agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+                    End If
+                    If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemRet = New retencion
+                            itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
+                            retenciones.Add(itemRet)
+                            If impuestos.total_imp_reten > 0 Then
+                                impuestos.sw_retencion = 1
+                            End If
+
+                        Else
+                            impuestos.total_imp_trasl = 0
+                        End If
+                    End If
+                    If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemTras = New traslado
+                            itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                            'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                            If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                            Else
+                                itemTras.tasa = 0
+                                itemTras.importe = 0
+                            End If
+                            traslados.Add(itemTras)
+                        End If
+                    End If
+
+
+                    If xe.Name.LocalName = "aditionalData" Then
+                        aditionalData.text_data = CType(xe.Attribute("textData"), String)
+                        aditionalData.metododepago = CType(xe.Attribute("methodOfPayment"), String)
+                        aditionalData.moneda = CType(xe.Attribute("currency"), String)
+                    End If
+
+                    If xe.Name.LocalName = "provider" Then
+                        provider.providerid = CType(xe.Attribute("providerID"), String)
+                        Const caracterSeparador As String = "@"
+                        Dim testPos As Integer = InStr(provider.providerid, caracterSeparador)
+                        If testPos <> 2 Then
+                            agrega_err(1, "El proveedor no tiene el formato correcto", errores)
+                        End If
+                        If provider.providerid.Length <> 12 Then
+                            agrega_err(1, "Longitud incorrecta en providerID", errores)
+                        Else
+                            Dim primer As Integer = provider.providerid.IndexOf("@", StringComparison.Ordinal)
+                            comprobante.cc_tipo = provider.providerid.Substring(0, primer)
+                            Dim segundo As Integer = InStr(3, provider.providerid, "@", CompareMethod.Text)
+                            comprobante.cc_cve = provider.providerid.Substring(2, 6)
+                            EfCveG = provider.providerid.Substring(segundo, 3)
+                        End If
+                        If comprobante.cc_cve <> cc_cve Or comprobante.cc_tipo <> cc_tipo Then
+                            agrega_err(1, "El dato Provider es incorrecto no corresponde con la session", errores)
+                        End If
+                    End If
+                    If xe.Name.LocalName = "lineItem" And errorItms = False Then
+
+                        Dim item = New lineitem
+                        item.type = 1 '@tipo_reng 'xe.Attribute("type")
+                        item.number = CType(xe.Attribute("number"), Integer)
+                        item.monto_decuento = Decimal.Parse("0.0000") '@mto_descto 'xe.Attribute("montoDescuento")
+                        item.pct_decuento = Decimal.Parse("0.0000") '@pct_descto  'xe.Attribute("pctDescuento")
+                        item.uns = 1 '@uns 'xe.Attribute("uns")
+                        item.precio = CType(xe.Attribute("price"), Decimal)
+                        item.sku = CType(xe.Attribute("sku"), String)
+                        item.partida = 0 '@num_rengp 'xe.Attribute("partida")
+                        item.reference_identification = CType(xe.Attribute("referenceIdentification"), String)
+                        item.art_tip = CType(xe.Attribute("articleType"), String)
+                        item.uni_med = "zzzzzz" '@uni_med 'xe.Attribute("uni_med")
+                        Dim primer As Integer = item.reference_identification.IndexOf("@", StringComparison.Ordinal)
+                        If primer < 1 Then
+                            agrega_err(1, "El formato del atributo referenceIdentification es incorrecto : " + item.reference_identification, errores)
+                            errorItms = True
+                        End If
+                        lineItems.Add(item)
+                        If item.number <> renglon Then
+                            agrega_err(1, "Los renglones deben ser agregados en orden lineItem: sku: " + item.sku + "number: " + item.number.ToString(), errores)
+                            errorItms = True
+                        End If
+                        renglon = renglon + 1
+                    End If
+                Next
+
+                If conce.Count = 0 Then
+                    agrega_err(1, "El comprobante no tiene conceptos", errores)
+                    errorConceptos = True
+                End If
+
+                comprobante.Conceptos = conce
+                requesForPayment.line_items = lineItems
+                requesForPayment.currency = currency
+                requesForPayment.aditional_data = aditionalData
+                requesForPayment.paymenttimeperiod = paymentTimePeriod
+                addenda.requestforpayment = requesForPayment
+                comprobante.Emisor = emisor
+                impuestos.Traslados = traslados
+                impuestos.Retenciones = retenciones
+                comprobante.Emisor = emisor
+                comprobante.Receptor = receptor
+                comprobante.Impuestos = impuestos
+                comprobante.Addenda = addenda
+
+                Dim msgUsr = From msg In errores _
+                    Select interror = msg.Interror, message = msg.Message _
+                    Where (interror = 1)
+
+                Dim er As New Errores
+                Dim cadena As String = msgUsr.Aggregate("", Function(current, msgs) current & msgs.message.Trim + ", ")
+
+                If cadena.Trim <> "" Then
+                    er.Interror = 1
+                    er.Message = cadena.Trim
+                    graba_error(errores, er, LlaveCFD, "60069", "LeeDatosFacturaLINQ")
+                End If
+
+            Catch ex As Exception
+                agrega_err(1, ex.Message, errores)
+            End Try
+
+        End Sub
+
+        Public Sub LeeDatosFacturaLINQ_FacSrv3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal XMLDOCFILEPATH As String, ByVal LlaveCFD As llave_cfd, ByVal cc_cve As String, ByVal cc_tipo As String)
+
+            Dim xmlElm As XElement
+
+            Try
+
+                xmlElm = XElement.Load(XMLDOCFILEPATH)
+                Dim root As XElement = XElement.Load(XMLDOCFILEPATH)
+                Dim qAtrib As IEnumerable(Of XAttribute) = _
+                    From atr In root.Attributes() _
+                    Select atr
+
+                For Each a In xmlElm.Elements
+                    If a.Name.LocalName = "Complemento" Then
+                        a.Remove()
+                    End If
+                Next
+
+                If LlaveCFD.version_nom <> "" Then
+                    comprobante.version = LlaveCFD.version
+                End If
+
+                If IsNothing(root.Attribute("Serie")) Then
+                    comprobante.serie = ""
+                Else
+                    comprobante.serie = root.Attribute("Serie").Value.ToString()
+                End If
+                'folio 
+                If IsNothing(root.Attribute("Folio")) Then
+                    agrega_err(1, "No puede leerse el dato folio", errores)
+                Else
+                    'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
+
+                    Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
+                    If folPaso >= 2147483647 Then
+                        comprobante.folio_factura = Int64.Parse(folPaso.ToString().Substring(0, 8))
+                    Else
+                        comprobante.folio_factura = folPaso
+                    End If
+
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Fecha")) Then
+                    agrega_err(1, "No puede leerse el dato fecha", errores)
+                Else
+                    comprobante.fecha_factura = root.Attribute("Fecha").Value.ToString()
+                End If
+                'fecha
+                If IsNothing(root.Attribute("Sello")) Then
+                    agrega_err(1, "No puede leerse el dato sello", errores)
+                Else
+                    comprobante.sello = root.Attribute("Sello").Value.ToString()
+                End If
+
+                ' numero de certificado
+                If IsNothing(root.Attribute("NoCertificado")) Then
+                    agrega_err(1, "No puede leerse el dato noCertificado", errores)
+                Else
+                    comprobante.no_certificado = root.Attribute("NoCertificado").Value.ToString()
+                End If
+                ' certificado
+                If IsNothing(root.Attribute("Certificado")) Then
+                    agrega_err(1, "No puede leerse el dato certificado", errores)
+                Else
+                    comprobante.certificado = root.Attribute("Certificado").Value.ToString()
+                End If
+                ' subtotal
+                If IsNothing(root.Attribute("SubTotal")) Then
+                    agrega_err(1, "No puede leerse el dato subTotal", errores)
+                Else
+                    comprobante.sub_total = Decimal.Parse(root.Attribute("SubTotal").Value)
+                End If
+                ' descuento
+                If IsNothing(root.Attribute("Descuento")) Then
+                    'agrega_err(1, "No puede leerse el dato descuento", errores)
+                    comprobante.descuento = 0 'el descuento se manda en 0 en caso de no haber atributo 14/08/2013
+                Else
+                    comprobante.descuento = Decimal.Parse(root.Attribute("Descuento").Value)
+                End If
+                ' total
+                If IsNothing(root.Attribute("Total")) Then
+                    agrega_err(1, "No puede leerse el dato total", errores)
+                Else
+                    comprobante.total = Decimal.Parse(root.Attribute("Total").Value)
+                End If
+                ' tipo de comprobante
+                If IsNothing(root.Attribute("TipoDeComprobante")) Then
+                    agrega_err(1, "No puede leerse el dato tipoDeComprobante", errores)
+                Else
+                    Dim tipoDeComprobante = root.Attribute("TipoDeComprobante").Value.ToString()
+                End If
+
+
+                comprobante.condiciones_pago = "0"
+
+
+                Dim qList = From xe In xmlElm.Descendants _
+                Select xe
+                Dim emisor = New emisor
+                Dim receptor = New receptor
+                Dim conce As New List(Of concepto)
+                Dim impuestos = New impuestos
+                Dim traslados = New List(Of traslado)
+                Dim retenciones = New List(Of retencion)
+                Dim addenda = New addenda
+                Dim requesForPayment = New requestforpayment
+                Dim currency = New currency
+                Dim aditionalData = New aditionaldata
+                Dim paymentTimePeriod = New paymenttimeperiod
+                Dim provider = New provider
+                Dim lineItems As New List(Of lineitem)
+                Dim renglon As Integer = 1
+                Const swCargosConcep As Boolean = False
+                Dim errorConceptos As Boolean = False
+                Dim errorItms As Boolean = False
+                impuestos.total_imp_trasl = 0
+                impuestos.sw_retencion = 0
+                impuestos.total_imp_reten = 0
+                Dim swTotalCapT As Boolean = False
+                Dim swTotalCapR As Boolean = False
+                Dim sdoc = New Document
+
+                For Each xe In qList
+
+                    If xe.Name.LocalName = "Emisor" Then
+                        emisor.rfc = CType(xe.Attribute("Rfc"), String)
+                    End If
+                    If xe.Name.LocalName = "Receptor" Then
+                        receptor.rfc = CType(xe.Attribute("Rfc"), String)
+                    End If
+                    If xe.Name.LocalName = "Concepto" And errorConceptos = False Then
+                        Dim itemComceptos = New concepto
+                        itemComceptos.cantidad = CType(xe.Attribute("Cantidad"), Decimal)
+                        itemComceptos.valor_unitario = CType(xe.Attribute("ValorUnitario"), Decimal)
+                        itemComceptos.importe = CType(xe.Attribute("Importe"), Decimal)
+                        conce.Add(itemComceptos)
+
+                        If itemComceptos.cantidad = 0 And itemComceptos.valor_unitario > 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
+                            Else
+                                agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+
+                        If swCargosConcep = True And errorConceptos = False Then
+                            If itemComceptos.cantidad <> 1 Then
+                                agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+                    End If
+                    If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemRet = New retencion
+                            itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
+                            retenciones.Add(itemRet)
+                            If impuestos.total_imp_reten > 0 Then
+                                impuestos.sw_retencion = 1
+                            End If
+
+                        Else
+                            impuestos.total_imp_trasl = 0
+                        End If
+                    End If
+                    If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
+                        If Not IsNothing(xe.Attribute("Importe")) Then
+                            impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                            Dim itemTras = New traslado
+                            itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                            'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                            'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                            If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                            Else
+                                itemTras.tasa = 0
+                                itemTras.importe = 0
+                            End If
+                            traslados.Add(itemTras)
+                        End If
+                    End If
+
+
+                    If xe.Name.LocalName = "aditionalData" Then
+                        aditionalData.text_data = CType(xe.Attribute("textData"), String)
+                        aditionalData.metododepago = CType(xe.Attribute("methodOfPayment"), String)
+                        aditionalData.moneda = CType(xe.Attribute("currency"), String)
+                    End If
+
+                    If xe.Name.LocalName = "provider" Then
+                        provider.providerid = CType(xe.Attribute("providerID"), String)
+                        Const caracterSeparador As String = "@"
+                        Dim testPos As Integer = InStr(provider.providerid, caracterSeparador)
+                        If testPos <> 2 Then
+                            agrega_err(1, "El proveedor no tiene el formato correcto", errores)
+                        End If
+                        If provider.providerid.Length <> 12 Then
+                            agrega_err(1, "Longitud incorrecta en providerID", errores)
+                        Else
+                            Dim primer As Integer = provider.providerid.IndexOf("@", StringComparison.Ordinal)
+                            comprobante.cc_tipo = provider.providerid.Substring(0, primer)
+                            Dim segundo As Integer = InStr(3, provider.providerid, "@", CompareMethod.Text)
+                            comprobante.cc_cve = provider.providerid.Substring(2, 6)
+                            EfCveG = provider.providerid.Substring(segundo, 3)
+                        End If
+                        If comprobante.cc_cve <> cc_cve Or comprobante.cc_tipo <> cc_tipo Then
+                            agrega_err(1, "El dato Provider es incorrecto no corresponde con la session", errores)
+                        End If
+                    End If
+                    If xe.Name.LocalName = "document" Then
+
+
+                        sdoc.referenceIdentification = CType(xe.Attribute("referenceIdentification"), String)
+                        Dim primer As Integer = sdoc.referenceIdentification.IndexOf("@", StringComparison.Ordinal)
+                        If primer < 1 Then
+                            agrega_err(1, "El formato del atributo referenceIdentification es incorrecto : " + sdoc.referenceIdentification, errores)
+                        End If
+
+                    End If
+                Next
+
+                If conce.Count = 0 Then
+                    agrega_err(1, "El comprobante no tiene conceptos", errores)
+                    errorConceptos = True
+                End If
+
+                comprobante.Conceptos = conce
+                requesForPayment.line_items = lineItems
+                requesForPayment.currency = currency
+                requesForPayment.aditional_data = aditionalData
+                requesForPayment.paymenttimeperiod = paymentTimePeriod
+                requesForPayment.document = sdoc
+                addenda.requestforpayment = requesForPayment
+                comprobante.Emisor = emisor
+                impuestos.Traslados = traslados
+                impuestos.Retenciones = retenciones
+                comprobante.Emisor = emisor
+                comprobante.Receptor = receptor
+                comprobante.Impuestos = impuestos
+                comprobante.Addenda = addenda
+
+                Dim msgUsr = From msg In errores _
+                    Select interror = msg.Interror, message = msg.Message _
+                    Where (interror = 1)
+
+                Dim er As New Errores
+                Dim cadena As String = msgUsr.Aggregate("", Function(current, msgs) current & msgs.message.Trim + ", ")
+
+                If cadena.Trim <> "" Then
+                    er.Interror = 1
+                    er.Message = cadena.Trim
+                    graba_error(errores, er, LlaveCFD, "60069", "LeeDatosFacturaLINQ_FacSrv")
+                End If
+
+            Catch ex As Exception
+                agrega_err(1, ex.Message, errores)
+            End Try
+
+        End Sub
+
 
         Public Sub agrega_err(ByVal errorXml As Integer, ByVal smensaje As String, ByVal errores As List(Of Errores))
             Dim er As New Errores

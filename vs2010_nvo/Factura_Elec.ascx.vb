@@ -146,7 +146,12 @@ Partial Class UserControlsRecepcion
 
         Try
             If errores.Count = 0 And _factura.iErrorG = 0 And llaveCfd.sw_sin_addenda = 0 And comprobante.tipodoc_cve = "QTFAPN" Then
-                _factura.LeeDatosFacturaLinq(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                If llaveCfd.version = "3.3" Then
+                    _factura.LeeDatosFacturaLinq3_3(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                Else
+                    _factura.LeeDatosFacturaLinq(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                End If
+                '_factura.LeeDatosFacturaLinq(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
             End If
         Catch ex As Exception
             _factura.agrega_err(3, ex.Message, errores)
@@ -154,7 +159,12 @@ Partial Class UserControlsRecepcion
 
         Try
             If errores.Count = 0 And _factura.iErrorG = 0 And llaveCfd.sw_sin_addenda = 0 And comprobante.tipodoc_cve = "VTFE" Then
-                _factura.LeeDatosFacturaLINQ_FacEmb(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                If llaveCfd.version = "3.3" Then
+                    _factura.LeeDatosFacturaLINQ_FacEmb3_3(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                Else
+                    _factura.LeeDatosFacturaLINQ_FacEmb(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                End If
+                '_factura.LeeDatosFacturaLINQ_FacEmb(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
             End If
         Catch ex As Exception
             _factura.agrega_err(3, ex.Message, errores)
@@ -163,7 +173,12 @@ Partial Class UserControlsRecepcion
         'lectura de addenda para factura de servicios
         Try
             If errores.Count = 0 And _factura.iErrorG = 0 And llaveCfd.sw_sin_addenda = 0 And comprobante.tipodoc_cve = "BTFACS" Then
-                _factura.LeeDatosFacturaLINQ_FacSrv(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                If llaveCfd.version = "3.3" Then
+                    _factura.LeeDatosFacturaLINQ_FacSrv3_3(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                Else
+                    _factura.LeeDatosFacturaLINQ_FacSrv(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
+                End If
+                '_factura.LeeDatosFacturaLINQ_FacSrv(errores, comprobante, nombreArchivoXml, llaveCfd, ccCve, ccTipo)
             End If
         Catch ex As Exception
             _factura.agrega_err(3, ex.Message, errores)
@@ -176,7 +191,12 @@ Partial Class UserControlsRecepcion
 
         Try
             If errores.Count = 0 And _factura.iErrorG = 0 And llaveCfd.sw_sin_addenda = 1 Then
-                _factura.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                If llaveCfd.version = "3.3" Then
+                    _factura.LeeDatosFacturaLINQ_SNAdd3_3(errores, comprobante, nombreArchivoXml, llaveCfd)
+                Else
+                    _factura.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                End If
+                '_factura.LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
             End If
         Catch ex As Exception
 
