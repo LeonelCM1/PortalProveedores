@@ -2044,11 +2044,12 @@ Namespace Skytex.FacturaElectronica
             Dim minimoTotal As Decimal
             Dim maximoTotal As Decimal
             Dim iva = From cons In comprobante.Impuestos.Traslados
-                       Select cons.tasa, cons.importe, cons.impuesto
-                       Where (impuesto = "IVA" And importe > 0)
+                        Select cons.tasa, cons.importe, cons.impuesto
+                        Where (impuesto = "002" And importe > 0)
             Dim tasaVarIva As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
             Dim importeIva As Decimal = 0
             Dim totalConceptos As Decimal = 0
+            iva = iva.Distinct()
             For Each i In iva
                 'tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
                 Dim swtasa = RevisaIntTasa(i.tasa.ToString())
@@ -2068,7 +2069,7 @@ Namespace Skytex.FacturaElectronica
 
             Dim ieps = From cons In comprobante.Impuestos.Traslados
                       Select cons.tasa, cons.importe, cons.impuesto
-                      Where (impuesto = "IEPS")
+                      Where (impuesto = "003")
             Dim tasaIeps As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
             Dim importeIeps As Decimal = 0
             For Each i In ieps
@@ -2085,14 +2086,15 @@ Namespace Skytex.FacturaElectronica
             Next
             Dim retenciones = From cons In comprobante.Impuestos.Retenciones
                     Select cons.importe, cons.impuesto
-                    Where (impuesto = "IVA")
+                    Where (impuesto = "002")
             Dim retenImporteIva As Decimal = 0
+            retenciones = retenciones.Distinct
             For Each i In retenciones
                 retenImporteIva = retenImporteIva + i.importe 'FormatNumber(i.importe, decimales)
             Next
             Dim retisr = From cons In comprobante.Impuestos.Retenciones
                   Select cons.importe, cons.impuesto
-                  Where (impuesto = "ISR")
+                  Where (impuesto = "001")
             Dim retenImporteIsr As Decimal = 0
             For Each i In retisr
                 retenImporteIsr = retenImporteIsr + i.importe 'FormatNumber(i.importe, decimales)
@@ -2802,10 +2804,17 @@ Namespace Skytex.FacturaElectronica
             Dim xsdTer As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/terceros11.xsd"))
             Dim xsdIep As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AcreditamientoIEPS10.xsd"))
 
-            schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
-            'schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd33.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            If llaveCfd.version = "3.3" Then
+                'schemas.Add("http://www.sat.gob.mx/cfd/3", xsd33.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/sitio_internet/cfd/catalogos", xsdCat33.CreateReader)
+            Else
+                schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            End If
+           
+            
+
             If leyendasFiscales = 1 Then
                 schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
             End If
