@@ -423,7 +423,12 @@ Namespace Skytex.FacturaElectronica
 
             End If
             If errores.Count = 0 And iErrorG = 0 Then
-                ValidaDatosEncabezadoTmp(errores, comprobante, llaveCfd)
+                If llaveCfd.version = "3.3" Then
+                    ValidaDatosEncabezadoTmp3_3(errores, comprobante, llaveCfd)
+                Else
+                    ValidaDatosEncabezadoTmp(errores, comprobante, llaveCfd)
+                End If
+                'ValidaDatosEncabezadoTmp(errores, comprobante, llaveCfd)
             End If
             If iErrorG = 60089 Then
                 agrega_err(1, "Error, la captura no fue procesada, el folio del comprobante ya había sido aceptado", errores, "60089")
@@ -626,7 +631,7 @@ Namespace Skytex.FacturaElectronica
             End If
             Dim iva = From cons In comprobante.Impuestos.Traslados
                        Select cons.tasa, cons.impuesto, cons.importe
-            Where (impuesto = "IVA")
+            Where (impuesto = "002")
             Dim varIva As Decimal
             Dim varIvaImporte As Decimal
             Dim noiva As Integer
@@ -5156,31 +5161,31 @@ Namespace Skytex.FacturaElectronica
                     End If
 
 
+                    If xe.Name.LocalName = "Traslado" Then
+                        If IsNothing(xe.Attribute("Base")) Then 'And  swTotalCapT = False Then
 
-                    If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
+                            'GCM 22012015 Obtenemos prefijo, solo entrara si es cfdi
+                            Dim prefijo = xe.GetPrefixOfNamespace(xe.Name.NamespaceName)
 
-                        'GCM 22012015 Obtenemos prefijo, solo entrara si es cfdi
-                        Dim prefijo = xe.GetPrefixOfNamespace(xe.Name.NamespaceName)
-
-                        If prefijo = "cfdi" Then
-                            If Not IsNothing(xe.Attribute("Importe")) Then
-                                impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
-                                Dim itemTras = New traslado
-                                itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
-                                'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
-                                'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
-                                If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
-                                    itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
-                                    itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
-                                Else
-                                    itemTras.tasa = 0
-                                    itemTras.importe = 0
+                            If prefijo = "cfdi" Then
+                                If Not IsNothing(xe.Attribute("Importe")) Then
+                                    impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                                    Dim itemTras = New traslado
+                                    itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                                    'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                                    'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                                    If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                        itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                        itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                                    Else
+                                        itemTras.tasa = 0
+                                        itemTras.importe = 0
+                                    End If
+                                    traslados.Add(itemTras)
                                 End If
-                                traslados.Add(itemTras)
                             End If
                         End If
                     End If
-
 
                 Next
                 If conce.Count = 0 Then

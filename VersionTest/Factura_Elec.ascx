@@ -1,4 +1,4 @@
-﻿<%@ control language="VB" autoeventwireup="false" inherits="UserControlsRecepcion, App_Web_ervqt4b3" %>
+﻿<%@ control language="VB" autoeventwireup="false" inherits="UserControlsRecepcion, App_Web_3g02hau3" %>
 
 <script type="text/javascript">
     function ShowProgress() {

@@ -1,4 +1,4 @@
-﻿<%@ control language="C#" autoeventwireup="true" inherits="ImpresionReciboQTR, App_Web_xhm5wtfn" %>
+﻿<%@ control language="C#" autoeventwireup="true" inherits="ImpresionReciboQTR, App_Web_gkqthg2a" %>
 <table style="width: 861px;" border="0">
     <tr>
         <td colspan="2" style="display: inline-block; color: #336699; font-weight: bold;
