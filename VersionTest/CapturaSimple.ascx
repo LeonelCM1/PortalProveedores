@@ -1,4 +1,4 @@
-﻿<%@ control language="C#" autoeventwireup="true" inherits="CapturaSimple, App_Web_gkqthg2a" %>
+﻿<%@ control language="C#" autoeventwireup="true" inherits="CapturaSimple, App_Web_qx5nx1ms" %>
 
 
 
