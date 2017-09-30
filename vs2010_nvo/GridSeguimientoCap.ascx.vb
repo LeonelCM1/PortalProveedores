@@ -737,7 +737,11 @@ Partial Class UserControlsGridSeguimientoCap
                     Page.Session("LlaveCFD") = llaveCfd
                     llaveCfd.sw_sin_addenda = 1
                     comprobante.Addenda.requestforpayment.provider.providerid = comprobante.cc_tipo + "@" + comprobante.cc_cve + "@" + llaveCfd.ef_cve
-                    llena_datos_Captura(errores, comprobante, llaveCfd)
+                    If llaveCfd.version = "3.3" Then
+                        llena_datos_Captura3_3(errores, comprobante, llaveCfd)
+                    Else
+                        llena_datos_Captura(errores, comprobante, llaveCfd)
+                    End If
                     If comprobante.tipodoc_cve = "BTFACS" Then
                         Response.Redirect("CapturaSrv.aspx")
                     ElseIf comprobante.tipodoc_cve = "VTFE" Then
@@ -948,7 +952,106 @@ Partial Class UserControlsGridSeguimientoCap
 
     End Sub
 
+    Private Sub llena_datos_Captura3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
+        borraInfoCfd_session()
+        Dim moneda As String = ""
+        Dim metodoDePago As String = ""
+        If comprobante.moneda <> "" Then
+            moneda = comprobante.moneda
+        End If
 
+        If comprobante.metodo_pago <> "" Then
+            metodoDePago = comprobante.metodo_pago
+        End If
+
+        Dim iva = From cons In comprobante.Impuestos.Traslados
+                   Select cons.tasa, cons.importe, cons.impuesto
+                   Where (impuesto = "002")
+
+        Dim tasaVarIva As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
+        Dim importeIva As Decimal = 0
+
+        For Each i In iva
+            Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
+            If swtasa = True Then
+                tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+            Else
+                tasaVarIva = i.tasa
+            End If
+            importeIva = importeIva + i.importe  'FormatNumber(i.importe, decimales)
+        Next
+
+        Dim ieps = From cons In comprobante.Impuestos.Traslados
+                  Select cons.tasa, cons.importe, cons.impuesto
+                  Where (impuesto = "003")
+
+        Dim tasaIeps As Decimal = 0  '= comprobante.Impuestos.Traslados.tasa / 100
+        Dim importeIeps As Decimal = 0
+
+        For Each i In ieps
+            Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
+            If swtasa = True Then
+                tasaIeps = i.tasa / 100 ' FormatNumber(i.tasa / 100, decimales)
+            Else
+                tasaIeps = i.tasa
+            End If
+            importeIeps = importeIeps + i.importe ' FormatNumber(i.importe, decimales)
+        Next
+
+        Dim retenciones = From cons In comprobante.Impuestos.Retenciones
+                Select cons.importe, cons.impuesto
+                Where (impuesto = "002")
+
+        Dim retenImporteIva As Decimal = 0
+
+        For Each i In retenciones
+            retenImporteIva = i.importe 'FormatNumber(i.importe, decimales)
+        Next
+
+        Dim retisr = From cons In comprobante.Impuestos.Retenciones
+              Select cons.importe, cons.impuesto
+              Where (impuesto = "001")
+
+        Dim retenImporteIsr As Decimal = 0
+
+        For Each i In retisr
+            retenImporteIsr = i.importe 'FormatNumber(i.importe, decimales)
+        Next
+
+        Dim totalConceptos As Decimal
+        Dim importeConceptos As Decimal
+
+        Dim qryResLine = From com2 In comprobante.Conceptos _
+               Let sub_total = com2.cantidad * com2.valor_unitario _
+               Select sub_total, com2.importe, com2.no_identificacion, com2.cantidad, com2.valor_unitario '_
+
+        totalConceptos = Aggregate com2 In qryResLine _
+                                Into Sum(com2.sub_total)
+
+        importeConceptos = Aggregate com2 In qryResLine _
+                           Into Sum(com2.importe)
+        Dim totalImpTrasl As Decimal
+
+
+        If comprobante.Impuestos.total_imp_trasl = 0 Then
+            totalImpTrasl = comprobante.Impuestos.Traslados.Aggregate(Of Decimal)(0, Function(current, item) current + item.importe)
+        Else
+            totalImpTrasl = comprobante.Impuestos.total_imp_trasl
+        End If
+
+        Page.Session("nombre_receptor") = comprobante.Receptor.nombre
+        Page.Session("EmpresaTitle") = System.String.Empty
+        Page.Session("subtotal") = comprobante.sub_total
+        Page.Session("descuento") = comprobante.descuento
+        Page.Session("total") = comprobante.total
+        Page.Session("tot_imp_trasl") = totalImpTrasl
+        Page.Session("tot_imp_ret") = comprobante.Impuestos.total_imp_reten
+        Page.Session("tasa") = tasaVarIva
+        Page.Session("importe") = importeIva
+        Page.Session("total_conceptos") = totalConceptos
+        Page.Session("importe_conceptos") = importeConceptos
+
+    End Sub
 
     Private Sub borraInfoCfd_session()
 

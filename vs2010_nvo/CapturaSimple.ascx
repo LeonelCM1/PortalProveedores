@@ -38,14 +38,19 @@
                     //document.getElementById("<%=lblErr.ClientID%>").value = 'prueba';
                     //alert("Saldo:" + saldo);
                 } else {
-                     document.all("<%=lblErr.ClientID%>").innerText = ""; } 
-                    //document.getElementById("<%=lblErr.ClientID%>").value = '';
-                
+                    document.all("<%=lblErr.ClientID%>").innerText = "";
+                }
 
-                
-            //alert('mmmmmmmm');
-            //}
+                /*if (cantidad == "0.000001") {
+                    document.all("<=lblErr.ClientID%>").innerText = "La cantidad 0.000001 no es valida, en su defecto inserte la cantidad 0";
+                } else {
+                    document.all("<=lblErr.ClientID%>").innerText = "";
+                } */
+                    //document.getElementById("<=lblErr.ClientID%>").value = '';
+                    //alert('mmmmmmmm');
+                    //}
             }
+
       
     </script>
 

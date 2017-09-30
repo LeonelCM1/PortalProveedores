@@ -321,9 +321,9 @@ Namespace Skytex.FacturaElectronica
                 objMail.IsBodyHtml = True
                 objMail.BodyEncoding = Encoding.UTF8
                 objMail.Priority = MailPriority.Normal
-                smtp.Host = emailSmtp
-                smtp.Credentials = New Net.NetworkCredential(emailUser, emailPsswd)
-                smtp.Send(objMail)
+                'smtp.Host = emailSmtp
+                'smtp.Credentials = New Net.NetworkCredential(emailUser, emailPsswd)
+                ''smtp.Send(objMail)
             Catch ex As SmtpException
                 MensajeError = "Error al enviar mail en la aplicación. " + sBody + " ::: " + ex.Message
                 iErrorG = 1
@@ -637,7 +637,7 @@ Namespace Skytex.FacturaElectronica
             Dim noiva As Integer
             Dim retisr = From cons In comprobante.Impuestos.Retenciones
                   Select cons.importe, cons.impuesto
-                  Where (impuesto = "ISR")
+                  Where (impuesto = "001")
             Dim retenImporteIsr As Decimal = 0
             For Each i In retisr
                 retenImporteIsr = retenImporteIsr + i.importe
@@ -647,7 +647,7 @@ Namespace Skytex.FacturaElectronica
             If comprobante.tipodoc_cve = "BTFSER" Then
                 noiva = Aggregate cons In comprobante.Impuestos.Traslados
                            Select cons.tasa, cons.importe, cons.impuesto
-                           Where (impuesto = "IVA")
+                           Where (impuesto = "002")
                               Into Count()
             Else
                 noiva = 1
@@ -850,7 +850,12 @@ Namespace Skytex.FacturaElectronica
             Try
                 If errores.Count = 0 And llaveCfd.sw_sin_addenda = 1 And iErrorG = 0 Then
                     'se ocupa para xml 3.2 y 3.3
-                    LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                    'LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                    If llaveCfd.version = "3.3" Then
+                        LeeDatosFacturaLINQ_SNAdd3_3(errores, comprobante, nombreArchivoXml, llaveCfd)
+                    Else
+                        LeeDatosFacturaLINQ_SNAdd(errores, comprobante, nombreArchivoXml, llaveCfd)
+                    End If
                 End If
             Catch ex As Exception
                 agrega_err(3, ex.Message, errores)
@@ -1334,6 +1339,11 @@ Namespace Skytex.FacturaElectronica
                         errorCfd = 1
                     End If
 
+                    'checar si esta validacion va a sustituir a la qvalidacion siguiente
+                    'If subtC < minimoTotal Or subtC > maximoTotal Then
+                    '    agrega_err(1, "No coincide Subtotal de Conceptos con LineItems: [" + subtC.ToString() + ":" + subtL.ToString() + "]", errores)
+                    '    errorCfd = 1
+                    'End If
 
                     If subtC <> subtL Then
                         agrega_err(1, "No coincide Subtotal de Conceptos con LineItems: [" + subtC.ToString() + ":" + subtL.ToString() + "]", errores)
@@ -1463,7 +1473,7 @@ Namespace Skytex.FacturaElectronica
             Dim maximoTotal As Decimal
             Dim iva = From cons In comprobante.Impuestos.Traslados
                        Select cons.tasa, cons.importe, cons.impuesto
-                       Where (impuesto = "IVA")
+                       Where (impuesto = "002")
             Dim tasaVarIva As Decimal = 0
             Dim importeIva As Decimal = 0
 
@@ -1484,10 +1494,11 @@ Namespace Skytex.FacturaElectronica
                     tasaVarIva = i.tasa
                 End If
                 importeIva = importeIva + i.importe
+                'importeIva = i.importe
             Next
             Dim ieps = From cons In comprobante.Impuestos.Traslados
                       Select cons.tasa, cons.importe, cons.impuesto
-                      Where (impuesto = "IEPS")
+                      Where (impuesto = "003")
             Dim tasaIeps As Decimal = 0
             Dim importeIeps As Decimal = 0
             For Each i In ieps
@@ -1501,14 +1512,14 @@ Namespace Skytex.FacturaElectronica
             Next
             Dim retenciones = From cons In comprobante.Impuestos.Retenciones
                     Select cons.importe, cons.impuesto
-                    Where (impuesto = "IVA")
+                    Where (impuesto = "002")
             Dim retenImporteIva As Decimal = 0
             For Each i In retenciones
                 retenImporteIva = retenImporteIva + i.importe
             Next
             Dim retisr = From cons In comprobante.Impuestos.Retenciones
                   Select cons.importe, cons.impuesto
-                  Where (impuesto = "ISR")
+                  Where (impuesto = "001")
             Dim retenImporteIsr As Decimal = 0
             For Each i In retisr
                 retenImporteIsr = retenImporteIsr + i.importe
@@ -1611,7 +1622,7 @@ Namespace Skytex.FacturaElectronica
                                      Let sub_total = com4.uns * com4.precio _
                                      Select sub_total, com4.pct_decuento, com4.sku, com4.monto_decuento
                 subtL = Aggregate com4 In subtotalItems _
-                             Into Sum(com4.sub_total)
+                             Into Sum(com4.sub_total - (com4.sub_total * (com4.pct_decuento / 100)))
                 subtL = FormatNumber(Round(subtL, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
             End If
 
@@ -1729,6 +1740,10 @@ Namespace Skytex.FacturaElectronica
                 End If
             End If
 
+            If totalListitems <> subtC Then
+                errorCfd = 7
+            End If
+
             Dim msg As String = ""
             Dim er As New Errores
             If errorCfd > 0 Then
@@ -1753,6 +1768,10 @@ Namespace Skytex.FacturaElectronica
                     graba_error(errores, er, llaveCfd, "60066", "ValidaTotales")
                 Case 6
                     msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
+                Case 7
+                    msg = "No coincide la sumatoria de Conceptos y la sumatoria de LineItems"
                     er.Message = msg
                     graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
                 Case Else
@@ -2427,6 +2446,8 @@ Namespace Skytex.FacturaElectronica
 
             Dim xsd22 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/CFD_Skytex-2.2.xsd"))
             Dim xsd32 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv32.xsd"))
+            Dim xsd33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv33.xsd"))
+            Dim xsdCat33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/catCFDI33.xsd"))
             Dim xsdAdd As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AddendaS_v1.0.xsd"))
             Dim xsdTdf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/TimbreFiscalDigital.xsd"))
             Dim xsdLf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/leyendasFisc.xsd"))
@@ -2440,10 +2461,16 @@ Namespace Skytex.FacturaElectronica
             Dim xsdTer As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/terceros11.xsd"))
             Dim xsdIep As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AcreditamientoIEPS10.xsd"))
 
-            schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
-            schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            If llaveCfd.version = "3.3" Then
+                'schemas.Add("http://www.sat.gob.mx/cfd/3", xsd33.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/sitio_internet/cfd/catalogos", xsdCat33.CreateReader)
+                schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
+            Else
+                schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
+                schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            End If
             If leyendasFiscales = 1 Then
                 schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
             End If
@@ -2554,7 +2581,9 @@ Namespace Skytex.FacturaElectronica
 
             Dim xsd22 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/CFD_Skytex-2.2.xsd"))
             Dim xsd32 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv32.xsd"))
-            Dim xsdAdd As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AddendaE_v1.0.xsd"))
+            Dim xsd33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv33.xsd"))
+            Dim xsdCat33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/catCFDI33.xsd"))
+            Dim xsdAdd As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AddendaS_v1.0.xsd"))
             Dim xsdTdf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/TimbreFiscalDigital.xsd"))
             Dim xsdLf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/leyendasFisc.xsd"))
             Dim xsdDet As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/detallista.xsd"))
@@ -2567,10 +2596,16 @@ Namespace Skytex.FacturaElectronica
             Dim xsdTer As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/terceros11.xsd"))
             Dim xsdIep As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AcreditamientoIEPS10.xsd"))
 
-            schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
-            schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            If llaveCfd.version = "3.3" Then
+                'schemas.Add("http://www.sat.gob.mx/cfd/3", xsd33.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/sitio_internet/cfd/catalogos", xsdCat33.CreateReader)
+                schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
+            Else
+                schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
+                schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            End If
             If leyendasFiscales = 1 Then
                 schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
             End If
@@ -2673,6 +2708,8 @@ Namespace Skytex.FacturaElectronica
 
             Dim xsd22 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/CFD_Skytex-2.2.xsd"))
             Dim xsd32 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv32.xsd"))
+            Dim xsd33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/cfdv33.xsd"))
+            Dim xsdCat33 As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/catCFDI33.xsd"))
             Dim xsdAdd As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/Addenda_v2.2.xsd"))
             Dim xsdTdf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/TimbreFiscalDigital.xsd"))
             Dim xsdLf As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/leyendasFisc.xsd"))
@@ -2686,10 +2723,16 @@ Namespace Skytex.FacturaElectronica
             Dim xsdTer As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/terceros11.xsd"))
             Dim xsdIep As XElement = XElement.Load(HttpContext.Current.Server.MapPath("~/App_Data/AcreditamientoIEPS10.xsd"))
 
-            schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
-            schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
-            schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            If llaveCfd.version = "3.3" Then
+                'schemas.Add("http://www.sat.gob.mx/cfd/3", xsd33.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/sitio_internet/cfd/catalogos", xsdCat33.CreateReader)
+                schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
+            Else
+                schemas.Add("http://www.sat.gob.mx/cfd/2", xsd22.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
+                schemas.Add("http://www.skytex.com.mx/sky", xsdAdd.CreateReader)
+                schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
+            End If
             If leyendasFiscales = 1 Then
                 schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
             End If
@@ -3998,7 +4041,8 @@ Namespace Skytex.FacturaElectronica
                 End If
                 'folio 
                 If IsNothing(root.Attribute("folio")) Then
-                    agrega_err(1, "No puede leerse el dato folio", errores)
+                    'agrega_err(1, "No puede leerse el dato folio", errores)
+                    comprobante.folio_factura = 0
                 Else
                     'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
                     Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
@@ -4332,7 +4376,8 @@ Namespace Skytex.FacturaElectronica
                 End If
                 'folio 
                 If IsNothing(root.Attribute("folio")) Then
-                    agrega_err(1, "No puede leerse el dato folio", errores)
+                    'agrega_err(1, "No puede leerse el dato folio", errores)
+                    comprobante.folio_factura = 0
                 Else
                     'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
                     Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
@@ -4626,7 +4671,8 @@ Namespace Skytex.FacturaElectronica
                 End If
                 'folio 
                 If IsNothing(root.Attribute("folio")) Then
-                    agrega_err(1, "No puede leerse el dato folio", errores)
+                    'agrega_err(1, "No puede leerse el dato folio", errores)
+                    comprobante.folio_factura = 0
                 Else
                     'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
 
@@ -5136,6 +5182,14 @@ Namespace Skytex.FacturaElectronica
                                 errorConceptos = True
                             End If
                         End If
+                        If itemComceptos.cantidad > 0 And itemComceptos.valor_unitario = 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False '
+                            Else
+                                agrega_err(1, "El valor unitario no puede ser 0", errores)
+                                errorConceptos = True
+                            End If
+                        End If
                         If swCargosConcep = True And errorConceptos = False Then
                             If itemComceptos.cantidad <> 1 Then
                                 agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
@@ -5145,18 +5199,20 @@ Namespace Skytex.FacturaElectronica
                     End If
 
                     If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
-                        If Not IsNothing(xe.Attribute("Importe")) Then
-                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
-                            Dim itemRet = New retencion
-                            itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
-                            itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
-                            retenciones.Add(itemRet)
-                            If impuestos.total_imp_reten > 0 Then
-                                impuestos.sw_retencion = 1
-                            End If
+                        If IsNothing(xe.Attribute("Base")) Then
+                            If Not IsNothing(xe.Attribute("Importe")) Then
+                                impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
+                                Dim itemRet = New retencion
+                                itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
+                                itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
+                                retenciones.Add(itemRet)
+                                If impuestos.total_imp_reten > 0 Then
+                                    impuestos.sw_retencion = 1
+                                End If
 
-                        Else
-                            impuestos.total_imp_trasl = 0
+                            Else
+                                impuestos.total_imp_trasl = 0
+                            End If
                         End If
                     End If
 
@@ -5248,7 +5304,8 @@ Namespace Skytex.FacturaElectronica
                 End If
                 'folio 
                 If IsNothing(root.Attribute("Folio")) Then
-                    agrega_err(1, "No puede leerse el dato folio", errores)
+                    'agrega_err(1, "No puede leerse el dato folio", errores)
+                    comprobante.folio_factura = 0
                 Else
                     'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
                     Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
@@ -5361,6 +5418,15 @@ Namespace Skytex.FacturaElectronica
                             End If
                         End If
 
+                        If itemComceptos.cantidad > 0 And itemComceptos.valor_unitario = 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False '
+                            Else
+                                agrega_err(1, "El valor unitario no puede ser 0", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+
                         If swCargosConcep = True And errorConceptos = False Then
                             If itemComceptos.cantidad <> 1 Then
                                 agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
@@ -5370,35 +5436,39 @@ Namespace Skytex.FacturaElectronica
                     End If
 
                     If xe.Name.LocalName = "Retencion" Then ' And swTotalCapR = False Then
-                        If Not IsNothing(xe.Attribute("Importe")) Then
-                            impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
-                            Dim itemRet = New retencion
-                            itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
-                            itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
-                            retenciones.Add(itemRet)
-                            If impuestos.total_imp_reten > 0 Then
-                                impuestos.sw_retencion = 1
-                            End If
+                        If IsNothing(xe.Attribute("Base")) Then
+                            If Not IsNothing(xe.Attribute("Importe")) Then
+                                impuestos.total_imp_reten = impuestos.total_imp_reten + CType(xe.Attribute("Importe"), Decimal)
+                                Dim itemRet = New retencion
+                                itemRet.impuesto = CType(xe.Attribute("Impuesto"), String)
+                                itemRet.importe = CType(xe.Attribute("Importe"), Decimal)
+                                retenciones.Add(itemRet)
+                                If impuestos.total_imp_reten > 0 Then
+                                    impuestos.sw_retencion = 1
+                                End If
 
-                        Else
-                            impuestos.total_imp_trasl = 0
+                            Else
+                                impuestos.total_imp_trasl = 0
+                            End If
                         End If
                     End If
                     If xe.Name.LocalName = "Traslado" Then 'And  swTotalCapT = False Then
-                        If Not IsNothing(xe.Attribute("Importe")) Then
-                            impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
-                            Dim itemTras = New traslado
-                            itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
-                            'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
-                            'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
-                            If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
-                                itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
-                                itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
-                            Else
-                                itemTras.tasa = 0
-                                itemTras.importe = 0
+                        If IsNothing(xe.Attribute("Base")) Then
+                            If Not IsNothing(xe.Attribute("Importe")) Then
+                                impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                                Dim itemTras = New traslado
+                                itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                                'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                                'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                                If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                    itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                    itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                                Else
+                                    itemTras.tasa = 0
+                                    itemTras.importe = 0
+                                End If
+                                traslados.Add(itemTras)
                             End If
-                            traslados.Add(itemTras)
                         End If
                     End If
 
@@ -5450,12 +5520,12 @@ Namespace Skytex.FacturaElectronica
                         lineItems.Add(item)
 
                         If item.number <> renglon Then
-                            agrega_err(1, "Los renglones deben ser agregados en orden lineItem: sku: " + item.sku + "number: " + item.number.ToString(), errores)
+                            agrega_err(1, "Los renglones deben ser agregados en orden lineItem3_3: sku: " + item.sku + "number: " + item.number.ToString(), errores)
                             errorItms = True
                         End If
 
                         If swCargos = True And item.type = 1 Then
-                            agrega_err(1, "Los cargos deben agregarse después de todos los artículos lineItem: sku: " + item.sku, errores)
+                            agrega_err(1, "Los cargos deben agregarse después de todos los artículos lineItem3_3: sku: " + item.sku, errores)
                             errorItms = True
                         End If
                         If item.type = 2 And swCargos = False Then
@@ -5568,7 +5638,8 @@ Namespace Skytex.FacturaElectronica
                 End If
                 'folio 
                 If IsNothing(root.Attribute("Folio")) Then
-                    agrega_err(1, "No puede leerse el dato folio", errores)
+                    'agrega_err(1, "No puede leerse el dato folio", errores)
+                    comprobante.folio_factura = 0
                 Else
                     'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
                     Dim folPaso = Int64.Parse(Regex.Replace(root.Attribute("Folio").Value, "[^0-9]", ""))  'Int32.Parse(root.Attribute("folio").Value)
@@ -5684,6 +5755,15 @@ Namespace Skytex.FacturaElectronica
                             End If
                         End If
 
+                        If itemComceptos.cantidad > 0 And itemComceptos.valor_unitario = 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False '
+                            Else
+                                agrega_err(1, "El valor unitario no puede ser 0", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+
                         If swCargosConcep = True And errorConceptos = False Then
                             If itemComceptos.cantidad <> 1 Then
                                 agrega_err(1, "La cantidad siempre debe ser 1 en el cargo extra", errores)
@@ -5772,7 +5852,7 @@ Namespace Skytex.FacturaElectronica
                         End If
                         lineItems.Add(item)
                         If item.number <> renglon Then
-                            agrega_err(1, "Los renglones deben ser agregados en orden lineItem: sku: " + item.sku + "number: " + item.number.ToString(), errores)
+                            agrega_err(1, "Los renglones deben ser agregados en orden lineItem3_3: sku: " + item.sku + "number: " + item.number.ToString(), errores)
                             errorItms = True
                         End If
                         renglon = renglon + 1
@@ -5846,7 +5926,8 @@ Namespace Skytex.FacturaElectronica
                 End If
                 'folio 
                 If IsNothing(root.Attribute("Folio")) Then
-                    agrega_err(1, "No puede leerse el dato folio", errores)
+                    'agrega_err(1, "No puede leerse el dato folio", errores)
+                    comprobante.folio_factura = 0
                 Else
                     'comprobante.folio_factura = Int64.Parse(root.Attribute("folio").Value)
 
@@ -5959,6 +6040,15 @@ Namespace Skytex.FacturaElectronica
                                 errorConceptos = False 'no aplica ya que hay facturas como esta que no maneja cantidad.
                             Else
                                 agrega_err(1, "Si la cantidad es 0, no debe agregar valor unitario", errores)
+                                errorConceptos = True
+                            End If
+                        End If
+
+                        If itemComceptos.cantidad > 0 And itemComceptos.valor_unitario = 0 Then
+                            If comprobante.tipodoc_cve = "BTFSER" Then 'GCM 05082015 Se agrego la excepcion a btfser 
+                                errorConceptos = False '
+                            Else
+                                agrega_err(1, "El valor unitario no puede ser 0", errores)
                                 errorConceptos = True
                             End If
                         End If
@@ -6182,20 +6272,38 @@ Namespace Skytex.FacturaElectronica
             If EfCveG Is Nothing Then
                 EfCveG = "zzz"
             End If
-            Dim iva = From cons In comprobante.Impuestos.Traslados
-                     Select cons.tasa, cons.impuesto
-                     Where (impuesto = "IVA")
 
             Dim varIva As Decimal '= comprobante.Impuestos.Traslados.tasa / 100
 
-            For Each i In iva
-                Dim swtasa = RevisaIntTasa(i.tasa.ToString())
-                If swtasa = True Then
-                    varIva = i.tasa
-                Else
-                    varIva = i.tasa * 100
-                End If
-            Next
+            If llaveCfd.version = "3.3" Then
+                Dim iva = From cons In comprobante.Impuestos.Traslados
+                     Select cons.tasa, cons.impuesto
+                     Where (impuesto = "002")
+
+                For Each i In iva
+                    Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                    If swtasa = True Then
+                        varIva = i.tasa
+                    Else
+                        varIva = i.tasa * 100
+                    End If
+                Next
+            Else
+                Dim iva = From cons In comprobante.Impuestos.Traslados
+                     Select cons.tasa, cons.impuesto
+                     Where (impuesto = "IVA")
+
+                For Each i In iva
+                    Dim swtasa = RevisaIntTasa(i.tasa.ToString())
+                    If swtasa = True Then
+                        varIva = i.tasa
+                    Else
+                        varIva = i.tasa * 100
+                    End If
+                Next
+            End If
+
+            
 
 
 
