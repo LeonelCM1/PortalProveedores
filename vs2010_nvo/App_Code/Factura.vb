@@ -1583,26 +1583,26 @@ Namespace Skytex.FacturaElectronica
                 'If sumaTotalCon < minimoTotal Or sumaTotalCon > maximoTotal Then
                 '    errorCfd = 1
                 'End If
-                'Dim desctoLineitem = From com3 In line _
-                '                          Let descto = (com3.uns * com3.precio) * (com3.pct_decuento / 100)
-                'descuentoCalculado = Aggregate com3 In desctoLineitem _
-                '                          Into Sum(com3.descto)
-                'Dim mtoDesc = Aggregate com3 In line _
-                '               Into Sum(com3.monto_decuento)
+                Dim desctoLineitem = From com3 In line _
+                                          Let descto = (com3.uns * com3.precio) * (com3.pct_decuento / 100)
+                descuentoCalculado = Aggregate com3 In desctoLineitem _
+                                          Into Sum(com3.descto)
+                Dim mtoDesc = Aggregate com3 In line _
+                               Into Sum(com3.monto_decuento)
 
-                'If errorCfd = 0 Then
-                '    '------------------------------------------ Validar los descuentos
-
-                '    If descuentoCalculado <> 0 Or mtoDesc <> 0 Then
-                '        If errorCfd = 0 Then
-                '            minimoTotal = CType((mtoDesc - Excepmax), Decimal)
-                '            maximoTotal = CType((mtoDesc + Excepmax), Decimal)
-                '            If descuentoCalculado < minimoTotal Or descuentoCalculado > maximoTotal Then
-                '                errorCfd = 2
-                '            End If
-                '        End If
-                '    End If
-                'End If
+                If errorCfd = 0 Then
+                    '------------------------------------------ Validar los descuentos
+                    'Valida Comprobante: descuento VS LineItems: suma(uns * precio) * pct_desc
+                    If descuentoCalculado <> 0 Or mtoDesc <> 0 Then
+                        If errorCfd = 0 Then
+                            minimoTotal = CType((mtoDesc - Excepmax), Decimal)
+                            maximoTotal = CType((mtoDesc + Excepmax), Decimal)
+                            If descuentoCalculado < minimoTotal Or descuentoCalculado > maximoTotal Then
+                                errorCfd = 2
+                            End If
+                        End If
+                    End If
+                End If
 
             End If
 
@@ -1740,8 +1740,14 @@ Namespace Skytex.FacturaElectronica
                 End If
             End If
 
+            'Valida Conceptos: suma(cantidad*valorUnitario) VS LineItems: suma(uns * precio)
             If totalListitems <> subtC Then
                 errorCfd = 7
+            End If
+
+            'Valida Comprobante: subtotal VS LineItems: suma(uns * precio).
+            If totalListitems <> subtotalComprobante Then
+                errorCfd = 8
             End If
 
             Dim msg As String = ""
@@ -1772,6 +1778,10 @@ Namespace Skytex.FacturaElectronica
                     graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
                 Case 7
                     msg = "No coincide la sumatoria de Conceptos y la sumatoria de LineItems"
+                    er.Message = msg
+                    graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
+                Case 8
+                    msg = "El subtotal no coincide con la sumatoria de LineItems"
                     er.Message = msg
                     graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
                 Case Else
@@ -2140,6 +2150,9 @@ Namespace Skytex.FacturaElectronica
             Dim val_unit = From com2 In qryResLine _
                             Select com2.valor_unitario _
                             Distinct
+
+            Dim totalListitems = Aggregate com2 In qryResLine _
+                              Into Sum(com2.sub_total)
             If errorCfd = 0 Then
                 '------------------------------------------ Validar los descuentos
                 mtoDescGlobal = FormatNumber(comprobante.descuento, decimales) ' Monto global de descuento
@@ -2275,6 +2288,16 @@ Namespace Skytex.FacturaElectronica
                 errorCfd = 0
             End If
 
+            'Valida Conceptos: suma(cantidad*valorUnitario) VS LineItems: suma(uns * precio)
+            If Not totalListitems = Subt_c Then
+                errorCfd = 7
+            End If
+
+            'Valida Comprobante: subtotal VS LineItems: suma(uns * precio).
+            If Not totalListitems = subtotalComprobante Then
+                errorCfd = 8
+            End If
+
             Dim msg As String = ""
             Dim er As New Errores
             If errorCfd > 0 Then
@@ -2302,6 +2325,14 @@ Namespace Skytex.FacturaElectronica
                     msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
                     er.Message = msg
                     graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales_SNAdd")
+                Case 7
+                    msg = "No coincide la sumatoria de Conceptos y la sumatoria de LineItems"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales")
+                Case 8
+                    msg = "El subtotal no coincide con la sumatoria de LineItems"
+                    er.Message = msg
+                    graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales")
                 Case Else
                     msg = ""
             End Select
