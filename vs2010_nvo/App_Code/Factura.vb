@@ -321,9 +321,9 @@ Namespace Skytex.FacturaElectronica
                 objMail.IsBodyHtml = True
                 objMail.BodyEncoding = Encoding.UTF8
                 objMail.Priority = MailPriority.Normal
-                'smtp.Host = emailSmtp
-                'smtp.Credentials = New Net.NetworkCredential(emailUser, emailPsswd)
-                ''smtp.Send(objMail)
+                smtp.Host = emailSmtp
+                smtp.Credentials = New Net.NetworkCredential(emailUser, emailPsswd)
+                smtp.Send(objMail)
             Catch ex As SmtpException
                 MensajeError = "Error al enviar mail en la aplicación. " + sBody + " ::: " + ex.Message
                 iErrorG = 1
@@ -441,29 +441,29 @@ Namespace Skytex.FacturaElectronica
             End If
         End Sub
 
-        Public Sub GrabaTmp3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
-            iErrorG = 0
-            If errores.Count = 0 And iErrorG = 0 Then
-                If comprobante.tipodoc_cve = "BTFACS" Or comprobante.tipodoc_cve = "BTFSER" Then
-                    ValidaDatosDetalleTmpSrv(errores, llaveCfd, comprobante.Addenda.requestforpayment.document)
-                Else
-                    ValidaDatosDetalleTmp(errores, comprobante.Addenda.requestforpayment.line_items, llaveCfd)
-                End If
+        'Public Sub GrabaTmp3_3(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
+        '    iErrorG = 0
+        '    If errores.Count = 0 And iErrorG = 0 Then
+        '        If comprobante.tipodoc_cve = "BTFACS" Or comprobante.tipodoc_cve = "BTFSER" Then
+        '            ValidaDatosDetalleTmpSrv(errores, llaveCfd, comprobante.Addenda.requestforpayment.document)
+        '        Else
+        '            ValidaDatosDetalleTmp(errores, comprobante.Addenda.requestforpayment.line_items, llaveCfd)
+        '        End If
 
-            End If
-            If errores.Count = 0 And iErrorG = 0 Then
-                ValidaDatosEncabezadoTmp3_3(errores, comprobante, llaveCfd)
-            End If
-            If iErrorG = 60089 Then
-                agrega_err(1, "Error, la captura no fue procesada, el folio del comprobante ya había sido aceptado", errores, "60089")
-            End If
-            If iErrorG = 60090 Then
-                agrega_err(1, "Error en la aplicacion, consulte con su administrador del sitio ", errores, "60090")
-            End If
-            If errores.Count > 0 Or iErrorG > 0 Then
-                LeerErroresSql(errores, llaveCfd)
-            End If
-        End Sub
+        '    End If
+        '    If errores.Count = 0 And iErrorG = 0 Then
+        '        ValidaDatosEncabezadoTmp3_3(errores, comprobante, llaveCfd)
+        '    End If
+        '    If iErrorG = 60089 Then
+        '        agrega_err(1, "Error, la captura no fue procesada, el folio del comprobante ya había sido aceptado", errores, "60089")
+        '    End If
+        '    If iErrorG = 60090 Then
+        '        agrega_err(1, "Error en la aplicacion, consulte con su administrador del sitio ", errores, "60090")
+        '    End If
+        '    If errores.Count > 0 Or iErrorG > 0 Then
+        '        LeerErroresSql(errores, llaveCfd)
+        '    End If
+        'End Sub
 
         Public Sub ValidaDatosEncabezadoTmp(ByVal errores As List(Of Errores), ByVal comprobante As Comprobante, ByVal llaveCfd As llave_cfd)
             Dim er As New Errores
@@ -1580,9 +1580,9 @@ Namespace Skytex.FacturaElectronica
                 maximoTotal = CType((sumaTotalLine + Excepmax), Decimal)
 
                 'se quito la validacion ocupada en los xml 3.2
-                'If sumaTotalCon < minimoTotal Or sumaTotalCon > maximoTotal Then
-                '    errorCfd = 1
-                'End If
+                If sumaTotalCon < minimoTotal Or sumaTotalCon > maximoTotal Then
+                    errorCfd = 1
+                End If
                 Dim desctoLineitem = From com3 In line _
                                           Let descto = (com3.uns * com3.precio) * (com3.pct_decuento / 100)
                 descuentoCalculado = Aggregate com3 In desctoLineitem _
@@ -1627,39 +1627,39 @@ Namespace Skytex.FacturaElectronica
             End If
 
             'se quito la validacion ocupada en los xml 3.2
-            'If errorCfd = 0 Then
-            '    '-------------------------------- Subtotales
-            '    'If subtotalComprobante <> subtC Then
-            '    '    errorCfd = 1
-            '    'End If
+            If errorCfd = 0 Then
+                '-------------------------------- Subtotales
+                'If subtotalComprobante <> subtC Then
+                '    errorCfd = 1
+                'End If
 
-            '    minimoTotal = CType((subtC - Excepmax), Decimal)
-            '    maximoTotal = CType((subtC + Excepmax), Decimal)
+                minimoTotal = CType((subtC - Excepmax), Decimal)
+                maximoTotal = CType((subtC + Excepmax), Decimal)
 
-            '    If subtotalComprobante < minimoTotal Or subtotalComprobante > maximoTotal Then
-            '        errorCfd = 1
-            '    End If
-
-
-            '    If comprobante.tipodoc_cve <> "BTFACS" Then
-            '        'If subtotalComprobante <> subtL Then
-            '        '    errorCfd = 1
-            '        'End If
-            '        minimoTotal = CType((subtL - Excepmax), Decimal)
-            '        maximoTotal = CType((subtL + Excepmax), Decimal)
-
-            '        If subtotalComprobante < minimoTotal Or subtotalComprobante > maximoTotal Then
-            '            errorCfd = 1
-            '        End If
+                If subtotalComprobante < minimoTotal Or subtotalComprobante > maximoTotal Then
+                    errorCfd = 1
+                End If
 
 
-            '        If subtC <> subtL Then
-            '            agrega_err(1, "No coincide Subtotal de Conceptos con LineItems: [" + subtC.ToString() + ":" + subtL.ToString() + "]", errores)
-            '            errorCfd = 1
-            '        End If
-            '    End If
+                If comprobante.tipodoc_cve <> "BTFACS" Then
+                    'If subtotalComprobante <> subtL Then
+                    '    errorCfd = 1
+                    'End If
+                    minimoTotal = CType((subtL - Excepmax), Decimal)
+                    maximoTotal = CType((subtL + Excepmax), Decimal)
 
-            'End If
+                    If subtotalComprobante < minimoTotal Or subtotalComprobante > maximoTotal Then
+                        errorCfd = 1
+                    End If
+
+
+                    If subtC <> subtL Then
+                        agrega_err(1, "No coincide Subtotal de Conceptos con LineItems: [" + subtC.ToString() + ":" + subtL.ToString() + "]", errores)
+                        errorCfd = 1
+                    End If
+                End If
+
+            End If
             Dim totalComprobante = FormatNumber(Round(comprobante.total, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
             Dim totImpTraslComprobante = FormatNumber(Round(comprobante.Impuestos.total_imp_trasl, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
             Dim traslComprobanteTotImp = FormatNumber(Round(((importeIva + importeIeps)), decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
@@ -1676,29 +1676,29 @@ Namespace Skytex.FacturaElectronica
 
             If errorCfd = 0 Then
                 'se quito la validacion ocupada en los xml 3.2
-                'If errorCfd = 0 Then
-                '    minimoTotal = CType((traslComprobanteTotImp - 0.5), Decimal)
-                '    maximoTotal = CType((traslComprobanteTotImp + 0.5), Decimal)
-                '    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
-                '        errorCfd = 4
-                '    End If
-                'End If
-                'If errorCfd = 0 Then
-                '    minimoTotal = CType((traslConceptos - 0.5), Decimal)
-                '    maximoTotal = CType((traslConceptos + 0.5), Decimal)
-                '    If traslConceptos < minimoTotal Or traslConceptos > maximoTotal Then
-                '        errorCfd = 4
-                '    End If
-                'End If
-                'If errorCfd = 0 Then
-                '    minimoTotal = CType((traslConceptos - Excepmax), Decimal)
-                '    maximoTotal = CType((traslConceptos + Excepmax), Decimal)
+                If errorCfd = 0 Then
+                    minimoTotal = CType((traslComprobanteTotImp - 0.5), Decimal)
+                    maximoTotal = CType((traslComprobanteTotImp + 0.5), Decimal)
+                    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                        errorCfd = 4
+                    End If
+                End If
+                If errorCfd = 0 Then
+                    minimoTotal = CType((traslConceptos - 0.5), Decimal)
+                    maximoTotal = CType((traslConceptos + 0.5), Decimal)
+                    If traslConceptos < minimoTotal Or traslConceptos > maximoTotal Then
+                        errorCfd = 4
+                    End If
+                End If
+                If errorCfd = 0 Then
+                    minimoTotal = CType((traslConceptos - Excepmax), Decimal)
+                    maximoTotal = CType((traslConceptos + Excepmax), Decimal)
 
-                '    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
-                '        errorCfd = 4
-                '    End If
+                    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                        errorCfd = 4
+                    End If
 
-                'End If
+                End If
 
                 If comprobante.tipodoc_cve <> "BTFACS" Then
                     If errorCfd = 0 Then
@@ -1721,13 +1721,13 @@ Namespace Skytex.FacturaElectronica
                 totalListitems = FormatNumber(Round((subtL - descuentoCalculado + traslLineitems) - totalReten, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
             End If
             'se quito la validacion ocupada en los xml 3.2
-            'If errorCfd = 0 Then
-            '    minimoTotal = CType((totalConceptos - Excepmax), Decimal)
-            '    maximoTotal = CType((totalConceptos + Excepmax), Decimal)
-            '    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
-            '        errorCfd = 5
-            '    End If
-            'End If
+            If errorCfd = 0 Then
+                minimoTotal = CType((totalConceptos - Excepmax), Decimal)
+                maximoTotal = CType((totalConceptos + Excepmax), Decimal)
+                If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                    errorCfd = 5
+                End If
+            End If
             If comprobante.tipodoc_cve <> "BTFACS" Then
                 If errorCfd = 0 Then
                     minimoTotal = 0
@@ -1738,16 +1738,6 @@ Namespace Skytex.FacturaElectronica
                         errorCfd = 5
                     End If
                 End If
-            End If
-
-            'Valida Conceptos: suma(cantidad*valorUnitario) VS LineItems: suma(uns * precio)
-            If totalListitems <> subtC Then
-                errorCfd = 7
-            End If
-
-            'Valida Comprobante: subtotal VS LineItems: suma(uns * precio).
-            If totalListitems <> subtotalComprobante Then
-                errorCfd = 8
             End If
 
             Dim msg As String = ""
@@ -1774,14 +1764,6 @@ Namespace Skytex.FacturaElectronica
                     graba_error(errores, er, llaveCfd, "60066", "ValidaTotales")
                 Case 6
                     msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
-                    er.Message = msg
-                    graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
-                Case 7
-                    msg = "No coincide la sumatoria de Conceptos y la sumatoria de LineItems"
-                    er.Message = msg
-                    graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
-                Case 8
-                    msg = "El subtotal no coincide con la sumatoria de LineItems"
                     er.Message = msg
                     graba_error(errores, er, llaveCfd, "60067", "ValidaTotales")
                 Case Else
@@ -2188,26 +2170,26 @@ Namespace Skytex.FacturaElectronica
             Dim totImpRet = (retenImporteIva + retenImporteIsr)
             If errorCfd = 0 Then
                 'se quito la validacion ocupada en los xml 3.2
-                'If errorCfd = 0 Then
-                '    minimoTotal = traslComprobanteTotImp - 0.5
-                '    maximoTotal = traslComprobanteTotImp + 0.5
+                If errorCfd = 0 Then
+                    minimoTotal = traslComprobanteTotImp - 0.5
+                    maximoTotal = traslComprobanteTotImp + 0.5
 
-                '    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
-                '        errorCfd = 4
-                '    End If
+                    If traslComprobanteTotImp < minimoTotal Or traslComprobanteTotImp > maximoTotal Then
+                        errorCfd = 4
+                    End If
 
-                'End If
+                End If
 
 
-                'If errorCfd = 0 Then 'tot_imp_trasl_comprobante <> trasl_conceptos Then
-                '    minimoTotal = traslConceptos - 0.5
-                '    maximoTotal = traslConceptos + 0.5
+                If errorCfd = 0 Then 'tot_imp_trasl_comprobante <> trasl_conceptos Then
+                    minimoTotal = traslConceptos - 0.5
+                    maximoTotal = traslConceptos + 0.5
 
-                '    If traslConceptos < minimoTotal Or traslConceptos > maximoTotal Then
-                '        errorCfd = 4
-                '    End If
+                    If traslConceptos < minimoTotal Or traslConceptos > maximoTotal Then
+                        errorCfd = 4
+                    End If
 
-                'End If
+                End If
 
                 If errorCfd = 0 Then
                     minimoTotal = CType((traslConceptos - Excepmax), Decimal)
@@ -2288,14 +2270,24 @@ Namespace Skytex.FacturaElectronica
                 errorCfd = 0
             End If
 
-            'Valida Conceptos: suma(cantidad*valorUnitario) VS LineItems: suma(uns * precio)
-            If Not totalListitems = Subt_c Then
-                errorCfd = 7
+            'se quito la validacion ocupada en los xml 3.2
+            If errorCfd = 0 Then
+                minimoTotal = CType((totalConceptos - Excepmax), Decimal)
+                maximoTotal = CType((totalConceptos + Excepmax), Decimal)
+                If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                    errorCfd = 5
+                End If
             End If
-
-            'Valida Comprobante: subtotal VS LineItems: suma(uns * precio).
-            If Not totalListitems = subtotalComprobante Then
-                errorCfd = 8
+            If comprobante.tipodoc_cve <> "BTFACS" Then
+                If errorCfd = 0 Then
+                    minimoTotal = 0
+                    maximoTotal = 0
+                    minimoTotal = CType((totalListitems - Excepmax), Decimal)
+                    maximoTotal = CType((totalListitems + Excepmax), Decimal)
+                    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+                        errorCfd = 5
+                    End If
+                End If
             End If
 
             Dim msg As String = ""
@@ -2325,14 +2317,6 @@ Namespace Skytex.FacturaElectronica
                     msg = "No coincide cantidad, valor unitario de Concepto con uns y precio de lineItem  "
                     er.Message = msg
                     graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales_SNAdd")
-                Case 7
-                    msg = "No coincide la sumatoria de Conceptos y la sumatoria de LineItems"
-                    er.Message = msg
-                    graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales")
-                Case 8
-                    msg = "El subtotal no coincide con la sumatoria de LineItems"
-                    er.Message = msg
-                    graba_error(errores, er, LlaveCfd, "60067", "ValidaTotales")
                 Case Else
                     msg = ""
             End Select
