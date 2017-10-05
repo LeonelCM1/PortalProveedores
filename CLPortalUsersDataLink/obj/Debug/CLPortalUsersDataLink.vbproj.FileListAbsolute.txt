@@ -214,3 +214,15 @@ C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersD
 C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
 C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
 C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.dll.config
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.pdb
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalUsersDataLink.xml
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.dll
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.pdb
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\bin\Debug\CLPortalAbstract.xml
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbprojResolveAssemblyReference.cache
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.Resources.resources
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.vbproj.GenerateResource.Cache
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.dll
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.xml
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalUsersDataLink\obj\Debug\CLPortalUsersDataLink.pdb

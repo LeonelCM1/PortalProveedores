@@ -33,6 +33,7 @@ Namespace Skytex.FacturaElectronica
         Private dsCPReceptor As New DataSet
         Private dsNEEmisor As New DataSet
         Private dsNEReceptor As New DataSet
+        Private dsTipoFactor As New DataSet
 
         'CONCEPTOS
         Private _recepcion As String = "Sin Datos"
@@ -43,6 +44,8 @@ Namespace Skytex.FacturaElectronica
         Private _dtValidacionCPEmisor As DataTable
         Private _dtValidacionNEReceptor As DataTable
         Private _dtValidacionNEEmisor As DataTable
+        Private _dtValidacionTipoFactor As DataTable
+
         Dim nomEstadoEmisor As String
         Dim nomEstadoReceptor As String
         Dim cpReceptor As String
@@ -125,6 +128,14 @@ Namespace Skytex.FacturaElectronica
             End Get
             Set(ByVal value As DataTable)
                 _dtValidacionDireccion = value
+            End Set
+        End Property
+        Public Property ValidacionTipoFactor() As DataTable
+            Get
+                Return _dtValidacionTipoFactor
+            End Get
+            Set(ByVal value As DataTable)
+                _dtValidacionTipoFactor = value
             End Set
         End Property
         Public Property EfCveG() As String
@@ -1622,7 +1633,7 @@ Namespace Skytex.FacturaElectronica
                                      Let sub_total = com4.uns * com4.precio _
                                      Select sub_total, com4.pct_decuento, com4.sku, com4.monto_decuento
                 subtL = Aggregate com4 In subtotalItems _
-                             Into Sum(com4.sub_total - (com4.sub_total * (com4.pct_decuento / 100)))
+                             Into Sum(com4.sub_total)
                 subtL = FormatNumber(Round(subtL, decimalesTruncados, MidpointRounding.AwayFromZero), decimales)
             End If
 
@@ -2271,24 +2282,24 @@ Namespace Skytex.FacturaElectronica
             End If
 
             'se quito la validacion ocupada en los xml 3.2
-            If errorCfd = 0 Then
-                minimoTotal = CType((totalConceptos - Excepmax), Decimal)
-                maximoTotal = CType((totalConceptos + Excepmax), Decimal)
-                If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
-                    errorCfd = 5
-                End If
-            End If
-            If comprobante.tipodoc_cve <> "BTFACS" Then
-                If errorCfd = 0 Then
-                    minimoTotal = 0
-                    maximoTotal = 0
-                    minimoTotal = CType((totalListitems - Excepmax), Decimal)
-                    maximoTotal = CType((totalListitems + Excepmax), Decimal)
-                    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
-                        errorCfd = 5
-                    End If
-                End If
-            End If
+            'If errorCfd = 0 Then
+            '    minimoTotal = CType((totalConceptos - Excepmax), Decimal)
+            '    maximoTotal = CType((totalConceptos + Excepmax), Decimal)
+            '    If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+            '        errorCfd = 5
+            '    End If
+            'End If
+            'If comprobante.tipodoc_cve <> "BTFACS" Then
+            '    If errorCfd = 0 Then
+            '        minimoTotal = 0
+            '        maximoTotal = 0
+            '        minimoTotal = CType((totalListitems - Excepmax), Decimal)
+            '        maximoTotal = CType((totalListitems + Excepmax), Decimal)
+            '        If totalComprobante < minimoTotal Or totalComprobante > maximoTotal Then
+            '            errorCfd = 5
+            '        End If
+            '    End If
+            'End If
 
             Dim msg As String = ""
             Dim er As New Errores
@@ -3276,7 +3287,7 @@ Namespace Skytex.FacturaElectronica
                                         agrega_err(1, "Para este codigo postal, el nombre del estado del receptor no aceptado por Skytex <br />", errores)
                                     End If
                                     Conexion.Close()
-                                    dsCPReceptor.Reset()
+                                    dsNEReceptor.Reset()
                                     ValidacionNEReceptor.Rows.Clear()
                                 Catch ex As Exception
                                     Dim msg As String
@@ -5233,28 +5244,59 @@ Namespace Skytex.FacturaElectronica
 
 
                     If xe.Name.LocalName = "Traslado" Then
-                        If IsNothing(xe.Attribute("Base")) Then 'And  swTotalCapT = False Then
+                        Dim tipo_factor = CType(xe.Attribute("TipoFactor"), String)
+                        Dim resTipo_factor As String = ""
 
-                            'GCM 22012015 Obtenemos prefijo, solo entrara si es cfdi
-                            Dim prefijo = xe.GetPrefixOfNamespace(xe.Name.NamespaceName)
+                        Dim sqlAdapter = New SqlDataAdapter("sp_valTipoFactorCFDI", Conexion)
+                        sqlAdapter.SelectCommand.CommandType = CommandType.StoredProcedure
+                        sqlAdapter.SelectCommand.CommandTimeout = _timeout
+                        sqlAdapter.SelectCommand.Parameters.AddWithValue("@tipoFactor", tipo_factor)
+                        Try
+                            Conexion.Open()
+                            sqlAdapter.Fill(dsTipoFactor, "sp_valTipoFactorCFDI")
+                            sqlAdapter.Dispose()
+                            ValidacionTipoFactor = dsTipoFactor.Tables.Item(0)
+                            resTipo_factor = CType(ValidacionTipoFactor.Rows(0).Item("sw_valido"), String)
+                            Conexion.Close()
+                            dsTipoFactor.Reset()
+                            ValidacionTipoFactor.Rows.Clear()
+                        Catch ex As Exception
+                            Dim msg As String
+                            msg = "sp_valTipoFactorCFDI"
+                            iErrorG = 3
+                            agrega_err(iErrorG, msg, errores)
+                        Finally
+                            If Conexion.State = ConnectionState.Open Then
+                                Conexion.Close()
+                            End If
+                        End Try
 
-                            If prefijo = "cfdi" Then
-                                If Not IsNothing(xe.Attribute("Importe")) Then
-                                    impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
-                                    Dim itemTras = New traslado
-                                    itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
-                                    'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
-                                    'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
-                                    If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
-                                        itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
-                                        itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
-                                    Else
-                                        itemTras.tasa = 0
-                                        itemTras.importe = 0
+                        If resTipo_factor = "1" Then
+                            If IsNothing(xe.Attribute("Base")) Then 'And  swTotalCapT = False Then
+                                'GCM 22012015 Obtenemos prefijo, solo entrara si es cfdi
+                                Dim prefijo = xe.GetPrefixOfNamespace(xe.Name.NamespaceName)
+
+                                If prefijo = "cfdi" Then
+                                    If Not IsNothing(xe.Attribute("Importe")) Then
+                                        impuestos.total_imp_trasl = impuestos.total_imp_trasl + CType(xe.Attribute("Importe"), Decimal)
+                                        Dim itemTras = New traslado
+                                        itemTras.impuesto = CType(xe.Attribute("Impuesto"), String)
+                                        'itemTras.tasa = CType(xe.Attribute("tasa"), Decimal)
+                                        'itemTras.importe = CType(xe.Attribute("importe"), Decimal)
+                                        If CType(xe.Attribute("TasaOCuota"), Decimal) > 0 And CType(xe.Attribute("Importe"), Decimal) > 0 Then
+                                            itemTras.tasa = CType(xe.Attribute("TasaOCuota"), Decimal)
+                                            itemTras.importe = CType(xe.Attribute("Importe"), Decimal)
+                                        Else
+                                            itemTras.tasa = 0
+                                            itemTras.importe = 0
+                                        End If
+                                        traslados.Add(itemTras)
                                     End If
-                                    traslados.Add(itemTras)
                                 End If
                             End If
+                        Else
+                            agrega_err(1, "El TipoFactor: " + tipo_factor + " no es valido. ", errores)
+                            errorConceptos = True
                         End If
                     End If
 

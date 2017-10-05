@@ -1,4 +1,4 @@
-﻿<%@ control language="C#" autoeventwireup="true" inherits="FacturaServicio, App_Web_qx5nx1ms" %>
+﻿<%@ control language="C#" autoeventwireup="true" inherits="FacturaServicio, App_Web_p3kwygq0" %>
 
 <style type="text/css">
     .overlay

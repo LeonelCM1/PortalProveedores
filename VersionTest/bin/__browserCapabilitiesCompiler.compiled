@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<preserve resultType="2" virtualPath="/vs2010_nvo/App_Browsers/" hash="6d1dea99" filehash="deb899bf240a38e5" flags="110000" assembly="App_Browsers" type="ASP.ApplicationBrowserCapabilitiesFactory">
+<preserve resultType="2" virtualPath="/vs2010_nvo/App_Browsers/" hash="6d1dea99" filehash="991004dc5a066ad0" flags="110000" assembly="App_Browsers" type="ASP.ApplicationBrowserCapabilitiesFactory">
     <filedeps>
         <filedep name="/vs2010_nvo/App_Browsers/firefox.browser" />
         <filedep name="/vs2010_nvo/App_Browsers/ie.browser" />
