@@ -83,7 +83,18 @@ Namespace My
             "_develop;Password=dinamico20")> _
         Public ReadOnly Property AppServerConnectionString() As String
             Get
-                Return CType(Me("skytexConnectionString"), String)
+                Return CType(Me("AppServerConnectionString"), String)
+            End Get
+        End Property
+
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(), _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString), _
+         Global.System.Configuration.DefaultSettingValueAttribute("Data Source=skyhj;Initial Catalog=skytex;Persist Security Info=True;User ID=soludin" & _
+            "_develop;Password=dinamico20")> _
+        Public ReadOnly Property SkyhjConnectionString() As String
+            Get
+                Return CType(Me("SkyhjConnectionString"), String)
             End Get
         End Property
     End Class
