@@ -250,11 +250,11 @@ Partial Class UserControlsRecepcion
             Select interror = msg.Interror, message = msg.Message _
             Where (interror = 60000) Or (interror = 1 And message.Trim = "")
 
-        'If msg60000.Count <> 0 Then
-        '    If swErrins = 1 And _factura.iErrorG > 0 And llaveCfd.folio_factura <> 0 And llaveCfd.rfc_emisor <> "" And llaveCfd.serie <> "" Then
-        '        _factura.LeerErroresSql(errores, llaveCfd)
-        '    End If
-        'End If
+        If msg60000.Count <> 0 Then
+            If swErrins = 1 And _factura.iErrorG > 0 And llaveCfd.folio_factura <> 0 And llaveCfd.rfc_emisor <> "" And llaveCfd.serie <> "" Then
+                _factura.LeerErroresSql(errores, llaveCfd)
+            End If
+        End If
 
     End Sub
 

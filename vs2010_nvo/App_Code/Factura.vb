@@ -60,8 +60,8 @@ Namespace Skytex.FacturaElectronica
         Private _msjError As String = ""
         Private _llamaSqlImpresion As Integer = 0
         Dim _server As New _Server
-        Private DBdevelop As String = _Server.DBdevelop
-        Private DBproduc As String = _Server.DBproduc
+        Private DBdevelop As String = _server.DBdevelop
+        Private DBproduc As String = _server.DBproduc
 #End Region
 
 #Region "Propiedades"
@@ -894,7 +894,7 @@ Namespace Skytex.FacturaElectronica
                         'se ocupa para xml 3.2
                         ValidaTotales(errores, comprobante, llaveCfd, decTrun, decimales)
                     End If
-                    
+
                 End If
             Catch ex As Exception
                 agrega_err(3, ex.Message, errores)
@@ -908,7 +908,7 @@ Namespace Skytex.FacturaElectronica
                         'se ocupa para xml 3.2
                         ValidaTotales_SNAdd(errores, comprobante, llaveCfd, decTrun, decimales)
                     End If
-                    
+
                 End If
             Catch ex As Exception
                 agrega_err(3, ex.Message, errores)
@@ -2886,8 +2886,8 @@ Namespace Skytex.FacturaElectronica
                 schemas.Add("http://www.sat.gob.mx/cfd/3", xsd32.CreateReader)
                 schemas.Add("http://www.sat.gob.mx/TimbreFiscalDigital", xsdTdf.CreateReader)
             End If
-           
-            
+
+
 
             If leyendasFiscales = 1 Then
                 schemas.Add("http://www.sat.gob.mx/leyendasFiscales", xsdLf.CreateReader)
@@ -6360,7 +6360,7 @@ Namespace Skytex.FacturaElectronica
                 Next
             End If
 
-            
+
 
 
 
@@ -6443,6 +6443,7 @@ Namespace Skytex.FacturaElectronica
             sqlAdapter.SelectCommand.Parameters.AddWithValue("@cc_tipo", ccTipo)
             sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_receptor", rfcReceptor)
             sqlAdapter.SelectCommand.Parameters.AddWithValue("@tipo_doc", tipdocCve)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@version", llaveCfd.version)
             Try
                 Conexion.Open()
                 sqlAdapter.Fill(ds, "sp_inserta_xml")
