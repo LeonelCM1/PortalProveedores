@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="VB" masterpagefile="~/mpOptionsUser.master" autoeventwireup="false" inherits="SeguimientoCaja, App_Web_k5u1vdh0" %>
+﻿<%@ page title="" language="VB" masterpagefile="~/mpOptionsUser.master" autoeventwireup="false" inherits="SeguimientoCaja, App_Web_bqe4lr4o" %>
 <%@ MasterType VirtualPath="~/mpOptionsUser.master"  %>
 <%@ Register src="~/GridSeguimientoCaja.ascx" tagname="ctlGridCH" tagprefix="ucCH" %>
 <%@ OutputCache Location="None" %>

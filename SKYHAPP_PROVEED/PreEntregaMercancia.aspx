@@ -1,4 +1,4 @@
-﻿<%@ page masterpagefile="~/mpMenu.master" language="vb" autoeventwireup="false" inherits="PreEntregaMercancia, App_Web_k5u1vdh0" title="Proveedores" enableviewstate="true" %>
+﻿<%@ page masterpagefile="~/mpMenu.master" language="vb" autoeventwireup="false" inherits="PreEntregaMercancia, App_Web_bqe4lr4o" title="Proveedores" enableviewstate="true" %>
 <%@ MasterType VirtualPath="~/mpMenu.master"  %>
 <%@ Register src="~/GeneraEtiqueta.ascx" tagname="ctlGenEtiq" tagprefix="ucGS" %>
 <%@ OutputCache Location="None" %>

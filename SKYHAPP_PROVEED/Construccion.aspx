@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="C#" masterpagefile="~/mpLogin.master" autoeventwireup="true" inherits="Construccion, App_Web_j4hekrlv" %>
+﻿<%@ page title="" language="C#" masterpagefile="~/mpLogin.master" autoeventwireup="true" inherits="Construccion, App_Web_2uhznha1" %>
 
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContentPlaceHolder" runat="server">
     <table border="0" style="width: 950px">

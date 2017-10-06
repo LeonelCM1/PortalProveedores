@@ -14,7 +14,7 @@ Public Class _Server
 
     Public DBdevelop As String = "SKYHDEV3" 'nombre del servidor de develop
     'Public DBdevelop As String = "develop" 'nombre del servidor de develop
-    Public DBproduc As String = "SQL" 'nombre del servidor de produccion
+    Public DBproduc As String = "skyhj" 'nombre del servidor de produccion
     Public DBCat As String = "skytex" 'nombre de la base de datos en servidor develop
     Public DBpro As String = "skytex" 'nombre de la base de datos en servidor de produccion
 
