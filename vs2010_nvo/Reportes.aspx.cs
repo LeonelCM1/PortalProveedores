@@ -67,13 +67,18 @@ public partial class Reportes : System.Web.UI.Page
                 reporte = "Files/QRCRWEBdev.rpt";
                 //reporte = "Files/QRCRWEB.rpt";
             }
-            if (db == DBproduc) //if (db == "SKYTEX")
+            if (db == "SKYTEX") //if (db == "SKYTEX")
             {
                 reporte = "Files/QRCRWEB.rpt";
             }
             if (db == "192.168.18.96") //if (db == "DEVELOP")//JPO: 27-06-16 valida el nombre de la instancia SQL a consultar
             {
                 reporte = "Files/QRCRWEBskyhsql.rpt";
+                //reporte = "Files/QRCRWEB.rpt";
+            }
+            if (db == "SKYHJ") //if (db == "DEVELOP")//JPO: 27-06-16 valida el nombre de la instancia SQL a consultar
+            {
+                reporte = "Files/QRCRWEBskyhj.rpt";
                 //reporte = "Files/QRCRWEB.rpt";
             }
         }
@@ -99,7 +104,7 @@ public partial class Reportes : System.Web.UI.Page
             rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
         }
 
-        if (db == DBproduc) //if (db == "SKYTEX")
+        if (db == "SKYTEX") //if (db == "SKYTEX")
         {
             //rpt.DataSourceConnections[0].SetConnection("192.168.18.21", "skytex", false);
             ////rpt.DataSourceConnections[0].SetConnection("192.168.18.49", "skytex", false);
@@ -112,6 +117,13 @@ public partial class Reportes : System.Web.UI.Page
             //rpt.DataSourceConnections[0].SetConnection("skyhdev", "develop", false);
             //rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "192.168.18.96", "skytex", false);
             rpt.DataSourceConnections[0].SetConnection("192.168.18.96", "skytex", false);
+            rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
+        }
+        if (db == "SKYHJ") //if (db == "DEVELOP")//JPO: 27-06-16 valida el nombre de la instancia SQL a consultar
+        {
+            //rpt.DataSourceConnections[0].SetConnection("skyhdev", "develop", false);
+            //rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "192.168.18.96", "skytex", false);
+            rpt.DataSourceConnections[0].SetConnection("skyhj", "skytex", false);
             rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
         }
 

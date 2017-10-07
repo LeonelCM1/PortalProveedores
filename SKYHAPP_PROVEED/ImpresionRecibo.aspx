@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="ImpresionRecibo, App_Web_bqe4lr4o" %>
+﻿<%@ page title="" language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="ImpresionRecibo, App_Web_cswz4jso" %>
 <%@ MasterType VirtualPath="~/mpMenu.master"  %>
 <%@ Register src="~/ImpresionReciboQTR.ascx" tagname="ctlImpresionRecibo" tagprefix="ucIR" %>
 <%@ OutputCache Location="None" %>

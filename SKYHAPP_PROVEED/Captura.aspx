@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="Captura, App_Web_bqe4lr4o" enableviewstate="true" maintainscrollpositiononpostback="true" %>
+﻿<%@ page title="" language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="Captura, App_Web_cswz4jso" enableviewstate="true" maintainscrollpositiononpostback="true" %>
 
 <%@ MasterType VirtualPath="~/mpMenu.master" %>
 <%--<%@ Register Src="~/CapturaAddenda.ascx" TagName="ctlCaptAddenda" TagPrefix="ucCA" %>--%>

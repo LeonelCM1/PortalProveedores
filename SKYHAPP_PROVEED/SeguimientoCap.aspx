@@ -1,4 +1,4 @@
-﻿<%@ page masterpagefile="~/mpMenu.master" language="vb" autoeventwireup="false" inherits="SeguimientoCap, App_Web_bqe4lr4o" codebehind="SeguimientoCap.aspx.vb" title="Proveedores" enableviewstate="true" %>
+﻿<%@ page masterpagefile="~/mpMenu.master" language="vb" autoeventwireup="false" inherits="SeguimientoCap, App_Web_cswz4jso" codebehind="SeguimientoCap.aspx.vb" title="Proveedores" enableviewstate="true" %>
 <%@ MasterType VirtualPath="~/mpMenu.master" %>
 <%@ Register Src="~/GridSeguimientoCap.ascx" TagName="ctlGridSeguimiento" TagPrefix="ucGS" %>
 <%@ OutputCache Location="None" %>
