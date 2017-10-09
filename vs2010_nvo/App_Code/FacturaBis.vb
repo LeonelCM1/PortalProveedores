@@ -652,6 +652,7 @@ Namespace Skytex.FacturaElectronica
             sqlAdapter.SelectCommand.Parameters.AddWithValue("@cc_tipo", ccTipo)
             sqlAdapter.SelectCommand.Parameters.AddWithValue("@rfc_receptor", rfcReceptor)
             sqlAdapter.SelectCommand.Parameters.AddWithValue("@tipo_doc", tipdocCve)
+            sqlAdapter.SelectCommand.Parameters.AddWithValue("@version", llaveCfd.version)
             Try
                 Conexion.Open()
                 sqlAdapter.Fill(ds, "sp_inserta_xml")

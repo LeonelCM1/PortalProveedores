@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="CapturaSrv, App_Web_1qkeo2iw" maintainscrollpositiononpostback="true" %>
+﻿<%@ page title="" language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="CapturaSrv, App_Web_rhgnm1es" maintainscrollpositiononpostback="true" %>
 
 
 <%@ MasterType VirtualPath="~/mpMenu.master" %>

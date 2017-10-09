@@ -1,4 +1,4 @@
-﻿<%@ page masterpagefile="~/mpOptionsUser.master" language="VB" autoeventwireup="false" inherits="CajaChica, App_Web_1qkeo2iw" %>
+﻿<%@ page masterpagefile="~/mpOptionsUser.master" language="VB" autoeventwireup="false" inherits="CajaChica, App_Web_rhgnm1es" %>
 <%@ MasterType VirtualPath="~/mpOptionsUser.master"  %>
 <%@ Register src="~/CajaFacturas.ascx" tagname="ctlCajaFact" tagprefix="ucCF" %>
 <%@ OutputCache Location="None" %>

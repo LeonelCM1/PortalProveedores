@@ -1,4 +1,4 @@
-﻿<%@ control language="VB" autoeventwireup="true" inherits="CajaFacturasControl, App_Web_ld2l1fol" %>
+﻿<%@ control language="VB" autoeventwireup="true" inherits="CajaFacturasControl, App_Web_mhf5ijmb" %>
 
 <table style="width: 100%;">
     <tr>

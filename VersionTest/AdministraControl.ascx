@@ -1,4 +1,4 @@
-﻿<%@ control language="VB" autoeventwireup="false" inherits="AdministraControl, App_Web_ld2l1fol" %>
+﻿<%@ control language="VB" autoeventwireup="false" inherits="AdministraControl, App_Web_mhf5ijmb" %>
 
 <asp:ScriptManager ID="ScriptManager1" runat="server">
 </asp:ScriptManager>
