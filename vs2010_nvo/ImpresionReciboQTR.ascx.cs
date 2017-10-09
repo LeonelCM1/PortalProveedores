@@ -119,7 +119,7 @@ public partial class ImpresionReciboQTR : System.Web.UI.UserControl
             rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
         }
 
-        if (db == DBproduc)//if (db == "SKYTEX")
+        if (db == "SKYTEX")//if (db == "SKYTEX")
         {
             rpt.Load(Server.MapPath("Files/QRCRWEB.rpt"));
             //rpt.DataSourceConnections[0].SetConnection("192.168.18.21", "skytex", false);
@@ -139,6 +139,17 @@ public partial class ImpresionReciboQTR : System.Web.UI.UserControl
             //rpt.DataSourceConnections[0].SetConnection("SQL", "skytex", false);
             //rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
             rpt.DataSourceConnections[0].SetConnection("192.168.18.96", "skytex", false);
+            rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
+        }
+        if (db == "SKYHJ")//if (db == "SKYTEX")
+        {
+            rpt.Load(Server.MapPath("Files/QRCRWEBskyhj.rpt"));
+            //rpt.DataSourceConnections[0].SetConnection("192.168.18.21", "skytex", false);
+            ////rpt.DataSourceConnections[0].SetConnection("192.168.18.49", "skytex", false);
+            //rpt.DataSourceConnections[0].SetLogon("soludin", "pluma");
+            //rpt.DataSourceConnections[0].SetConnection("SQL", "skytex", false);
+            //rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
+            rpt.DataSourceConnections[0].SetConnection("SKYHJ", "skytex", false);
             rpt.DataSourceConnections[0].SetLogon("soludin_develop", "dinamico20");
         }
         rpt.SetParameterValue("@ef_cve", efCve);

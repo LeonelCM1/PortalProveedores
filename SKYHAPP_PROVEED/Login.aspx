@@ -1,4 +1,4 @@
-<%@ page masterpagefile="~/mpLogin.master" language="VB" autoeventwireup="false" inherits="Login, App_Web_cswz4jso" title="Proveedores" %>
+<%@ page masterpagefile="~/mpLogin.master" language="VB" autoeventwireup="false" inherits="Login, App_Web_xsrxeqlv" title="Proveedores" %>
 
 <%@ MasterType VirtualPath="~/mpLogin.master" %>
 <%@ Register Src="~/Login.ascx" TagName="ctlLogin" TagPrefix="uc1" %>

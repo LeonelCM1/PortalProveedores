@@ -682,8 +682,8 @@ Partial Class UserControlsRecepcion
             rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "192.168.18.96", "skytex")
         End If
 
-        'If db = "SKYTEX" Then
-        If db = DBproduc Then
+        If db = "SKYTEX" Then
+            'If db = DBproduc Then
             rpt.Load(Server.MapPath("Files/QRCRWEB.rpt"))
             rpt.Refresh()
             'rpt.DataSourceConnections(0).SetConnection("192.168.18.21", "skytex", False)
@@ -693,6 +693,17 @@ Partial Class UserControlsRecepcion
             'rpt.DataSourceConnections(0).SetConnection(DBproduc, DBPro, False)
             'rpt.DataSourceConnections(0).SetLogon("soludin_develop", "dinamico20")
             rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "SQL", "skytex")
+        End If
+
+        If db = "SKYHJ" Then '
+            rpt.Load(Server.MapPath("Files/QRCRWEBskyhj.rpt"))
+            rpt.Refresh()
+            'rpt.DataSourceConnections(0).SetConnection("SKYHDEV", "develop", False)
+            'rpt.DataSourceConnections(0).SetConnection("SKYHDEV3", "skytex", False)
+            'rpt.DataSourceConnections(0).SetLogon("soludin", "pluma")'JPO: 27/06/2016 
+            'rpt.DataSourceConnections(0).SetConnection(DBdevelop, DBCat, False)
+            'rpt.DataSourceConnections(0).SetLogon("soludin_develop", "dinamico20")
+            rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "SKYHJ", "skytex")
         End If
 
         'Paso de parametros

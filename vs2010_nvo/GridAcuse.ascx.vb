@@ -126,8 +126,8 @@ Partial Class UserControlsGridAcuse
             'rpt.DataSourceConnections(0).SetLogon("soludin_develop", "dinamico20")
             rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "skyhdev3", "develop")
         End If
-        'If db = "SKYTEX" Then
-        If db = DBproduc Then
+        If db = "SKYTEX" Then
+            'If db = DBproduc Then
             'rpt.DataSourceConnections(0).SetConnection("192.168.18.21", "skytex", False)
             'rpt.DataSourceConnections(0).SetLogon("soludin", "pluma")
             'rpt.DataSourceConnections(0).SetConnection("SQL", "skytex", False)
@@ -146,6 +146,15 @@ Partial Class UserControlsGridAcuse
             'rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "192.168.18.96", "skytex")
             rpt.DataSourceConnections(0).SetConnection("192.168.18.96", "skytex", False)
             rpt.DataSourceConnections(0).SetLogon("soludin_develop", "dinamico20")
+        End If
+        If db = "SKYHJ" Then
+            'rpt.DataSourceConnections(0).SetConnection("192.168.18.21", "skytex", False)
+            'rpt.DataSourceConnections(0).SetLogon("soludin", "pluma")
+            'rpt.DataSourceConnections(0).SetConnection("SQL", "skytex", False)
+            'rpt.DataSourceConnections(0).SetLogon("soludin_develop", "dinamico20")
+            'rpt.DataSourceConnections(0).SetConnection(DBproduc, DBPro, False)
+            'rpt.DataSourceConnections(0).SetLogon("soludin_develop", "dinamico20")
+            rpt.SetDatabaseLogon("soludin_develop", "dinamico20", "SKYHJ", "skytex")
         End If
         rpt.SetParameterValue("@ef_cve", efCve)
         rpt.SetParameterValue("@tipdoc_cve", doctoContra)
