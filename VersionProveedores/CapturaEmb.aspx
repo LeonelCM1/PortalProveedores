@@ -1,4 +1,4 @@
-﻿<%@ page language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="CapturaEmb, App_Web_ykmasxcf" maintainscrollpositiononpostback="True" %>
+﻿<%@ page language="VB" masterpagefile="~/mpMenu.master" autoeventwireup="false" inherits="CapturaEmb, App_Web_uagyq1ll" maintainscrollpositiononpostback="True" %>
 <%@ MasterType VirtualPath="~/mpMenu.master" %>
 <%@ Register Src="~/FacturaEmbarque.ascx" TagName="ctlFacturaEmbarque" TagPrefix="ucFEmb" %>
 <%@ OutputCache Location="None" %>

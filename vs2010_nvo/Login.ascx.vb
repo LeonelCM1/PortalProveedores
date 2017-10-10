@@ -12,7 +12,7 @@ Partial Class Login12
         config = ObjSecurity.ObtConfig()
         Page.Session("config") = config
         Page.Session("password") = Login1.Password.Trim() 'GCM 14012015 para etiquetas
-        If user.perfil.Any() Then
+        If user.Perfil.Any() Then
             e.Authenticated = True
         End If
 

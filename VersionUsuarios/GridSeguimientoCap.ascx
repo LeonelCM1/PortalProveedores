@@ -1,4 +1,4 @@
-﻿<%@ control language="VB" autoeventwireup="false" inherits="UserControlsGridSeguimientoCap, App_Web_cjgzslet" %>
+﻿<%@ control language="VB" autoeventwireup="false" inherits="UserControlsGridSeguimientoCap, App_Web_kqyk5kff" %>
 <asp:ScriptManager ID="ScriptManager1" runat="server">
 </asp:ScriptManager>
 <asp:UpdatePanel ID="upMain" runat="server" UpdateMode="Conditional" Visible="true"

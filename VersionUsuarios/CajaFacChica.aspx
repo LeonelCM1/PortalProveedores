@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="VB" masterpagefile="~/mpOptionsUser.master" autoeventwireup="false" inherits="CajaFacChica, App_Web_ce3seyug" %>
+﻿<%@ page title="" language="VB" masterpagefile="~/mpOptionsUser.master" autoeventwireup="false" inherits="CajaFacChica, App_Web_3i5t5lcj" %>
 <%@ MasterType VirtualPath="~/mpOptionsUser.master" %>
 <%@ Register src="~/CajaFacturasControl.ascx" tagName="ctlCajaFactCtrl" tagPrefix="ucCF" %>
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContentPlaceHolder" Runat="Server">

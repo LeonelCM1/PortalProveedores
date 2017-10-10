@@ -138,3 +138,11 @@ C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstra
 C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
 C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
 C:\Users\fernando.garcia\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.dll
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.pdb
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\bin\Debug\CLPortalAbstract.xml
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.Resources.resources
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.vbproj.GenerateResource.Cache
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.dll
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.xml
+C:\Users\Fer\Documents\Repositorios\PortalProveedores\CLPortalAbstract\obj\Debug\CLPortalAbstract.pdb

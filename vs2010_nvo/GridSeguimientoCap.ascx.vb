@@ -865,14 +865,17 @@ Partial Class UserControlsGridSeguimientoCap
 
         Dim tasaVarIva As Decimal = 0 '= comprobante.Impuestos.Traslados.tasa / 100
         Dim importeIva As Decimal = 0
-
+        'FGV10.10.2017 se agrego el if para que solo entre a validar la tasa de iva en aquellos registros donde el importe sea > 0
         For Each i In iva
-            Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
-            If swtasa = True Then
-                tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
-            Else
-                tasaVarIva = i.tasa
+            If i.importe > 0 Then
+                Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaVarIva = i.tasa
+                End If
             End If
+            
             importeIva = importeIva + i.importe  'FormatNumber(i.importe, decimales)
         Next
 
@@ -882,14 +885,17 @@ Partial Class UserControlsGridSeguimientoCap
 
         Dim tasaIeps As Decimal = 0  '= comprobante.Impuestos.Traslados.tasa / 100
         Dim importeIeps As Decimal = 0
-
+        'FGV10.10.2017 se agrego el if para que solo entre a validar la tasa de iva en aquellos registros donde el importe sea > 0
         For Each i In ieps
             Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
-            If swtasa = True Then
-                tasaIeps = i.tasa / 100 ' FormatNumber(i.tasa / 100, decimales)
-            Else
-                tasaIeps = i.tasa
+            If i.importe > 0 Then
+                If swtasa = True Then
+                    tasaIeps = i.tasa / 100 ' FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaIeps = i.tasa
+                End If
             End If
+
             importeIeps = importeIeps + i.importe ' FormatNumber(i.importe, decimales)
         Next
 
