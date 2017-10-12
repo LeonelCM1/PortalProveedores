@@ -65,14 +65,14 @@ Namespace My
             End Get
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("Data Source=SKYHDEV3;Initial Catalog=skytex;Persist Security Info=True;User ID=so"& _ 
-            "ludin_develop;Password=dinamico20")>  _
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(), _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString), _
+         Global.System.Configuration.DefaultSettingValueAttribute("Data Source=SKYHDEV3;Initial Catalog=develop;Persist Security Info=True;User ID=so" & _
+            "ludin_develop;Password=dinamico20")> _
         Public ReadOnly Property developConnectionString() As String
             Get
-                Return CType(Me("developConnectionString"),String)
+                Return CType(Me("developConnectionString"), String)
             End Get
         End Property
     End Class

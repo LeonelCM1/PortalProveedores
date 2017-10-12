@@ -530,13 +530,15 @@ Namespace Skytex.FacturaElectronica
 
             For Each i In iva
                 Dim swtasa = RevisaIntTasa(i.tasa.ToString())
-                If swtasa = True Then
-                    If varIva = 0 Then
-                        varIva = i.tasa
-                    End If
-                Else
-                    If varIva = 0 Then
-                        varIva = i.tasa * 100
+                If i.importe > 0 Then
+                    If swtasa = True Then
+                        If varIva = 0 Then
+                            varIva = i.tasa
+                        End If
+                    Else
+                        If varIva = 0 Then
+                            varIva = i.tasa * 100
+                        End If
                     End If
                 End If
                 importeIva = importeIva + i.importe
@@ -666,13 +668,15 @@ Namespace Skytex.FacturaElectronica
 
             For Each i In iva
                 Dim swtasa = RevisaIntTasa(i.tasa.ToString())
-                If swtasa = True Then
-                    If varIva = 0 Then
-                        varIva = i.tasa
-                    End If
-                Else
-                    If varIva = 0 Then
-                        varIva = i.tasa * 100
+                If i.importe > 0 Then
+                    If swtasa = True Then
+                        If varIva = 0 Then
+                            varIva = i.tasa
+                        End If
+                    Else
+                        If varIva = 0 Then
+                            varIva = i.tasa * 100
+                        End If
                     End If
                 End If
                 importeIva = importeIva + i.importe

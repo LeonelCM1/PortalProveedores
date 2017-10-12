@@ -872,10 +872,12 @@ Partial Class UserControlsGridSeguimientoCap
 
         For Each i In iva
             Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
-            If swtasa = True Then
-                tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
-            Else
-                tasaVarIva = i.tasa
+            If i.importe > 0 Then
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaVarIva = i.tasa
+                End If
             End If
             importeIva = importeIva + i.importe  'FormatNumber(i.importe, decimales)
         Next
@@ -973,10 +975,12 @@ Partial Class UserControlsGridSeguimientoCap
 
         For Each i In iva
             Dim swtasa = _factura.RevisaIntTasa(i.tasa.ToString())
-            If swtasa = True Then
-                tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
-            Else
-                tasaVarIva = i.tasa
+            If i.importe > 0 Then
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaVarIva = i.tasa
+                End If
             End If
             importeIva = importeIva + i.importe  'FormatNumber(i.importe, decimales)
         Next

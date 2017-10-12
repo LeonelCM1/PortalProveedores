@@ -453,16 +453,17 @@ Partial Class UserControlsRecepcion
         'importeIva = i.importe 'FormatNumber(i.importe, decimales)
         'Next
 
+        'FGV10.10.2017 se agrego el if para que solo entre a validar la tasa de iva en aquellos registros donde el importe sea > 0
         For Each i In iva
             'tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
             Dim swtasa = RevisaIntTasa(i.tasa.ToString())
-
-            If swtasa = True Then
-                tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
-            Else
-                tasaVarIva = i.tasa
+            If i.importe > 0 Then
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaVarIva = i.tasa
+                End If
             End If
-
             importeIva = importeIva + i.importe 'FormatNumber(i.importe, decimales)
         Next
 
@@ -576,16 +577,17 @@ Partial Class UserControlsRecepcion
         'importeIva = i.importe 'FormatNumber(i.importe, decimales)
         'Next
 
+        'FGV10.10.2017 se agrego el if para que solo entre a validar la tasa de iva en aquellos registros donde el importe sea > 0
         For Each i In iva
             'tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
             Dim swtasa = RevisaIntTasa(i.tasa.ToString())
-
-            If swtasa = True Then
-                tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
-            Else
-                tasaVarIva = i.tasa
+            If i.importe > 0 Then
+                If swtasa = True Then
+                    tasaVarIva = i.tasa / 100 'FormatNumber(i.tasa / 100, decimales)
+                Else
+                    tasaVarIva = i.tasa
+                End If
             End If
-
             importeIva = importeIva + i.importe 'FormatNumber(i.importe, decimales)
         Next
 
