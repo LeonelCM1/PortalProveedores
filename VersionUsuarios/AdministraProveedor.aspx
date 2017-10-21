@@ -1,4 +1,4 @@
-﻿<%@ page title="" language="VB" masterpagefile="~/mpOptionsUser.master" autoeventwireup="false" inherits="AdministraProveedor, App_Web_3i5t5lcj" maintainscrollpositiononpostback="true" %>
+﻿<%@ page title="" language="VB" masterpagefile="~/mpOptionsUser.master" autoeventwireup="false" inherits="AdministraProveedor, App_Web_1cwdkebu" maintainscrollpositiononpostback="true" %>
 <%@ MasterType VirtualPath="~/mpOptionsUser.master"  %>
 <%@ Register src="~/AdministraControl.ascx" tagname="ctlAdmCtrl" tagprefix="ucAC" %>
 <%@ OutputCache Location="None" %>

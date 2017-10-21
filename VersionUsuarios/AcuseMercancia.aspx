@@ -1,4 +1,4 @@
-﻿<%@ page masterpagefile="~/mpMenu.master" language="vb" autoeventwireup="false" inherits="AcuseMercancia, App_Web_3i5t5lcj" title="Proveedores" enableviewstate="true" %>
+﻿<%@ page masterpagefile="~/mpMenu.master" language="vb" autoeventwireup="false" inherits="AcuseMercancia, App_Web_1cwdkebu" title="Proveedores" enableviewstate="true" %>
 <%@ MasterType VirtualPath="~/mpMenu.master"  %>
 <%@ Register src="~/GridAcuse.ascx" tagname="ctlGridAcuse" tagprefix="ucGS" %>
 <%@ OutputCache Location="None" %>

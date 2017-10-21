@@ -57,8 +57,8 @@ Namespace Skytex.FacturaElectronica
         Private _msjError As String = ""
         Private _llamaSqlImpresion As Integer = 0
         Dim _server As New _Server
-        Private DBdevelop As String = _Server.DBdevelop
-        Private DBproduc As String = _Server.DBproduc
+        Private DBdevelop As String = _server.DBdevelop
+        Private DBproduc As String = _server.DBproduc
 #End Region
 
 #Region "Propiedades"
@@ -2514,7 +2514,7 @@ Namespace Skytex.FacturaElectronica
                 '    End Try
                 'End If
 
-                
+
 
                 'FGV 14012016
                 'se agrego la excepcion para que con algunos rfc's no aplicara la validacion del numCtaPago

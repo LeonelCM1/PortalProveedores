@@ -1,4 +1,4 @@
-<%@ page masterpagefile="~/mpMenu.master" language="VB" autoeventwireup="false" inherits="Facturas, App_Web_3i5t5lcj" title="Proveedores" %>
+<%@ page masterpagefile="~/mpMenu.master" language="VB" autoeventwireup="false" inherits="Facturas, App_Web_1cwdkebu" title="Proveedores" %>
 
 <%@ MasterType VirtualPath="~/mpMenu.master" %>
 <%@ Register Src="~/Factura_Elec.ascx" TagName="ctlFacturaElect" TagPrefix="ucFE" %>

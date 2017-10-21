@@ -1,4 +1,4 @@
-﻿<%@ page language="VB" autoeventwireup="false" inherits="CartaFacturas, App_Web_kqyk5kff" %>
+﻿<%@ page language="VB" autoeventwireup="false" inherits="CartaFacturas, App_Web_5g52da2q" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
